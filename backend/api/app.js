@@ -37,4 +37,11 @@ app.listen(PORT, () => {
   console.log(`Serveur démarré sur le port ${PORT}`);
 });
 
+ // index.js qui regroupe tous les modèles
+
+sequelize.sync({ alter: true }) // alter: true pour mettre à jour la base sans supprimer les données
+  .then(() => console.log('Modèles synchronisés !'))
+  .catch(err => console.error('Erreur de synchronisation :', err));
+
+
 module.exports = app;

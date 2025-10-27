@@ -3,7 +3,7 @@ const sequelize = require('../database');
 
 const Wishlist = sequelize.define('wishlist', { 
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    utilisateur_id: { type: DataTypes.INTEGER, allowNull: false },
+    user_id: { type: DataTypes.INTEGER, allowNull: false },
     categorie_id:{ type: DataTypes.INTEGER, allowNull: true },
     souhait_texte:{ type: DataTypes.STRING, allowNull: false },
     date_ajout: {type: DataTypes.DATE, defaultValue: DataTypes.NOW}

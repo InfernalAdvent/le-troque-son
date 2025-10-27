@@ -1,7 +1,7 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../database');
 
-const Message = sequelize.define('users', { 
+const Message = sequelize.define('messages', { 
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     conversation_id: { type: DataTypes.INTEGER, allowNull: false },
     expediteur_id:{ type: DataTypes.INTEGER, allowNull: false },

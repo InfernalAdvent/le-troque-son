@@ -12,6 +12,8 @@ const usersRouter = require('./routes/users');
 const departementsRouter = require('./routes/departements');
 const annoncesRouter = require('./routes/annonces');
 const categoriesRouter = require('./routes/categories');
+const wishlistsRouter = require('./routes/wishlists')
+const authRouter = require('./routes/auth');
 const allowedOrigins = ['http://localhost:3000'];
 
 const app = express();
@@ -38,16 +40,15 @@ app.use('/users', usersRouter);
 app.use('/departements', departementsRouter);
 app.use('/annonces', annoncesRouter);
 app.use('/categories', categoriesRouter);
+app.use('/wishlist', wishlistsRouter);
+app.use('/auth', authRouter);
 
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur le port ${PORT}`);
 });
 
- // index.js qui regroupe tous les modèles
-
 sequelize.sync({ alter: true }) // alter: true pour mettre à jour la base sans supprimer les données
   .then(() => console.log('Modèles synchronisés !'))
   .catch(err => console.error('Erreur de synchronisation :', err));
-
 
 module.exports = app;

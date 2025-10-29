@@ -9,7 +9,7 @@ const Wishlist = require('./wishlist');
 
 
 Annonce.belongsTo(User, { foreignKey: 'utilisateur_id' });
-Annonce.belongsTo(Categorie, { foreignKey: 'categorie_id' });
+Annonce.belongsTo(Categorie, { foreignKey: 'categorie_id', as: 'categoriePrincipale' });
 Annonce.belongsTo(Categorie, { foreignKey: 'echange_categorie_id', as: 'echangeCategorie' });
 Annonce.belongsTo(Departement, { foreignKey: 'departement_id' });
 

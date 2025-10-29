@@ -10,6 +10,8 @@ const PORT = process.env.PORT || 5000;
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const departementsRouter = require('./routes/departements');
+const annoncesRouter = require('./routes/annonces');
+const categoriesRouter = require('./routes/categories');
 const allowedOrigins = ['http://localhost:3000'];
 
 const app = express();
@@ -34,6 +36,8 @@ app.use(cors({
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/departements', departementsRouter);
+app.use('/annonces', annoncesRouter);
+app.use('/categories', categoriesRouter);
 
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur le port ${PORT}`);

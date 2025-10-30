@@ -10,7 +10,8 @@ const User = sequelize.define('users', {
     date_naissance: {type: DataTypes.DATE, allowNull: true},
     pays: {type: DataTypes.STRING, allowNull: false, defaultValue: 'France'},
     departement_id: {type: DataTypes.INTEGER, allowNull: true},
-    date_inscription: {type: DataTypes.DATE, defaultValue: DataTypes.NOW}
+    date_inscription: {type: DataTypes.DATE, defaultValue: DataTypes.NOW},
+    derniere_connexion: {type: DataTypes.DATE,allowNull: true, defaultValue: null}
 });
 
 module.exports = User;

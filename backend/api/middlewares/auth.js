@@ -1,38 +1,32 @@
-// middleware/auth.middleware.js
+// middlewares/auth.js (MODIFIÉ pour lire le cookie)
 
 const jwt = require('jsonwebtoken');
 
-// 🚨 Assurez-vous d'avoir process.env.JWT_SECRET défini dans votre .env 🚨
-
-const authenticateToken = (req, res, next) => {
-    // 1. Récupérer le jeton
-    // Le jeton est généralement envoyé dans l'en-tête 'Authorization' sous la forme 'Bearer <token>'
-    const authHeader = req.headers['authorization'];
+const verifyCookieToken = (req, res, next) => {
+    // 1. Récupérer le jeton à partir du cookie
+    // Grâce à app.js et cookie-parser, req.cookies.jwt est disponible
+    const token = req.cookies.jwt; 
     
-    // Extrait le token après 'Bearer '
-    const token = authHeader && authHeader.split(' ')[1]; 
-
     // Si pas de jeton, renvoie 401 (Unauthorized)
-    if (token == null) {
-        return res.status(401).json({ message: "Accès refusé. Jeton non fourni." });
+    if (!token) {
+        return res.status(401).json({ message: "Accès refusé. Jeton non fourni (manque le cookie)." });
     }
 
     // 2. Vérifier le jeton
     try {
-        // Décoder le jeton en utilisant la clé secrète
+        // Décoder le jeton
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         
-        // Ajouter les données de l'utilisateur (id, email) à l'objet req 
-        // pour que les contrôleurs suivants y aient accès (ex: req.user.id)
+        // Ajouter les données de l'utilisateur à l'objet req 
         req.user = decoded; 
         
         // 3. Passer au contrôleur suivant
         next(); 
         
     } catch (err) {
-        // Si le jeton est invalide (expiré, falsifié), renvoie 403 (Forbidden)
+        // Jeton invalide (expiré, falsifié), renvoie 403 (Forbidden)
         return res.status(403).json({ message: "Jeton invalide ou expiré." });
     }
 };
 
-module.exports = authenticateToken;
+module.exports = verifyCookieToken;

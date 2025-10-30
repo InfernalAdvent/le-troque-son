@@ -4,13 +4,18 @@ const postLogin = async (req, res) => {
     const { email, password } = req.body;
     try {
         const { user, token } = await authService.login(email, password);
+        await user.update({
+            derniere_connexion: new Date()
+        });
        
         res.cookie('jwt', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
         res.status(200).json({ message: 'Connexion réussie' });
+        
 
     } catch (error) {
         res.status(401).json({ error: error.message });
     }
+    
 };
 
 const postSignUp = async (req, res) => {

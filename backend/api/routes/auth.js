@@ -1,7 +1,6 @@
-// routes/auth.js
-
 const express = require('express');
 const router = express.Router();
+
 const { postLogin, postSignUp ,postLogout } = require('../controllers/authController');
 
 router.post('/login', postLogin);

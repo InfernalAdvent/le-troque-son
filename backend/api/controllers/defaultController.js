@@ -1,3 +1,4 @@
+const defaultService = require("../services/defaultService");
 
 const defaultController = (service) => ({
     
@@ -25,6 +26,46 @@ const defaultController = (service) => ({
             console.error("Erreur lors de la récupération de l'élément:", error);
             res.status(500).json({ error: "Erreur serveur." });
         }
+    },
+
+    add: async (req, res) => {
+        if (req.user && req.user.id) {
+            req.body.user_id = req.user.id;
+        } else {
+                // Si le middleware est passé mais que req.user n'est pas là (rare), on bloque par sécurité.
+                return res.status(401).json({ error: "Utilisateur non identifié après l'authentification." });
+            }
+        try {
+            const newElement = await service.add(req.body);
+            res.status(201).json(newElement);
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        }
+    },
+
+    update: async(req, res) => {
+        try {
+            const updatedElement = await service.update(req.params.id, req.body); 
+            
+            if (!updatedElement) {
+                return res.status(404).json({ message: 'Élément non trouvé'});
+            }
+            res.status(200).json(updatedElement);
+        } catch (error) {
+            res.status(500).json({ error: error.message}); 
+        }
+    },
+
+    delete: async(req, res) => {
+        try {
+            const deletedElement = await service.delete(req.params.id);
+            if (!deletedElement) {
+                return res.status(404).json({ message: 'Élément non trouvé'});
+            }
+            res.status(200).json({ message: "Élément supprimé"});
+        } catch (error) {
+            res.status(400).json({ error: error.message });
+        };
     }
 });
 

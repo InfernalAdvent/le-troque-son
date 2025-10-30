@@ -16,7 +16,6 @@ const Annonce = sequelize.define('annonces', {
     code_postal: {type: DataTypes.STRING, allowNull: false},
     statut: {type: DataTypes.STRING, allowNull: false, defaultValue: 'Active'},
     date_publication: {type: DataTypes.DATE, defaultValue: DataTypes.NOW},
-    date_mise_a_jour: {type: DataTypes.DATE, allowNull: false}
 });
 
 module.exports = Annonce;

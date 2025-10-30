@@ -58,13 +58,19 @@ const defaultController = (service) => ({
 
     delete: async(req, res) => {
         try {
-            const deletedElement = await service.delete(req.params.id);
-            if (!deletedElement) {
-                return res.status(404).json({ message: 'Élément non trouvé'});
+            const id = req.params.id;
+            const userId = req.user ? req.user.id : null;
+            if(!userId) {
+                return res.status(401).json({ error: "Authentification requise pour supprimer cet élément."});
             }
-            res.status(200).json({ message: "Élément supprimé"});
+            const deletedElement = await service.delete(id, userId);
+            if (!deletedElement) {
+                return res.status(404).json({ message: 'Élément non trouvé ou vous ne disposez les droits pour supprimer cet élément'});
+            }
+            res.status(204).send();
         } catch (error) {
-            res.status(400).json({ error: error.message });
+            console.error("Erreur lors de la suppression de l'élément:", error);
+            res.status(500).json({ error: error.message });
         };
     }
 });

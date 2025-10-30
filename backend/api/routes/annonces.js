@@ -19,6 +19,6 @@ router.get('/:id', annoncesDefaultController.getById);
 router.get('/', annoncesDefaultController.getAll);
 router.post('/', verifyCookieToken,  annoncesDefaultController.add);
 router.put('/:id', verifyCookieToken, annoncesSpecificController.updateAnnonceOwner);
-router.delete('/:id', verifyCookieToken, annoncesDefaultController.delete);
+router.delete('/:id', verifyCookieToken, annoncesSpecificController.deleteAnnonceOwner);
 
 module.exports = router;

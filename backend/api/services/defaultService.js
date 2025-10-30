@@ -1,3 +1,5 @@
+const { Op } = require('sequelize');
+
 const defaultService = (Model) => ({
     
     getAll: async (options = {}) => {
@@ -33,22 +35,34 @@ const defaultService = (Model) => ({
         }
     },
 
-    delete: async(id) => {
+    delete: async(id, userId) => {
         try {
-            // Sequelize utilise Model.destroy() et renvoie le nombre de lignes supprimées (1 ou 0)
-            const rowsDeleted = await Model.destroy({ 
-                where: { id: id } 
-            });
+           
+            if (userId) {
 
-            // Si rowsDeleted est 0, l'élément n'a pas été trouvé.
-            if (rowsDeleted === 0) {
-                return null; // Indique que rien n'a été supprimé
-            } 
-            
-            return true; // Indique que la suppression a réussi
+                const rowsDeleted = await Model.destroy({ 
+                    where: {
+                        id: id,
+                        [Op.or]: [
+                            { user_id: userId },
+                            { utilisateur_id: userId }
+                        ]
+                    }
+                });
+
+
+                if (rowsDeleted === 0) {
+                    return null; 
+                } 
+
+            return true; 
+
+            } else {
+                return null;
+            }
 
         } catch (error) {
-            throw new Error(`Erreur lors de la suppression de l'élément : ${error.message}`);
+        throw new Error(`Erreur lors de la suppression de l'élément : ${error.message}`);
         };
     }
 });

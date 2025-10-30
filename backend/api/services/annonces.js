@@ -26,8 +26,6 @@ const updateAnnonceOwner = async (id, data, userId) => {
     }
 };
 
-
-
 const getAnnoncesByCategories = async(categorieId) => {
     return await Annonce.findAll({
         where: {
@@ -43,6 +41,27 @@ const getAnnoncesByCategories = async(categorieId) => {
     })
 };
 
+    const deleteAnnonceOwner= async(id, userId) => {
+        try {
+            const whereOwner = {id: id}
+            if(userId) {
+                whereOwner.utilsateur_id = userId
+            }
+            const rowsDeleted = await Annonce.destroy({ 
+                where: whereOwner
+            });
+
+            if (rowsDeleted === 0) {
+                return null; 
+            } 
+            
+            return true; 
+
+        } catch (error) {
+            throw new Error(`Erreur lors de la suppression de l'annonce : ${error.message}`);
+        };
+    }
+
 module.exports = {
-    getAnnoncesByCategories, updateAnnonceOwner
+    getAnnoncesByCategories, updateAnnonceOwner, deleteAnnonceOwner
 };

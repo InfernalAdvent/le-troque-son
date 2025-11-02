@@ -26,24 +26,7 @@ const wishlistController = {
                     // On peut renvoyer 403 Forbidden si l'erreur est clairement liée à l'accès
                     res.status(500).json({ error: error.message}); 
                 };
-            },
-            deleteWishlistOwner: async(req, res) => {
-            try {
-                const id = req.params.id;
-                const userId = req.user ? req.user.id : null;
-                if(!userId) {
-                    return res.status(401).json({ error: "Authentification requise pour supprimer cette wishlist."});
-                }
-                const deletedElement = await wishlistService.deleteWishlistOwner(id, userId);
-                if (!deletedElement) {
-                    return res.status(404).json({ message: 'Wishlist non trouvée, ou vous ne disposez pas les droits pour la supprimer'});
-                }
-                res.status(204).send();
-            } catch (error) {
-                console.error("Erreur lors de la suppression de la wishlist:", error);
-                res.status(500).json({ error: error.message });
-            };
-        }
+            }
 }
 
 module.exports = wishlistController;

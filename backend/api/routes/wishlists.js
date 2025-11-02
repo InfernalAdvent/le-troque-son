@@ -16,6 +16,6 @@ router.get('/', wishlistDefaultController.getAll);
 router.get('/:id', wishlistDefaultController.getById);
 router.post('/', verifyCookieToken, wishlistDefaultController.add);
 router.put('/:id', verifyCookieToken, wishlistSpecificController.updateWishlistOwner);
-router.delete('/:id', verifyCookieToken, wishlistSpecificController.deleteWishlistOwner);
+router.delete('/:id', verifyCookieToken, wishlistDefaultController.delete);
 
 module.exports = router;

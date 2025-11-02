@@ -1,5 +1,3 @@
-const { Op } = require('sequelize');
-
 const defaultService = (Model) => ({
     
     getAll: async (options = {}) => {
@@ -37,32 +35,22 @@ const defaultService = (Model) => ({
 
     delete: async(id, userId) => {
         try {
-           
-            if (userId) {
+            const whereOwner = {id: id}
+            if(userId) {
+                whereOwner.user_id = userId
+            }
+            const rowsDeleted = await Model.destroy({ 
+                where: whereOwner
+            });
 
-                const rowsDeleted = await Model.destroy({ 
-                    where: {
-                        id: id,
-                        [Op.or]: [
-                            { user_id: userId },
-                            { utilisateur_id: userId }
-                        ]
-                    }
-                });
-
-
-                if (rowsDeleted === 0) {
-                    return null; 
-                } 
-
+            if (rowsDeleted === 0) {
+                return null; 
+            } 
+            
             return true; 
 
-            } else {
-                return null;
-            }
-
         } catch (error) {
-        throw new Error(`Erreur lors de la suppression de l'élément : ${error.message}`);
+            throw new Error(`Erreur lors de la suppression de l'élément : ${error.message}`);
         };
     }
 });

@@ -14,6 +14,7 @@ const annoncesRouter = require('./routes/annonces');
 const categoriesRouter = require('./routes/categories');
 const wishlistsRouter = require('./routes/wishlists')
 const authRouter = require('./routes/auth');
+const photosRouter = require('./routes/photos');
 const allowedOrigins = ['http://localhost:3000'];
 
 const app = express();
@@ -41,6 +42,7 @@ app.use('/departements', departementsRouter);
 app.use('/annonces', annoncesRouter);
 app.use('/categories', categoriesRouter);
 app.use('/wishlist', wishlistsRouter);
+app.use('/photos', photosRouter);
 app.use('/auth', authRouter);
 
 app.listen(PORT, () => {

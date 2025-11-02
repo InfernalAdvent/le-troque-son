@@ -3,7 +3,7 @@ const sequelize = require('../database');
 
 const Annonce = sequelize.define('annonces', { 
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-    utilisateur_id: {type: DataTypes.INTEGER, allowNull: false},
+    user_id: {type: DataTypes.INTEGER, allowNull: false},
     categorie_id: {type: DataTypes.INTEGER, allowNull: false},
     departement_id: {type: DataTypes.INTEGER, allowNull: false},
     titre: {type: DataTypes.STRING, allowNull: false},

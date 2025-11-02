@@ -38,24 +38,7 @@ const annonceController = {
                 // On peut renvoyer 403 Forbidden si l'erreur est clairement liée à l'accès
                 res.status(500).json({ error: error.message}); 
             };
-        },
-        deleteAnnonceOwner: async(req, res) => {
-        try {
-            const id = req.params.id;
-            const userId = req.user ? req.user.id : null;
-            if(!userId) {
-                return res.status(401).json({ error: "Authentification requise pour supprimer cette annonce."});
-            }
-            const deletedElement = await annoncesService.deleteAnnonceOwner(id, userId);
-            if (!deletedElement) {
-                return res.status(404).json({ message: 'Annonce non trouvée, ou vous ne disposez pas les droits pour la supprimer'});
-            }
-            res.status(204).send();
-        } catch (error) {
-            console.error("Erreur lors de la suppression de l'annonce:", error);
-            res.status(500).json({ error: error.message });
-        };
-    }
+        }
 };
 
 module.exports = annonceController;

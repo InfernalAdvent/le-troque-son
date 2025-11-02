@@ -9,7 +9,7 @@ const updateAnnonceOwner = async (id, data, userId) => {
         const [rowsAffected] = await Annonce.update(data, {
             where: { 
                 id: id,
-                utilisateur_id: userId
+                user_id: userId
             }
         });
 
@@ -41,27 +41,6 @@ const getAnnoncesByCategories = async(categorieId) => {
     })
 };
 
-    const deleteAnnonceOwner= async(id, userId) => {
-        try {
-            const whereOwner = {id: id}
-            if(userId) {
-                whereOwner.utilsateur_id = userId
-            }
-            const rowsDeleted = await Annonce.destroy({ 
-                where: whereOwner
-            });
-
-            if (rowsDeleted === 0) {
-                return null; 
-            } 
-            
-            return true; 
-
-        } catch (error) {
-            throw new Error(`Erreur lors de la suppression de l'annonce : ${error.message}`);
-        };
-    }
-
 module.exports = {
-    getAnnoncesByCategories, updateAnnonceOwner, deleteAnnonceOwner
+    getAnnoncesByCategories, updateAnnonceOwner
 };

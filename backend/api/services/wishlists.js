@@ -26,27 +26,6 @@ const updateWishlistOwner = async (id, data, userId) => {
     }
 };
 
-const deleteWishlistOwner= async(id, userId) => {
-        try {
-            const whereOwner = {id: id}
-            if(userId) {
-                whereOwner.user_id = userId
-            }
-            const rowsDeleted = await Wishlist.destroy({ 
-                where: whereOwner
-            });
-
-            if (rowsDeleted === 0) {
-                return null; 
-            } 
-            
-            return true; 
-
-        } catch (error) {
-            throw new Error(`Erreur lors de la suppression de l'annonce : ${error.message}`);
-        };
-    }
-
 module.exports = {
-    updateWishlistOwner, deleteWishlistOwner
+    updateWishlistOwner
 };

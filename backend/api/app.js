@@ -15,6 +15,7 @@ const categoriesRouter = require('./routes/categories');
 const wishlistsRouter = require('./routes/wishlists')
 const authRouter = require('./routes/auth');
 const photosRouter = require('./routes/photos');
+const conversationsRouter = require('./routes/conversations');
 const allowedOrigins = ['http://localhost:3000'];
 
 const app = express();
@@ -44,6 +45,7 @@ app.use('/categories', categoriesRouter);
 app.use('/wishlist', wishlistsRouter);
 app.use('/photos', photosRouter);
 app.use('/auth', authRouter);
+app.use('/conversations', conversationsRouter);
 
 app.listen(PORT, () => {
   console.log(`Serveur démarré sur le port ${PORT}`);

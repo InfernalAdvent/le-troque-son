@@ -17,7 +17,6 @@ const annonceController = {
         try {
             const annonceId = parseInt(req.params.id, 10);
                 
-                // L'ID de l'utilisateur est stocké par le middleware verifyToken dans req.user.id
                 const userId = req.user.id; 
 
                 if (isNaN(annonceId) || isNaN(userId)) {
@@ -27,7 +26,6 @@ const annonceController = {
                 const updatedElement = await annoncesService.updateAnnonceOwner(annonceId, req.body, userId);
                 
                 if (!updatedElement) {
-                    // Le message 404 est correct car l'élément n'est pas "trouvé" pour CET utilisateur
                     return res.status(404).json({ message: 'Annonce non trouvée ou vous n\'êtes pas l\'auteur.'});
                 }
                 
@@ -35,7 +33,6 @@ const annonceController = {
                 
             } catch (error) {
                 console.error("Erreur lors de la mise à jour de l'annonce:", error);
-                // On peut renvoyer 403 Forbidden si l'erreur est clairement liée à l'accès
                 res.status(500).json({ error: error.message}); 
             };
         }

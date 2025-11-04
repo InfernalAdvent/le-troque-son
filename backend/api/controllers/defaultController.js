@@ -2,7 +2,6 @@ const defaultService = require("../services/defaultService");
 
 const defaultController = (service) => ({
     
-    // Controller pour gérer la requête GET ALL
     getAll: async (req, res) => {
         try {
             const data = await service.getAll();
@@ -13,10 +12,9 @@ const defaultController = (service) => ({
         }
     },
 
-    // Controller pour gérer la requête GET ONE
     getById: async (req, res) => {
         try {
-            const id = req.params.id; // Assume que la route est /:id
+            const id = req.params.id;
             const item = await service.getById(id);
             if (!item) {
                 return res.status(404).json({ error: "Ressource non trouvée." });
@@ -32,7 +30,6 @@ const defaultController = (service) => ({
         if (req.user && req.user.id) {
             req.body.user_id = req.user.id;
         } else {
-                // Si le middleware est passé mais que req.user n'est pas là (rare), on bloque par sécurité.
                 return res.status(401).json({ error: "Utilisateur non identifié après l'authentification." });
             }
         try {

@@ -31,7 +31,7 @@ const signup = async (email, password, userData) => {
         throw new Error("Cet email est déjà utilisé.");
     }
 
-    const { prenom, nom, date_de_naissance, pays, departement_id } = userData;
+    const { prenom, nom, date_de_naissance, pays, departement_id, pseudo } = userData;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const newUser = await User.create({
@@ -42,6 +42,7 @@ const signup = async (email, password, userData) => {
         date_de_naissance,
         pays,
         departement_id,
+        pseudo
     });
 
     const token = jwt.sign(

@@ -99,9 +99,21 @@ const getAnnoncesByCategories = async(categoryId, filterCategoryId = null) => {
     }
 };
 
+const searchAnnonces = async(titre) => {
+    return await Annonce.findAll({
+        where: {
+            titre: {
+                [Op.like]: `%${titre}%`
+            }
+        },
+        limit: 20,
+    });
+};
+
 // Exportation de toutes les méthodes (celles par défaut et celles spécifiques)
 module.exports = {
     annonceDefaultService, 
     getAnnoncesByCategories, 
-    updateAnnonceOwner
+    updateAnnonceOwner,
+    searchAnnonces
 };

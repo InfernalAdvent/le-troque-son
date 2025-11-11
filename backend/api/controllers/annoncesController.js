@@ -35,7 +35,23 @@ const annonceController = {
                 console.error("Erreur lors de la mise à jour de l'annonce:", error);
                 res.status(500).json({ error: error.message}); 
             };
+        },
+    
+    searchAnnonces: async (req, res) => {
+        const titre = req.query.titre || '';
+
+        if(!titre.trim()) {
+            return res.status(400).json({ error: 'Le paramètre titre est requis'});
         }
+        try {
+            const annonces = await annoncesService.searchAnnonces(titre);
+            console.log("Résultats trouvés:", annonces);
+            res.json(annonces);
+        } catch(err) {
+            console.error('Erreur lors de la recherche des annonces:', err);
+            res.status(500).json({error: "Erreur serveur"});
+        };
+    }
 };
 
 module.exports = annonceController;

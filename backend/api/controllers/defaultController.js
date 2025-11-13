@@ -26,6 +26,22 @@ const defaultController = (service) => ({
         }
     },
 
+    getByUserId: async (req, res) => {
+        try {
+            const userId = req.params.userId;
+            if(!userId) {
+                return res.status(400).json({ error: "Le paramètre userId est requis"});
+            }
+            const entries = await service.getByUserId(userId);
+            if(!entries || entries.length === 0) {
+                return res.status(404).json({ error: "Ressources non trouvées."});
+            }
+            res.json(entries);
+        } catch (error) {
+            res.status(500).json({ error: "Erreur serveur." });
+        }
+    },
+
     add: async (req, res) => {
         if (req.user && req.user.id) {
             req.body.user_id = req.user.id;

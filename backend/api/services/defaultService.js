@@ -8,6 +8,17 @@ const defaultService = (Model) => ({
         return await Model.findByPk(id);
     },
 
+    getByUserId: async(userId) => {
+        if(!userId) {
+            return null
+        }
+        return await Model.findAll({
+            where: {
+                user_id: userId
+            }
+        });
+    },
+
     add: async (data) => {
        try {
             const newElement = new Model(data);

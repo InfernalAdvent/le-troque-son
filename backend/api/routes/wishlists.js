@@ -12,6 +12,7 @@ const defaultController = require('../controllers/defaultController');
 const wishlistDefaultService = defaultService(Wishlist);
 const wishlistDefaultController = defaultController(wishlistDefaultService);
 
+router.get('/user/userId', wishlistDefaultController.getByUserId);
 router.get('/', wishlistDefaultController.getAll);
 router.get('/:id', wishlistDefaultController.getById);
 router.post('/', verifyCookieToken, wishlistDefaultController.add);

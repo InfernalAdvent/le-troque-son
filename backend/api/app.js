@@ -16,7 +16,7 @@ const wishlistsRouter = require('./routes/wishlists')
 const authRouter = require('./routes/auth');
 const photosRouter = require('./routes/photos');
 const conversationsRouter = require('./routes/conversations');
-const allowedOrigins = ['http://localhost:3000'];
+const allowedOrigins = ['http://localhost:3000' || 'http://localhost:5174'];
 
 const app = express();
 

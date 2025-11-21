@@ -1,0 +1,283 @@
+import { useState, useEffect } from "react";
+import { Menu, X, Search, User, MessageSquare, ChevronLeft } from "lucide-react";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import api from "../api";
+
+export default function Header() {
+    const [mainCategories, setMainCategories] = useState([]);
+    const [sousCategories, setSousCategories] = useState([]);
+    const [filtresActifs, setFiltresActifs] = useState([]);
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [search, setSearch] = useState("");
+    
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    // Charger les catégories principales au montage
+    useEffect(() => {
+        const fetchMainCategories = async() => {
+            try {
+                const res = await api.get("/categories/main");
+                setMainCategories(res.data);
+            } catch (err) {
+                console.error("Erreur chargement catégories :", err);
+            }
+        };
+        fetchMainCategories();
+    }, []);
+
+    // Détecter si on est sur une page de catégorie et charger les enfants
+    useEffect(() => {
+        const match = location.pathname.match(/^\/categorie\/(\d+)/);
+        
+        if (match) {
+            const categorieId = match[1];
+            
+            // Charger les sous-catégories directement dans l'effet
+            const fetchSousCategories = async() => {
+                try {
+                    // Récupérer les enfants
+                    const childrenRes = await api.get(`/categories/${categorieId}/children`);
+                    
+                    // Pour chaque sous-catégorie, vérifier si elle a des enfants
+                    const categoriesAvecEnfants = await Promise.all(
+                        childrenRes.data.map(async (cat) => {
+                            try {
+                                const enfantsRes = await api.get(`/categories/${cat.id}/children`);
+                                return {
+                                    ...cat,
+                                    hasChildren: enfantsRes.data.length > 0
+                                };
+                            } catch (err) {
+                                console.error(`Erreur vérification enfants catégorie ${cat.id}:`, err);
+                                return { ...cat, hasChildren: false };
+                            }
+                        })
+                    );
+                    
+                    setSousCategories(categoriesAvecEnfants);
+                    setFiltresActifs([]);
+                } catch (err) {
+                    console.error("Erreur chargement sous-catégories :", err);
+                }
+            };
+            
+            fetchSousCategories();
+        }
+    }, [location.pathname]);
+
+    // Fonction pour retourner à la page d'accueil
+    const retourAccueil = () => {
+        setSousCategories([]);
+        setFiltresActifs([]);
+        navigate('/');
+    };
+
+    // Toggle d'un filtre de sous-catégorie
+    const toggleFiltre = (sousCatId) => {
+        setFiltresActifs(prev => {
+            if (prev.includes(sousCatId)) {
+                return prev.filter(id => id !== sousCatId);
+            } else {
+                return [...prev, sousCatId];
+            }
+        });
+    };
+
+    // Gérer le changement de texte dans la searchbar
+    const handleSearchChange = (e) => {
+        setSearch(e.target.value);
+    };
+
+    return (
+        <header className="bg-white shadow-sm sticky top-0 z-50">
+            {/* Partie supérieure : Logo + Searchbar */}
+            <div className="border-b border-gray-200">
+                <div className="max-w-5xl mx-auto px-4">
+                    {/* Desktop Layout */}
+                    <div className="hidden md:flex items-center justify-between py-4 gap-6">
+                        {/* Logo */}
+                        <NavLink to="/" className="shrink-0">
+                            <h1 className="text-2xl font-bold text-violet-600 whitespace-nowrap">
+                                Le Troque Son
+                            </h1>
+                        </NavLink>
+
+                        <button className="bg-violet-600 hover:bg-violet-800 text-white px-6 py-3 rounded-lg font-medium whitespace-nowrap transition-colors">
+                          Déposer une annonce
+                        </button>
+
+                        {/* Searchbar Desktop */}
+                        <div className="flex-1 max-w-2xl relative">
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    placeholder="Rechercher une annonce..."
+                                    className="w-full border-2 border-violet-600 rounded-lg py-3 pl-4 pr-12 text-sm focus:outline-none focus:border-violet-800"
+                                    value={search}
+                                    onChange={handleSearchChange}
+                                />
+                                <button 
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-violet-600 hover:bg-violet-800 text-white p-2 rounded-md"
+                                >
+                                    <Search size={20} />
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Icônes */}
+                        <div className="flex items-center gap-4 shrink-0">
+                            <NavLink 
+                                to="/messages" 
+                                className="text-violet-600 hover:text-violet-800 transition-colors p-2"
+                                title="Messages"
+                            >
+                                <MessageSquare size={24} />
+                            </NavLink>
+                            
+                            <NavLink 
+                                to="/connexion" 
+                                className="text-violet-600 hover:text-violet-800 transition-colors p-2"
+                                title="Connexion"
+                            >
+                                <User size={24} />
+                            </NavLink>
+                        </div>
+                    </div>
+
+                    {/* Mobile & Tablet Layout */}
+                    <div className="md:hidden">
+                        {/* Ligne 1 : Logo + Menu burger */}
+                        <div className="flex items-center justify-between py-3">
+                            <NavLink to="/" className="flex-1 text-center">
+                                <h1 className="text-xl font-bold text-violet-600">
+                                    Le Troque Son
+                                </h1>
+                            </NavLink>
+                            
+                            <button 
+                                className="p-2"
+                                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                            >
+                                {mobileMenuOpen ? (
+                                    <X size={24} className="text-violet-600" />
+                                ) : (
+                                    <Menu size={24} className="text-violet-600" />
+                                )}
+                            </button>
+                        </div>
+
+                        {/* Ligne 2 : Searchbar Mobile */}
+                        <div className="pb-3 relative">
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    placeholder="Rechercher..."
+                                    className="w-full border-2 border-violet-600 rounded-lg py-2.5 pl-4 pr-12 text-sm focus:outline-none focus:border-violet-700"
+                                    value={search}
+                                    onChange={handleSearchChange}
+                                />
+                                <button 
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-violet-600 hover:bg-violet-800 text-white p-1.5 rounded-md"
+                                >
+                                    <Search size={18} />
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Navbar des catégories - Dynamique */}
+            <nav className="bg-gray-50 border-b border-gray-200">
+                <div className="max-w-7xl mx-auto px-4">
+                    <div className="flex items-center justify-center gap-1 md:gap-4 lg:gap-8 py-3 overflow-x-auto">
+                        {/* Si on est sur une catégorie, afficher un bouton retour + les sous-catégories */}
+                        {sousCategories.length > 0 ? (
+                            <>
+                                <button
+                                    onClick={retourAccueil}
+                                    className="flex items-center gap-1 text-sm text-violet-600 font-medium hover:text-violet-800 whitespace-nowrap"
+                                >
+                                    <ChevronLeft size={18} />
+                                    <span>Retour</span>
+                                </button>
+                                
+                                <span className="text-gray-400">|</span>
+
+                                {sousCategories.map((sousCat) => (
+                                    sousCat.hasChildren ? (
+                                        // Si la catégorie a des enfants, c'est un NavLink
+                                        <NavLink
+                                            key={sousCat.id}
+                                            to={`/categorie/${sousCat.id}`}
+                                            className="text-sm text-violet-600 font-medium transition-colors hover:text-violet-800 whitespace-nowrap"
+                                        >
+                                            {sousCat.nom}
+                                        </NavLink>
+                                    ) : (
+                                        // Sinon, c'est un bouton filtre
+                                        <button
+                                            key={sousCat.id}
+                                            onClick={() => toggleFiltre(sousCat.id)}
+                                            className={`text-sm font-medium transition-all whitespace-nowrap px-3 py-1.5 rounded-md ${
+                                                filtresActifs.includes(sousCat.id)
+                                                    ? 'bg-violet-600 text-white hover:bg-violet-700'
+                                                    : 'text-violet-600 hover:bg-violet-50'
+                                            }`}
+                                        >
+                                            {sousCat.nom}
+                                        </button>
+                                    )
+                                ))}
+                            </>
+                        ) : (
+                            /* Sinon, afficher les catégories principales */
+                            mainCategories.map((cat) => (
+                                <NavLink
+                                    key={cat.id}
+                                    to={`/categorie/${cat.id}`}
+                                    className="text-sm text-violet-600 font-medium transition-colors hover:text-violet-800 whitespace-nowrap"
+                                >
+                                    {cat.nom}
+                                </NavLink>
+                            ))
+                        )}
+                    </div>
+                </div>
+            </nav>
+
+            {/* Menu Mobile déroulant */}
+            {mobileMenuOpen && (
+                <div className="md:hidden bg-white border-t border-gray-200 shadow-lg">
+                    <nav className="max-w-7xl mx-auto px-4 py-4">
+                        {/* Options de navigation */}
+                        <div className="space-y-2 mb-4 pb-4 border-b border-gray-200">
+                            <NavLink
+                                to="/messages"
+                                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                                onClick={() => setMobileMenuOpen(false)}
+                            >
+                                <MessageSquare size={20} className="text-violet-600" />
+                                <span className="font-medium">Messages</span>
+                            </NavLink>
+
+                            <NavLink
+                                to="/connexion"
+                                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                                onClick={() => setMobileMenuOpen(false)}
+                            >
+                                <User size={20} className="text-violet-600" />
+                                <span className="font-medium">Connexion / Inscription</span>
+                            </NavLink>
+                        </div>
+
+                        <button className="w-full bg-violet-600 hover:bg-violet-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                            Déposer une annonce
+                        </button>
+                    </nav>
+                </div>
+            )}
+        </header>
+    );
+}

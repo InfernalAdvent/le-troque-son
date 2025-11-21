@@ -1,12 +1,14 @@
-
+import { Routes, Route } from 'react-router-dom'
+import Header from './components/header'
 
 
 function App() {
-
   return (
-    <>
-      <h2 className='text 2xl text-blue-500 bg-black'>Hello World!</h2>
-    </>
+    <div className="flex flex-col min-h-screen">
+      <Header />
+    
+    
+    </div>
   )
 }
 

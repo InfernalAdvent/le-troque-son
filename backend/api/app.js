@@ -16,7 +16,7 @@ const wishlistsRouter = require('./routes/wishlists')
 const authRouter = require('./routes/auth');
 const photosRouter = require('./routes/photos');
 const conversationsRouter = require('./routes/conversations');
-const allowedOrigins = ['http://localhost:3000' || 'http://localhost:5174'];
+const allowedOrigins = ['http://localhost:5000', 'http://localhost:5173'];
 
 const app = express();
 
@@ -34,7 +34,8 @@ app.use(cors({
     } else {
       return callback(new Error("Not allowed by CORS"));
     }
-  }
+  },
+  credentials: true
 }));
 
 app.use('/', indexRouter);

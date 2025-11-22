@@ -33,13 +33,10 @@ export default function Header() {
         if (match) {
             const categorieId = match[1];
             
-            // Charger les sous-catégories directement dans l'effet
             const fetchSousCategories = async() => {
                 try {
-                    // Récupérer les enfants
                     const childrenRes = await api.get(`/categories/${categorieId}/children`);
                     
-                    // Pour chaque sous-catégorie, vérifier si elle a des enfants
                     const categoriesAvecEnfants = await Promise.all(
                         childrenRes.data.map(async (cat) => {
                             try {
@@ -67,26 +64,49 @@ export default function Header() {
     }, [location.pathname]);
 
     // Fonction pour retourner à la page d'accueil
-    const retourAccueil = () => {
+    const retourArriere = () => {
         setSousCategories([]);
         setFiltresActifs([]);
-        navigate('/');
+        navigate(-1);
     };
 
     // Toggle d'un filtre de sous-catégorie
     const toggleFiltre = (sousCatId) => {
         setFiltresActifs(prev => {
-            if (prev.includes(sousCatId)) {
-                return prev.filter(id => id !== sousCatId);
+            const newFiltres = prev.includes(sousCatId)
+                ? prev.filter(id => id !== sousCatId)
+                : [...prev, sousCatId];
+            
+            // Mettre à jour l'URL avec les filtres
+            const params = new URLSearchParams(location.search);
+            if (newFiltres.length > 0) {
+                params.set('filtres', newFiltres.join(','));
             } else {
-                return [...prev, sousCatId];
+                params.delete('filtres');
             }
+            navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+            
+            return newFiltres;
         });
     };
 
     // Gérer le changement de texte dans la searchbar
     const handleSearchChange = (e) => {
         setSearch(e.target.value);
+    };
+
+    // Fonction pour lancer la recherche
+    const handleSearch = () => {
+        if (search.trim().length > 0) {
+            navigate(`/?search=${encodeURIComponent(search.trim())}`);
+        }
+    };
+
+    // Gérer la touche Entrée
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            handleSearch();
+        }
     };
 
     return (
@@ -96,7 +116,6 @@ export default function Header() {
                 <div className="max-w-5xl mx-auto px-4">
                     {/* Desktop Layout */}
                     <div className="hidden md:flex items-center justify-between py-4 gap-6">
-                        {/* Logo */}
                         <NavLink to="/" className="shrink-0">
                             <h1 className="text-2xl font-bold text-violet-600 whitespace-nowrap">
                                 Le Troque Son
@@ -107,7 +126,6 @@ export default function Header() {
                           Déposer une annonce
                         </button>
 
-                        {/* Searchbar Desktop */}
                         <div className="flex-1 max-w-2xl relative">
                             <div className="relative">
                                 <input
@@ -116,8 +134,10 @@ export default function Header() {
                                     className="w-full border-2 border-violet-600 rounded-lg py-3 pl-4 pr-12 text-sm focus:outline-none focus:border-violet-800"
                                     value={search}
                                     onChange={handleSearchChange}
+                                    onKeyPress={handleKeyPress}
                                 />
                                 <button 
+                                    onClick={handleSearch}
                                     className="absolute right-2 top-1/2 -translate-y-1/2 bg-violet-600 hover:bg-violet-800 text-white p-2 rounded-md"
                                 >
                                     <Search size={20} />
@@ -125,7 +145,6 @@ export default function Header() {
                             </div>
                         </div>
 
-                        {/* Icônes */}
                         <div className="flex items-center gap-4 shrink-0">
                             <NavLink 
                                 to="/messages" 
@@ -147,7 +166,6 @@ export default function Header() {
 
                     {/* Mobile & Tablet Layout */}
                     <div className="md:hidden">
-                        {/* Ligne 1 : Logo + Menu burger */}
                         <div className="flex items-center justify-between py-3">
                             <NavLink to="/" className="flex-1 text-center">
                                 <h1 className="text-xl font-bold text-violet-600">
@@ -167,7 +185,6 @@ export default function Header() {
                             </button>
                         </div>
 
-                        {/* Ligne 2 : Searchbar Mobile */}
                         <div className="pb-3 relative">
                             <div className="relative">
                                 <input
@@ -176,8 +193,10 @@ export default function Header() {
                                     className="w-full border-2 border-violet-600 rounded-lg py-2.5 pl-4 pr-12 text-sm focus:outline-none focus:border-violet-700"
                                     value={search}
                                     onChange={handleSearchChange}
+                                    onKeyPress={handleKeyPress}
                                 />
                                 <button 
+                                    onClick={handleSearch}
                                     className="absolute right-2 top-1/2 -translate-y-1/2 bg-violet-600 hover:bg-violet-800 text-white p-1.5 rounded-md"
                                 >
                                     <Search size={18} />
@@ -191,12 +210,11 @@ export default function Header() {
             {/* Navbar des catégories - Dynamique */}
             <nav className="bg-gray-50 border-b border-gray-200">
                 <div className="max-w-7xl mx-auto px-4">
-                    <div className="flex items-center justify-center gap-1 md:gap-4 lg:gap-8 py-3 overflow-x-auto">
-                        {/* Si on est sur une catégorie, afficher un bouton retour + les sous-catégories */}
+                    <div className="flex items-center justify-center gap-2 md:gap-6 py-3 overflow-x-auto">
                         {sousCategories.length > 0 ? (
                             <>
                                 <button
-                                    onClick={retourAccueil}
+                                    onClick={retourArriere}
                                     className="flex items-center gap-1 text-sm text-violet-600 font-medium hover:text-violet-800 whitespace-nowrap"
                                 >
                                     <ChevronLeft size={18} />
@@ -207,7 +225,6 @@ export default function Header() {
 
                                 {sousCategories.map((sousCat) => (
                                     sousCat.hasChildren ? (
-                                        // Si la catégorie a des enfants, c'est un NavLink
                                         <NavLink
                                             key={sousCat.id}
                                             to={`/categorie/${sousCat.id}`}
@@ -216,7 +233,6 @@ export default function Header() {
                                             {sousCat.nom}
                                         </NavLink>
                                     ) : (
-                                        // Sinon, c'est un bouton filtre
                                         <button
                                             key={sousCat.id}
                                             onClick={() => toggleFiltre(sousCat.id)}
@@ -232,7 +248,6 @@ export default function Header() {
                                 ))}
                             </>
                         ) : (
-                            /* Sinon, afficher les catégories principales */
                             mainCategories.map((cat) => (
                                 <NavLink
                                     key={cat.id}
@@ -251,7 +266,6 @@ export default function Header() {
             {mobileMenuOpen && (
                 <div className="md:hidden bg-white border-t border-gray-200 shadow-lg">
                     <nav className="max-w-7xl mx-auto px-4 py-4">
-                        {/* Options de navigation */}
                         <div className="space-y-2 mb-4 pb-4 border-b border-gray-200">
                             <NavLink
                                 to="/messages"

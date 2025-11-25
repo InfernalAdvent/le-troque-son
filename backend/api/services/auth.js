@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { User } = require('../models');
+const { User, Departement } = require('../models');
 
 const saltRounds = 10; 
 
@@ -31,18 +31,29 @@ const signup = async (email, password, userData) => {
         throw new Error("Cet email est déjà utilisé.");
     }
 
-    const { prenom, nom, date_de_naissance, pays, departement_id, pseudo } = userData;
+    const { 
+            prenom, 
+            nom, 
+            pseudo,
+            telephone,
+            adresse,
+            ville,
+            code_postal,
+            departement_id
+        } = userData;    
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
     const newUser = await User.create({
         prenom,
         nom,
         email,
+        pseudo,
         password: hashedPassword,
-        date_de_naissance,
-        pays,
+        telephone,
+        adresse,
+        ville,
+        code_postal,
         departement_id,
-        pseudo
     });
 
     const token = jwt.sign(
@@ -54,4 +65,20 @@ const signup = async (email, password, userData) => {
     return { user: newUser, token };
 };
 
-module.exports = { login, signup };
+const getCurrentUser = async (userId) => {
+    try {
+        const user = await User.findByPk(userId, {
+            attributes: { exclude: ["password"] },
+            include: {
+                model: Departement,
+                attributes: ["id", "nom", "numero"]
+            }
+        });
+        return user;
+    } catch (err) {
+        console.error("Erreur dans getCurrentUser:", err);
+        throw err;
+    }
+};
+
+module.exports = { login, signup, getCurrentUser };

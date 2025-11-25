@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
-import { Menu, X, Search, User, MessageSquare, ChevronLeft } from "lucide-react";
+import { useState, useEffect, useContext } from "react";
+import { Menu, X, Search, User, MessageSquare, ChevronLeft, UserCircle } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
+import { AuthContext } from "./authContext";
 import api from "../api";
 
 export default function Header() {
@@ -9,9 +10,15 @@ export default function Header() {
     const [filtresActifs, setFiltresActifs] = useState([]);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [search, setSearch] = useState("");
+
+    const { user } = useContext(AuthContext);
     
     const location = useLocation();
     const navigate = useNavigate();
+
+    const isAuthPage = ["/login", "/inscription"].some(path =>
+        location.pathname.startsWith(path)
+    );
 
     // Charger les catégories principales au montage
     useEffect(() => {
@@ -109,6 +116,18 @@ export default function Header() {
         }
     };
 
+    if (isAuthPage) {
+        return (
+            <header className="bg-white shadow-sm sticky top-0 z-50 py-4 px-6">
+                <NavLink to="/" className="block text-center">
+                    <h1 className="text-4xl font-bold text-violet-600">
+                        Le Troque Son
+                    </h1>
+                </NavLink>
+            </header>
+        );
+    }
+
     return (
         <header className="bg-white shadow-sm sticky top-0 z-50">
             {/* Partie supérieure : Logo + Searchbar */}
@@ -146,20 +165,33 @@ export default function Header() {
                         </div>
 
                         <div className="flex items-center gap-4 shrink-0">
+                            {user ? (
+                                <NavLink 
+                                    to="/compte" 
+                                    className="text-violet-600 hover:text-violet-800 transition-colors p-2"
+                                    title="compte"
+                                >
+                                    <UserCircle size={24} />
+                                </NavLink>
+                            ) : (
+
+                                <NavLink 
+                                    to="/login" 
+                                    className="text-violet-600 hover:text-violet-800 transition-colors p-2"
+                                    title="Connexion"
+                                >
+                                    <User size={24} />
+                                </NavLink>
+
+                            )}
+                            
+                            
                             <NavLink 
                                 to="/messages" 
                                 className="text-violet-600 hover:text-violet-800 transition-colors p-2"
                                 title="Messages"
                             >
                                 <MessageSquare size={24} />
-                            </NavLink>
-                            
-                            <NavLink 
-                                to="/connexion" 
-                                className="text-violet-600 hover:text-violet-800 transition-colors p-2"
-                                title="Connexion"
-                            >
-                                <User size={24} />
                             </NavLink>
                         </div>
                     </div>
@@ -267,6 +299,26 @@ export default function Header() {
                 <div className="md:hidden bg-white border-t border-gray-200 shadow-lg">
                     <nav className="max-w-7xl mx-auto px-4 py-4">
                         <div className="space-y-2 mb-4 pb-4 border-b border-gray-200">
+                            {user ? (
+                                <NavLink
+                                    to="/compte"
+                                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    <User size={20} className="text-violet-600" />
+                                    <span className="font-medium">Mon Compte</span>
+                                </NavLink>
+                            ) : (
+                                <NavLink
+                                    to="/login"
+                                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >
+                                    <User size={20} className="text-violet-600" />
+                                    <span className="font-medium">Connexion / Inscription</span>
+                                </NavLink>
+                            )}
+
                             <NavLink
                                 to="/messages"
                                 className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
@@ -276,14 +328,6 @@ export default function Header() {
                                 <span className="font-medium">Messages</span>
                             </NavLink>
 
-                            <NavLink
-                                to="/connexion"
-                                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
-                                onClick={() => setMobileMenuOpen(false)}
-                            >
-                                <User size={20} className="text-violet-600" />
-                                <span className="font-medium">Connexion / Inscription</span>
-                            </NavLink>
                         </div>
 
                         <button className="w-full bg-violet-600 hover:bg-violet-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">

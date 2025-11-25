@@ -31,7 +31,7 @@ Photo.belongsTo(Wishlist, { foreignKey: 'wishlist_id' });
 Photo.belongsTo(User, { foreignKey: 'user_id'})
 
 
-User.belongsTo(Departement, { foreignKey: 'departement_id' });
+User.belongsTo(Departement, { foreignKey: 'departement_id', targetKey: 'numero' });
 
 
 Wishlist.belongsTo(User, { foreignKey: 'user_id' });

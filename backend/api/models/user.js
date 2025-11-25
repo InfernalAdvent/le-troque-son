@@ -8,11 +8,13 @@ const User = sequelize.define('users', {
     email: {type: DataTypes.STRING, /* unique: true, */ allowNull: false},
     pseudo: {type: DataTypes.STRING, allowNull: false},
     password: {type: DataTypes.STRING, allowNull: false},
-    date_naissance: {type: DataTypes.DATE, allowNull: true},
-    pays: {type: DataTypes.STRING, allowNull: false, defaultValue: 'France'},
-    departement_id: {type: DataTypes.INTEGER, allowNull: true},
+    telephone: {type: DataTypes.INTEGER, allowNull: true},
+    departement_id: {type: DataTypes.STRING, allowNull: false},
+    adresse: {type: DataTypes.STRING, allowNull: false},
+    ville: {type: DataTypes.STRING, allowNull: false},
+    code_postal: {type: DataTypes.INTEGER, allowNull: false},
     date_inscription: {type: DataTypes.DATE, defaultValue: DataTypes.NOW},
-    derniere_connexion: {type: DataTypes.DATE,allowNull: true, defaultValue: null}
+    derniere_connexion: {type: DataTypes.DATE, allowNull: true, defaultValue: null}
 });
 
 module.exports = User;

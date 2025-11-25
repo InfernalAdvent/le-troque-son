@@ -1,5 +1,8 @@
 import { Routes, Route, useLocation, useParams } from 'react-router-dom';
 import Header from './components/header';
+import Login from './pages/login';
+import SignUp from './pages/signup';
+import Compte from './pages/account';
 import AnnoncesCard from './components/annoncesCard';
 import api from './api';
 import { useEffect, useState } from 'react';
@@ -179,6 +182,9 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/categorie/:id" element={<CategorieAnnonces />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/inscription" element={<SignUp />} />
+          <Route path="compte" element={<Compte />} />
         </Routes>
       </main>
     </div>

@@ -11,7 +11,7 @@ const Wishlist = require('./wishlist');
 Annonce.belongsTo(User, { foreignKey: 'user_id' });
 Annonce.belongsTo(Categorie, { foreignKey: 'categorie_id', as: 'categoriePrincipale' });
 Annonce.belongsTo(Categorie, { foreignKey: 'echange_categorie_id', as: 'echangeCategorie' });
-Annonce.belongsTo(Departement, { foreignKey: 'departement_id' });
+Annonce.belongsTo(Departement, { foreignKey: 'departement_numero', targetKey: 'numero' });
 
 
 Categorie.belongsTo(Categorie, { foreignKey: 'parent_id', as: 'parent' });
@@ -31,7 +31,7 @@ Photo.belongsTo(Wishlist, { foreignKey: 'wishlist_id' });
 Photo.belongsTo(User, { foreignKey: 'user_id'})
 
 
-User.belongsTo(Departement, { foreignKey: 'departement_id', targetKey: 'numero' });
+User.belongsTo(Departement, { foreignKey: 'departement_numero', targetKey: 'numero' });
 
 
 Wishlist.belongsTo(User, { foreignKey: 'user_id' });

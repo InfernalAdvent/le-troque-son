@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext } from "react";
-import { Menu, X, Search, User, MessageSquare, ChevronLeft, UserCircle } from "lucide-react";
+import { Menu, X, Search, User, MessageSquare, ChevronLeft, UserCircle, LogIn, LogOut } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "./authContext";
 import api from "../api";
@@ -10,13 +10,14 @@ export default function Header() {
     const [filtresActifs, setFiltresActifs] = useState([]);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [search, setSearch] = useState("");
+    const {setUser} = useContext(AuthContext);
 
     const { user } = useContext(AuthContext);
     
     const location = useLocation();
     const navigate = useNavigate();
 
-    const isAuthPage = ["/login", "/inscription"].some(path =>
+    const isAuthPage = ["/login", "/inscription", "/annonces/add"].some(path =>
         location.pathname.startsWith(path)
     );
 
@@ -116,11 +117,21 @@ export default function Header() {
         }
     };
 
+    const handleLogout = async () => {
+        try {
+            await api.post("/auth/logout");
+            setUser(null);
+            navigate("/");
+        } catch (err) {
+            console.error("Erreur lors de la déconnexion :", err)
+        }
+    };
+
     if (isAuthPage) {
         return (
             <header className="bg-white shadow-sm sticky top-0 z-50 py-4 px-6">
                 <NavLink to="/" className="block text-center">
-                    <h1 className="text-4xl font-bold text-violet-600">
+                    <h1 className="text-4xl font-bold text-violet-800">
                         Le Troque Son
                     </h1>
                 </NavLink>
@@ -129,21 +140,33 @@ export default function Header() {
     }
 
     return (
-        <header className="bg-white shadow-sm sticky top-0 z-50">
+        <header className="bg-violet-100 shadow-sm sticky top-0 z-50">
             {/* Partie supérieure : Logo + Searchbar */}
             <div className="border-b border-gray-200">
                 <div className="max-w-5xl mx-auto px-4">
                     {/* Desktop Layout */}
                     <div className="hidden md:flex items-center justify-between py-4 gap-6">
                         <NavLink to="/" className="shrink-0">
-                            <h1 className="text-2xl font-bold text-violet-600 whitespace-nowrap">
+                            <h1 className="text-2xl font-bold text-violet-800 whitespace-nowrap">
                                 Le Troque Son
                             </h1>
                         </NavLink>
 
-                        <button className="bg-violet-600 hover:bg-violet-800 text-white px-6 py-3 rounded-lg font-medium whitespace-nowrap transition-colors">
-                          Déposer une annonce
-                        </button>
+                        {user ? (
+                            <NavLink
+                                to="/annonces/add"
+                                className="bg-violet-600 hover:bg-violet-800 text-white px-6 py-3 rounded-lg font-medium whitespace-nowrap transition-colors">
+                                Déposer une annonce
+                            </NavLink>
+
+                        ): (
+                            <NavLink
+                                to="/login"
+                                className="bg-violet-600 hover:bg-violet-800 text-white px-6 py-3 rounded-lg font-medium whitespace-nowrap transition-colors">
+                                Déposer une annonce
+                            </NavLink>
+                        )}
+                        
 
                         <div className="flex-1 max-w-2xl relative">
                             <div className="relative">
@@ -180,19 +203,29 @@ export default function Header() {
                                     className="text-violet-600 hover:text-violet-800 transition-colors p-2"
                                     title="Connexion"
                                 >
-                                    <User size={24} />
+                                    <LogIn size={24} />
                                 </NavLink>
 
                             )}
-                            
-                            
+                                  
                             <NavLink 
                                 to="/messages" 
                                 className="text-violet-600 hover:text-violet-800 transition-colors p-2"
                                 title="Messages"
                             >
                                 <MessageSquare size={24} />
+
                             </NavLink>
+                            {user && ( 
+                                <button 
+                                    onClick={handleLogout} 
+                                    className="text-violet-600 hover:text-violet-800 transition-colors p-2"
+                                    title="Déconnexion"
+                                >
+                                    <LogOut size={24} />
+                                </button>
+                            )}
+
                         </div>
                     </div>
 
@@ -200,7 +233,7 @@ export default function Header() {
                     <div className="md:hidden">
                         <div className="flex items-center justify-between py-3">
                             <NavLink to="/" className="flex-1 text-center">
-                                <h1 className="text-xl font-bold text-violet-600">
+                                <h1 className="text-xl font-bold text-violet-800">
                                     Le Troque Son
                                 </h1>
                             </NavLink>
@@ -271,7 +304,7 @@ export default function Header() {
                                             className={`text-sm font-medium transition-all whitespace-nowrap px-3 py-1.5 rounded-md ${
                                                 filtresActifs.includes(sousCat.id)
                                                     ? 'bg-violet-600 text-white hover:bg-violet-700'
-                                                    : 'text-violet-600 hover:bg-violet-50'
+                                                    : 'text-violet-600'
                                             }`}
                                         >
                                             {sousCat.nom}
@@ -302,31 +335,41 @@ export default function Header() {
                             {user ? (
                                 <NavLink
                                     to="/compte"
-                                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-violet-100 transition-colors"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
-                                    <User size={20} className="text-violet-600" />
+                                    <User size={20} className="text-violet-800" />
                                     <span className="font-medium">Mon Compte</span>
                                 </NavLink>
                             ) : (
                                 <NavLink
                                     to="/login"
-                                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-violet-100 transition-colors"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
-                                    <User size={20} className="text-violet-600" />
+                                    <User size={20} className="text-violet-800" />
                                     <span className="font-medium">Connexion / Inscription</span>
                                 </NavLink>
                             )}
 
                             <NavLink
                                 to="/messages"
-                                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-violet-100 transition-colors"
                                 onClick={() => setMobileMenuOpen(false)}
                             >
-                                <MessageSquare size={20} className="text-violet-600" />
+                                <MessageSquare size={20} className="text-violet-800" />
                                 <span className="font-medium">Messages</span>
                             </NavLink>
+
+                            {user && (
+                                <button
+                                onClick={handleLogout}
+                                className="w-full flex items-center text-left gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-violet-100 transition-colors"
+                                title="Déconnexion">
+                                <LogOut size={20} className="text-violet-800" />
+                                <span className="font-medium">Déconnexion</span>
+                                </button>
+                            )}
 
                         </div>
 

@@ -4,6 +4,7 @@ import Login from './pages/login';
 import SignUp from './pages/signup';
 import Compte from './pages/account';
 import AnnoncesCard from './components/annoncesCard';
+import AnnoncesAdd from './pages/annoncesAdd'
 import api from './api';
 import { useEffect, useState } from 'react';
 
@@ -64,7 +65,7 @@ function Home() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className='text-3xl sm:text-4xl md:text-5xl font-bold text-violet-600 text-left mb-4'>
+      <h1 className='text-3xl sm:text-4xl md:text-5xl font-bold text-violet-800 text-left mb-4'>
         {searchQuery ? `Résultats pour "${searchQuery}"` : 'En ce moment sur Le Troque Son'}
       </h1>
       
@@ -75,7 +76,7 @@ function Home() {
       {annonces.length === 0 ? (
         <p className="text-gray-600 text-center py-12">Aucune annonce disponible pour le moment.</p>
       ) : (
-        <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
+        <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8'>
           {annonces.map((annonce) => (
             <AnnoncesCard 
               key={annonce.id}
@@ -149,7 +150,7 @@ function CategorieAnnonces() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className='text-3xl sm:text-4xl md:text-5xl font-bold text-violet-600 text-left mb-4'>
+      <h1 className='text-3xl sm:text-4xl md:text-5xl font-bold text-violet-800 text-left mb-4'>
         {categorie?.nom}
       </h1>
       
@@ -176,7 +177,7 @@ function CategorieAnnonces() {
 
 function App() {
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className="flex flex-col min-h-screen bg-violet-100">
       <Header />
       <main className='flex-1'>
         <Routes>
@@ -184,7 +185,8 @@ function App() {
           <Route path="/categorie/:id" element={<CategorieAnnonces />} />
           <Route path="/login" element={<Login />} />
           <Route path="/inscription" element={<SignUp />} />
-          <Route path="compte" element={<Compte />} />
+          <Route path="/compte" element={<Compte />} />
+          <Route path="/annonces/add" element={<AnnoncesAdd />} />
         </Routes>
       </main>
     </div>

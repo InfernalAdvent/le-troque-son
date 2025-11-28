@@ -10,7 +10,11 @@ export default function AnnoncesCard({ annonce, photo }) {
             <div className="h-48 w-full bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
                 {photo ? (
                     <img 
-                        src={photo.url} 
+                        src={photo.url.startsWith("/uploads")
+                            ? `http://localhost:5000${photo.url}` 
+                            : photo.url
+                        }
+                         
                         alt={annonce.titre}
                         className="w-full h-full object-contain"
                     />
@@ -20,11 +24,11 @@ export default function AnnoncesCard({ annonce, photo }) {
             </div>
 
             {/* Informations de l'annonce */}
-            <h3 className="text-xl font-bold text-violet-600 line-clamp-2">
+            <h3 className="text-xl font-bold text-violet-800 line-clamp-2">
                 {annonce.titre}
             </h3>
             
-            <p className="text-2xl font-bold text-violet-600">
+            <p className="text-2xl font-bold text-violet-800">
                 {annonce.prix} €
             </p>
             

@@ -16,7 +16,7 @@ const annoncesDefaultController = defaultController(annoncesDefaultService);
 router.get('/search', annoncesSpecificController.searchAnnonces);
 router.get('/user/:userId', annoncesDefaultController.getByUserId);
 router.get('/categorie/:id', annoncesSpecificController.getAnnoncesByCategories);
-router.get('/', annoncesDefaultController.getAll);
+router.get('/', annoncesSpecificController.getAllWithFilters);
 router.get('/:id', annoncesDefaultController.getById);
 router.post('/', verifyCookieToken,  annoncesDefaultController.add);
 router.put('/:id', verifyCookieToken, annoncesSpecificController.updateAnnonceOwner);

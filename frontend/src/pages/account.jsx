@@ -50,8 +50,6 @@ export default function Account() {
                 <h2 className="text-2xl text-violet-800 font-bold mb-6">Mon Compte</h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                    <p><strong>Nom :</strong> {user?.nom}</p>
-                    <p><strong>Prénom :</strong> {user?.prenom}</p>
                     <p><strong>Pseudo :</strong> {user?.pseudo}</p>
                     <p><strong>Email :</strong> {user?.email}</p>
                     <p><strong>Téléphone :</strong> {user?.telephone}</p>
@@ -71,7 +69,7 @@ export default function Account() {
                 ) : annoncesUser.length === 0 ? (
                     <p className="text-gray-600">Vous n’avez pas encore posté d’annonce.</p>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 justify-center sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                         {annoncesUser.map((annonce) => (
                             <AnnoncesCard
                                 key={annonce.id}

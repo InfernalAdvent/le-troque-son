@@ -140,7 +140,7 @@ export default function Header() {
     }
 
     return (
-        <header className="bg-violet-100 shadow-sm sticky top-0 z-50">
+        <header className="bg-violet-100 sticky top-0 z-50">
             {/* Partie supérieure : Logo + Searchbar */}
             <div className="border-b border-gray-200">
                 <div className="max-w-5xl mx-auto px-4">
@@ -273,7 +273,7 @@ export default function Header() {
             </div>
 
             {/* Navbar des catégories - Dynamique */}
-            <nav className="bg-gray-50 border-b border-gray-200">
+            <nav className="bg-gray-50">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="flex items-center justify-center gap-2 md:gap-6 py-3 overflow-x-auto">
                         {sousCategories.length > 0 ? (
@@ -283,7 +283,7 @@ export default function Header() {
                                     className="flex items-center gap-1 text-sm text-violet-600 font-medium hover:text-violet-800 whitespace-nowrap"
                                 >
                                     <ChevronLeft size={18} />
-                                    <span>Retour</span>
+                                    <span></span>
                                 </button>
                                 
                                 <span className="text-gray-400">|</span>

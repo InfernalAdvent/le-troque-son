@@ -4,7 +4,8 @@ import Login from './pages/login';
 import SignUp from './pages/signup';
 import Compte from './pages/account';
 import AnnoncesCard from './components/annoncesCard';
-import AnnoncesAdd from './pages/annoncesAdd'
+import AnnoncesAdd from './pages/annoncesAdd';
+import DepartementFilter from "./components/departementFilter";
 import api from './api';
 import { useEffect, useState } from 'react';
 
@@ -18,34 +19,36 @@ function Home() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        
-        // Récupérer les paramètres de l'URL
+
         const params = new URLSearchParams(location.search);
         const searchQuery = params.get('search');
-        
-        let annoncesRes;
-        
-        // Si on a une recherche, utiliser la route de recherche
-        if (searchQuery) {
-          annoncesRes = await api.get(`/annonces/search?titre=${searchQuery}`);
-        } else {
-          // Sinon, charger toutes les annonces
-          annoncesRes = await api.get("/annonces");
+        const departements = params.get('departements');
+
+        let url = "/annonces";
+        const queryParams = [];
+
+        if (searchQuery) queryParams.push(`search=${searchQuery}`);
+        if (departements) queryParams.push(`departements=${departements}`);
+
+        if (queryParams.length > 0) {
+          url += "?" + queryParams.join("&");
         }
-        
-        // Charger les photos
+
+        const annoncesRes = await api.get(url);
         const photosRes = await api.get("/photos");
-        
+
         setAnnonces(annoncesRes.data);
         setPhotos(photosRes.data);
         setLoading(false);
       } catch (err) {
-        console.error("Erreur lors du chargement des données :", err);
+        console.error(err);
         setLoading(false);
       }
     };
+
     fetchData();
   }, [location.search]);
+
 
   const getPhotoForAnnonce = (annonceId) => {
     return photos.find(photo => photo.annonce_id === annonceId);
@@ -153,6 +156,7 @@ function CategorieAnnonces() {
       <h1 className='text-3xl sm:text-4xl md:text-5xl font-bold text-violet-800 text-left mb-4'>
         {categorie?.nom}
       </h1>
+
       
       <p className="text-gray-600 mb-8">
         {annonces.length} annonce{annonces.length > 1 ? 's' : ''} trouvée{annonces.length > 1 ? 's' : ''}
@@ -179,6 +183,9 @@ function App() {
   return (
     <div className="flex flex-col min-h-screen bg-violet-100">
       <Header />
+
+      <DepartementFilter />
+      
       <main className='flex-1'>
         <Routes>
           <Route path="/" element={<Home />} />

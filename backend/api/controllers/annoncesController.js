@@ -13,6 +13,17 @@ const annonceController = {
         }
     },
 
+    getAllWithFilters: async (req, res) => {
+        try {
+        const { departements, search } = req.query;
+        const annonces = await annoncesService.getAllWithFilters({ departements, search });
+        res.json(annonces);
+        } catch (err) {
+        console.error("Erreur filtres annonces :", err);
+        res.status(500).json({ error: "Erreur serveur" });
+        }
+    },
+
     updateAnnonceOwner: async (req, res) => {
         try {
             const annonceId = parseInt(req.params.id, 10);

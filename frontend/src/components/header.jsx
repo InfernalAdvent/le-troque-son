@@ -283,10 +283,10 @@ export default function Header() {
                                     className="flex items-center gap-1 text-sm text-violet-600 font-medium hover:text-violet-800 whitespace-nowrap"
                                 >
                                     <ChevronLeft size={18} />
-                                    <span></span>
+                                    <span>Retour</span>
                                 </button>
                                 
-                                <span className="text-gray-400">|</span>
+                                
 
                                 {sousCategories.map((sousCat) => (
                                     sousCat.hasChildren ? (

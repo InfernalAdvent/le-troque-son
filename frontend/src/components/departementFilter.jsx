@@ -53,7 +53,7 @@ export default function DepartementFilter() {
       >
         <span>Filtrer par département</span>
         <span
-          className={`transform transition-transform duration-300 ease-in-out ${open ? "rotate-180" : "rotate-0"}`}
+          className={`transform transition-transform duration-500 ease-in-out ${open ? "rotate-180" : "rotate-0"}`}
         >
           ▼
         </span>

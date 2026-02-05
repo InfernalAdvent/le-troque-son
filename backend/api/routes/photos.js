@@ -4,7 +4,7 @@ const router = express.Router();
 const verifyCookieToken = require('../middlewares/auth');
 const upload = require("../middlewares/upload");
 
-const Photo = require('../models/photo');
+const { Photo } = require('../models');
 
 const defaultService = require('../services/defaultService');
 const defaultController = require('../controllers/defaultController');
@@ -21,5 +21,6 @@ router.post(
     upload.array("photos", 10),
     photosSpecificController.upload
 );
+router.get('/annonce/:annonceId', photosSpecificController.getByAnnonceId);
 
 module.exports = router;

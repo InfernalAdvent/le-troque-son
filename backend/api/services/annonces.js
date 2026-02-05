@@ -8,14 +8,28 @@ const defaultAnnonceService = defaultService(Annonce);
 
 // Définition des inclusions pour récupérer les relations
 const AnnonceIncludes = [
-    { model: User, attributes: ['id', 'nom', 'prenom'] },
-    { model: Categorie, as: 'categoriePrincipale', attributes: ['id', 'nom'],
+    { model: User,
+        as: "user",
+        attributes: ['id','pseudo', "date_inscription", "derniere_connexion"] },
+    { model: Categorie, 
+        as: 'categoriePrincipale',
+        attributes: ['id', 'nom'],
         include: [{ model: Categorie, as: 'parent', attributes: ['id', 'nom'] }] 
     },
-    { model: Categorie, as: 'echangeCategorie', attributes: ['id', 'nom'] },
-    { model: Departement, attributes: ['id', 'nom'] },
+    { model: Categorie,
+        as: 'echangeCategorie',
+        attributes: ['id', 'nom'] },
+    { model: Departement,
+        attributes: ['id', 'nom'] },
     // Ajouter Photo si nécessaire
 ];
+
+const getAnnonceWithUser = async (id) => {
+    return await Annonce.findOne({
+        where: {id},
+        include: AnnonceIncludes
+    });
+};
 
 // 🔹 Récupération de toutes les annonces avec filtres (départements + recherche)
 const getAllWithFilters = async ({ departements, search }) => {
@@ -83,5 +97,6 @@ module.exports = {
     getAllWithFilters,
     getAnnoncesByCategories,
     updateAnnonceOwner,
-    searchAnnonces
+    searchAnnonces,
+    getAnnonceWithUser
 };

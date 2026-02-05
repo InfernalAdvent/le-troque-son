@@ -205,7 +205,7 @@ export default function AnnoncesAdd() {
                 {error && <p className="bg-red-100 text-red-700 p-3 rounded">{error}</p>}
 
                 <div>
-                    <label className="block font-semibold mb-1">Titre</label>
+                    <label className="block font-semibold mb-1">Nom de l'annonce</label>
                     <input
                         type="text"
                         name="titre"

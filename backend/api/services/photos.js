@@ -20,8 +20,14 @@ const photoService = {
         } catch (error) {
             throw new Error("Erreur lors du téléchargement des photos : " + error.message);
         }
-    }
+    },
 
+    getByAnnonceId: async (annonceId) => {
+        return Photo.findAll({
+            where: { annonce_id: annonceId },
+            order: [["ordre", "ASC"]],
+        });
+    },
 };
 
 module.exports = photoService;

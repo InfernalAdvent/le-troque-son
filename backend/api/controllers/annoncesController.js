@@ -1,6 +1,20 @@
 const annoncesService = require('../services/annonces');
 
 const annonceController = {
+    getAnnonceWithUser: async (req, res) => {
+        try {
+            const annonce = await annoncesService.getAnnonceWithUser(req.params.id);
+            if(!annonce) {
+                return res.status(404).json({ error: "Annonce introuvable"});
+            }
+            res.json(annonce);
+            console.log(annonce.toJSON());
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: "Erreur serveur"});
+        }
+    },
+
     getAnnoncesByCategories:  async (req, res) => {
         const categorieId = req.params.id;
 

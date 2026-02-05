@@ -3,6 +3,7 @@ import Header from './components/header';
 import Login from './pages/login';
 import SignUp from './pages/signup';
 import Compte from './pages/account';
+import Annonce from './pages/annonce';
 import AnnoncesCard from './components/annoncesCard';
 import AnnoncesAdd from './pages/annoncesAdd';
 import DepartementFilter from "./components/departementFilter";
@@ -181,7 +182,7 @@ function CategorieAnnonces() {
 
 function App() {
   return (
-    <div className="flex flex-col min-h-screen bg-violet-100">
+    <div className="flex flex-col min-h-screen bg-violet-200">
       <Header />
 
       <DepartementFilter />
@@ -190,6 +191,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/categorie/:id" element={<CategorieAnnonces />} />
+          <Route path="/annonces/:id" element={<Annonce/>} />
           <Route path="/login" element={<Login />} />
           <Route path="/inscription" element={<SignUp />} />
           <Route path="/compte" element={<Compte />} />

@@ -19,8 +19,20 @@ const photoController = {
             console.error(error);
             res.status(500).json({ error: error.message });
         }
-    }
+    },
 
+    getByAnnonceId: async (req, res) => {
+        try {
+            const { annonceId } = req.params;
+
+            const photos = await photoService.getByAnnonceId(annonceId);
+
+            res.json(photos);
+        } catch (err) {
+            console.error("Erreur récupération photos par annonce:", err);
+            res.status(500).json({ message: "Erreur récupération photos"});
+        }
+    }
 };
 
 module.exports = photoController;

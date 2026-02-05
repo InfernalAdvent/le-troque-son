@@ -1,15 +1,16 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import api from "../api";
 
 export default function DepartementFilter() {
+  const { id } = useParams();
   const [departements, setDepartements] = useState([]);
   const [open, setOpen] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
 
-  const hiddenOn = ["/login", "/inscription", "/annonces/add", "/compte"];
+  const hiddenOn = ["/login", "/inscription", "/annonces/add", "/compte", `/annonces/${id}`];
   
   useEffect(() => {
     const fetchDepartements = async () => {

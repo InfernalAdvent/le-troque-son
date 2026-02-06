@@ -4,7 +4,7 @@ export default function AnnoncesCard({ annonce, photo }) {
     return(
         <NavLink 
             to={`/annonces/${annonce.id}`}
-            className="border border-gray-200 rounded-xl shadow-lg hover:shadow-2xl transition-shadow p-6 w-full max-w-xs flex flex-col gap-3 bg-white"
+            className="border border-gray-200 rounded-xl shadow-lg hover:shadow-2xl transition-shadow p-6 w-full max-w-xs flex flex-col gap-3 bg-white mx-auto"
         >
             {/* Image de l'annonce */}
             <div className="h-48 w-full bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">

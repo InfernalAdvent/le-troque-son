@@ -22,5 +22,6 @@ router.post(
     photosSpecificController.upload
 );
 router.get('/annonce/:annonceId', photosSpecificController.getByAnnonceId);
+router.put('/ordre/:annonceId', verifyCookieToken, photosSpecificController.updateOrder);
 
 module.exports = router;

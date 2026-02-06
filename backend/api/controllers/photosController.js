@@ -32,6 +32,28 @@ const photoController = {
             console.error("Erreur récupération photos par annonce:", err);
             res.status(500).json({ message: "Erreur récupération photos"});
         }
+    }, 
+
+    updateOrder: async (req, res) => {
+        try {
+            const { annonceId } = req.params;
+            const { photoIds } = req.body; // [{ id: 5, ordre: 0 }, { id: 3, ordre: 1 }, ...]
+
+            console.log("🔍 Annonce ID:", annonceId);
+            console.log("🔍 Photo IDs reçus:", photoIds);
+
+            if (!photoIds || !Array.isArray(photoIds)) {
+                return res.status(400).json({ error: "Format invalide pour photoIds" });
+            }
+
+            const result = await photoService.updateOrder(photoIds, annonceId);
+
+            res.json(result);
+
+        } catch (error) {
+            console.error("Erreur mise à jour ordre photos:", error);
+            res.status(500).json({ error: error.message });
+        }
     }
 };
 

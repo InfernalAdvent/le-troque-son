@@ -336,10 +336,10 @@ export default function AnnoncesAdd() {
                         required
                     >
                         <option value="">Sélectionner</option>
-                        <option value="neuf">Neuf</option>
-                        <option value="comme neuf">Comme neuf</option>
-                        <option value="bon">Bon</option>
-                        <option value="usagé">Usagé</option>
+                        <option value="Comme neuf">Comme neuf</option>
+                        <option value="Très bon état">Très bon état</option>
+                        <option value="Bon état">Bon état</option>
+                        <option value="Usagé">Usagé</option>
                     </select>
                 </div>
 

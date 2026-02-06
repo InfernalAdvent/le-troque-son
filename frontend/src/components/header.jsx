@@ -292,7 +292,10 @@ export default function Header() {
                                     sousCat.hasChildren ? (
                                         <NavLink
                                             key={sousCat.id}
-                                            to={`/categorie/${sousCat.id}`}
+                                            to={{
+                                                pathname:`/categorie/${sousCat.id}`,
+                                                search: location.search
+                                            }}
                                             className="text-sm text-violet-600 font-medium transition-colors hover:text-violet-800 whitespace-nowrap"
                                         >
                                             {sousCat.nom}
@@ -316,7 +319,10 @@ export default function Header() {
                             mainCategories.map((cat) => (
                                 <NavLink
                                     key={cat.id}
-                                    to={`/categorie/${cat.id}`}
+                                    to={{
+                                        pathname:`/categorie/${cat.id}`,
+                                        search: location.search
+                                    }}
                                     className="text-sm text-violet-600 font-medium transition-colors hover:text-violet-800 whitespace-nowrap"
                                 >
                                     {cat.nom}

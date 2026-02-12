@@ -353,7 +353,9 @@ export default function AnnoncesAdd() {
                         required
                     >
                         <option value="">Sélectionner un département</option>
-                        {departements.map(dep => (
+                        {departements
+                        .filter(dep => dep && dep.numero && dep.nom)
+                        .map(dep => (
                             <option key={dep.id} value={dep.numero}>
                                 {dep.numero} - {dep.nom}
                             </option>

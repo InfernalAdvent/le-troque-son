@@ -5,7 +5,7 @@ const { Conversation, Message, User, Annonce } = require('../models');
 const ConversationIncludes = [
     { model: User, as: 'initiateur', attributes: ['id', 'pseudo'] },
     { model: User, as: 'receveur', attributes: ['id', 'pseudo'] },
-    { model: Annonce, as: 'annonce', attributes: ['id', 'titre', 'prix'] } 
+    { model: Annonce, as: 'annonce', attributes: ['id', 'titre', 'prix'], paranoid: false } 
 ];
 
 const MessageIncludes = [
@@ -22,6 +22,13 @@ const conversationService = {
      * @returns {object} La conversation (existante ou nouvelle).
      */
     findOrCreateConversation: async (userId, receveurId, annonceId) => {
+        
+        const annonce = await Annonce.findByPk(annonceId);
+
+        if (!annonce || annonce.deleted_at) {
+        throw new Error("Cette annonce n'existe plus ou a été supprimée.");
+        }
+
         try {
             // CONVERSION DE TYPE POUR S'ASSURER QUE LA COMPARAISON DE SÉCURITÉ FONCTIONNE
             const initiatorId = parseInt(userId, 10);

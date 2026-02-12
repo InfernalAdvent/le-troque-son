@@ -76,6 +76,24 @@ const annonceController = {
             console.error('Erreur lors de la recherche des annonces:', err);
             res.status(500).json({error: "Erreur serveur"});
         };
+    },
+
+    deleteAnnonce: async(req, res) => {
+        try {
+            const id = req.params.id;
+            const userId = req.user ? req.user.id : null;
+            if(!userId) {
+                return res.status(401).json({ error: "Authentification requise pour supprimer cette annonce."});
+            }
+            const deletedAnnonce = await annoncesService.deleteAnnonce(id, userId);
+            if (!deletedAnnonce) {
+                return res.status(404).json({ message: 'Annonce non trouvée ou vous ne disposez les droits pour supprimer cette annonce'});
+            }
+            res.status(204).send();
+        } catch (error) {
+            console.error("Erreur lors de la suppression de l'annonce:", error);
+            res.status(500).json({ error: error.message });
+        };
     }
 };
 

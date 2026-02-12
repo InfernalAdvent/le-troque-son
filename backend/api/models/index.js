@@ -12,6 +12,7 @@ Annonce.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 Annonce.belongsTo(Categorie, { foreignKey: 'categorie_id', as: 'categoriePrincipale' });
 Annonce.belongsTo(Categorie, { foreignKey: 'echange_categorie_id', as: 'echangeCategorie' });
 Annonce.belongsTo(Departement, { foreignKey: 'departement_numero', targetKey: 'numero' });
+Annonce.hasMany(Photo, { foreignKey: 'annonce_id', hooks: true });
 
 
 Categorie.belongsTo(Categorie, { foreignKey: 'parent_id', as: 'parent' });
@@ -26,7 +27,7 @@ Message.belongsTo(Conversation, { foreignKey: 'conversation_id' });
 Message.belongsTo(User, { foreignKey: 'expediteur_id', as: 'expediteur' });
 
 
-Photo.belongsTo(Annonce, { foreignKey: 'annonce_id' });
+Photo.belongsTo(Annonce, { foreignKey: 'annonce_id'});
 Photo.belongsTo(Wishlist, { foreignKey: 'wishlist_id' });
 Photo.belongsTo(User, { foreignKey: 'user_id'})
 

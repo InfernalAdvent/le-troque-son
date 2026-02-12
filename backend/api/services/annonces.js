@@ -1,5 +1,5 @@
 const { Op } = require('sequelize');
-const { Annonce, User, Categorie, Departement } = require('../models'); 
+const { Annonce, User, Categorie, Departement, Photo } = require('../models'); 
 const defaultService = require('./defaultService'); 
 const categorieService = require('./categories'); 
 
@@ -92,11 +92,37 @@ const searchAnnonces = async (titre) => {
     });
 };
 
+// services/annonces.js
+const deleteAnnonce = async (id, userId) => {
+  const whereOwner = { id };
+  if (userId) whereOwner.user_id = userId;
+
+  // 1. On effectue le soft delete de l'annonce
+  // Sequelize va générer un : UPDATE annonces SET deleted_at = NOW() ...
+  const rowsAffected = await Annonce.destroy({
+    where: whereOwner,
+    force: false 
+  });
+
+  if (rowsAffected > 0) {
+    // 2. On supprime REELLEMENT les photos de la base de données
+    // Comme le modèle Photo n'est pas paranoid, Sequelize fait un DELETE FROM photos...
+    await Photo.destroy({ 
+      where: { annonce_id: id } 
+    });
+    return true;
+  }
+
+  return false;
+};
+
+
 module.exports = {
     defaultAnnonceService,
     getAllWithFilters,
     getAnnoncesByCategories,
     updateAnnonceOwner,
     searchAnnonces,
-    getAnnonceWithUser
+    getAnnonceWithUser,
+    deleteAnnonce
 };

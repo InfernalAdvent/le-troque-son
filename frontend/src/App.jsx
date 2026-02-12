@@ -52,8 +52,11 @@ function Home() {
 
 
   const getPhotoForAnnonce = (annonceId) => {
-    return photos.find(photo => photo.annonce_id === annonceId);
-  };
+    return photos.find(photo => 
+    photo.annonce_id === annonceId && photo.ordre === 0
+  ) || photos.find(photo => photo.annonce_id === annonceId); 
+  // Le "||" permet de prendre n'importe quelle photo de l'annonce si aucune n'a l'ordre 0
+};
 
   if (loading) {
     return (

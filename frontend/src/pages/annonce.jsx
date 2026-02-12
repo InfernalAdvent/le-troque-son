@@ -23,6 +23,7 @@ export default function Annonce() {
     const [formData, setFormData] = useState({});
     const [newPhotos, setNewPhotos] = useState([]);
     const [uploading, setUploading] = useState(false);
+    const [editModePhotos, setEditModePhotos] = useState(false);
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
 
@@ -38,23 +39,23 @@ export default function Annonce() {
     };
 
     const handleSave = async () => {
-  try {
-    // 1️⃣ Mettre à jour uniquement les infos de l'annonce
-    await api.put(`/annonces/${annonce.id}`, formData);
+        try {
+            // 1️⃣ Mettre à jour uniquement les infos de l'annonce
+            await api.put(`/annonces/${annonce.id}`, formData);
 
-    // 4️⃣ Mettre à jour l’annonce côté front
-    setAnnonce({ ...annonce, ...formData });
-    setEditMode(false);
-  } catch (err) {
-    console.error("Erreur mise à jour annonce/photos", err);
-    if (err.response) {
-      // affiche l'erreur du serveur si dispo
-      alert(`Erreur serveur : ${err.response.data.message || err.response.statusText}`);
-    } else {
-      alert("Erreur lors de la mise à jour");
-    }
-  }
-};
+            // 4️⃣ Mettre à jour l’annonce côté front
+            setAnnonce({ ...annonce, ...formData });
+            setEditMode(false);
+        } catch (err) {
+            console.error("Erreur mise à jour annonce/photos", err);
+            if (err.response) {
+            // affiche l'erreur du serveur si dispo
+            alert(`Erreur serveur : ${err.response.data.message || err.response.statusText}`);
+            } else {
+            alert("Erreur lors de la mise à jour");
+            }
+        }
+        };
 
 const handleSavePhotos = async () => {
     if (newPhotos.length === 0) return;
@@ -122,17 +123,21 @@ const handleSavePhotos = async () => {
     }
 };
 
-const { handleDragStart, handleDragOver, handleDrop } = useDragAndDrop(
+    const { handleDragStart, handleDragOver, handleDrop } = useDragAndDrop(
         photos,
         newPhotos,
         async (reorderedPhotos) => {
-            const existingPhotos = reorderedPhotos.filter(p => !p.isNew);
-            const newPhotosOnly = reorderedPhotos.filter(p => p.isNew);
+            // ✅ Mettre à jour la propriété ordre localement
+            const photosWithNewOrder = reorderedPhotos.map((photo, idx) => ({
+                ...photo,
+                ordre: idx
+            }));
+
+            const existingPhotos = photosWithNewOrder.filter(p => !p.isNew);
+            const newPhotosOnly = photosWithNewOrder.filter(p => p.isNew);
 
             setPhotos(existingPhotos);
             setNewPhotos(newPhotosOnly);
-            
-            console.log("Photos à sauvegarder:", existingPhotos.map((p, idx) => ({ id: p.id, ordre: idx })));
 
             // Sauvegarder en BDD
             try {
@@ -299,7 +304,7 @@ const { handleDragStart, handleDragOver, handleDrop } = useDragAndDrop(
                                     setSelectedPhotoIndex(index);
                                 }}
                                 />
-                                {isOwner && editMode && (
+                                {isOwner && editModePhotos && (
                                 <button
                                     onClick={() => {
                                     if(photo.isNew) {
@@ -318,7 +323,7 @@ const { handleDragStart, handleDragOver, handleDrop } = useDragAndDrop(
 
 
                             {/* Bouton + pour ajouter des photos */}
-                            {isOwner && editMode && (
+                            {isOwner && editModePhotos && (
                                 <div className="flex items-center gap-4">
                                 <div
                                     onClick={() => fileInputRef.current.click()}
@@ -337,7 +342,7 @@ const { handleDragStart, handleDragOver, handleDrop } = useDragAndDrop(
                                 />
                                 </div>
                             )}
-                            {isOwner && editMode && newPhotos.length > 0 && (
+                            {isOwner && editModePhotos && newPhotos.length > 0 && (
                                 <div className="flex justify-center mt-4">
                                     <button
                                         onClick={handleSavePhotos}
@@ -350,6 +355,29 @@ const { handleDragStart, handleDragOver, handleDrop } = useDragAndDrop(
                             )}
                             </div>
 
+                            {/* Bouton édition photos */}
+                        {isOwner && (
+                            <div className="flex justify-center mt-4">
+                                {!editModePhotos ? (
+                                    <button
+                                        onClick={() => setEditModePhotos(true)}
+                                        className="px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition"
+                                    >
+                                        Modifier les photos
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={() => {
+                                            setEditModePhotos(false);
+                                            setNewPhotos([]); // Annuler les nouvelles photos non sauvegardées
+                                        }}
+                                        className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                                    >
+                                        Terminer
+                                    </button>
+                                )}
+                            </div>
+                        )}
 
                         {/* Modal agrandie */}
                         {isModalOpen && (
@@ -421,7 +449,7 @@ const { handleDragStart, handleDragOver, handleDrop } = useDragAndDrop(
                 <select
                     value={formData.etat}
                     onChange={(e) => setFormData({ ...formData, etat: e.target.value })}
-                    className="w-full bg-white text-violet-800 text-xl border rounded px-2 py-1 mb-4"
+                    className="w-full bg-white text-violet-800 border rounded px-2 py-1 mb-4"
                 >
                     <option value="Comme neuf">Comme neuf</option>
                     <option value="Très bon état">Très bon état</option>
@@ -436,7 +464,7 @@ const { handleDragStart, handleDragOver, handleDrop } = useDragAndDrop(
                 <input
                     value={formData.echange_souhaite_texte}
                     onChange={(e) => setFormData({ ...formData, echange_souhaite_texte: e.target.value })}
-                    className="w-full bg-white text-violet-800 text-xl border rounded px-2 py-1 mb-4"
+                    className="w-full bg-white text-violet-800 border rounded px-2 py-1 mb-4"
                 />
                 ) :( 
                     <p><strong>Échange possible contre :</strong> {annonce.echange_souhaite_texte}</p>
@@ -445,7 +473,7 @@ const { handleDragStart, handleDragOver, handleDrop } = useDragAndDrop(
                 <input
                     value={formData.ville}
                     onChange={(e) => setFormData({ ...formData, ville: e.target.value })}
-                    className="w-full bg-white text-violet-800 text-xl border rounded px-2 py-1 mb-4"
+                    className="w-full bg-white text-violet-800 border rounded px-2 py-1 mb-4"
                 />
                 ) :( 
                     <p><strong>Ville :</strong> {annonce.ville}</p>
@@ -454,7 +482,7 @@ const { handleDragStart, handleDragOver, handleDrop } = useDragAndDrop(
                 <input
                     value={formData.code_postal}
                     onChange={(e) => setFormData({ ...formData, code_postal: e.target.value })}
-                    className="w-full bg-white text-violet-800 text-xl border rounded px-2 py-1 mb-4"
+                    className="w-full bg-white text-violet-800 border rounded px-2 py-1 mb-4"
                 />
                 ) :( 
                     <p><strong>Code Postal :</strong> {annonce.code_postal}</p>

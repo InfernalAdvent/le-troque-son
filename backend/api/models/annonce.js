@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../database');
+const Photo = require('./photo'); // importe le modèle Photo
 
 const Annonce = sequelize.define('annonces', { 
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
@@ -16,6 +17,13 @@ const Annonce = sequelize.define('annonces', {
     code_postal: {type: DataTypes.STRING(5), allowNull: false},
     statut: {type: DataTypes.STRING, allowNull: false, defaultValue: 'Active'},
     date_publication: {type: DataTypes.DATE, defaultValue: DataTypes.NOW},
+    deleted_at: { type: DataTypes.DATE, allowNull: true }
+}, {
+    paranoid: true,
+    timestamps: true, // OBLIGATOIRE
+    createdAt: 'date_publication', // Mappe ton ancienne colonne
+    updatedAt: false, // Désactive si tu n'as pas de colonne update_at
+    deletedAt: 'deleted_at' // Lie explicitement ta colonne à Sequelize
 });
 
 module.exports = Annonce;

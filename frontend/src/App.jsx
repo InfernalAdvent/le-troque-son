@@ -110,18 +110,29 @@ function CategorieAnnonces() {
       try {
         setLoading(true);
         
-        // Récupérer les infos de la catégorie
         const catRes = await api.get(`/categories/${id}`);
         setCategorie(catRes.data);
-        
-        // Récupérer les annonces de la catégorie
-        let annoncesRes = await api.get(`/annonces/categorie/${id}`);
-        
-        // Récupérer les filtres depuis l'URL
+
+        // 👇 Construire l'URL avec les query params
         const params = new URLSearchParams(location.search);
         const filtresParam = params.get('filtres');
+        const departementsParam = params.get('departements');
+
+        let url = `/annonces/categorie/${id}`;
+        const queryParams = [];
         
-        // Si des filtres sont actifs, filtrer les annonces
+        if (departementsParam) queryParams.push(`departements=${departementsParam}`);
+        if (filtresParam) queryParams.push(`filtres=${filtresParam}`);
+        
+        if (queryParams.length > 0) {
+          url += "?" + queryParams.join("&");
+        }
+        
+        // 👇 Utiliser l'URL construite
+        let annoncesRes = await api.get(url);
+        
+        // 👇 Plus besoin de filtrer côté client si le backend le fait
+        // Garde ce code uniquement si ton backend ne gère pas encore les filtres
         if (filtresParam) {
           const filtresIds = filtresParam.split(',').map(Number);
           annoncesRes.data = annoncesRes.data.filter(annonce => 
@@ -129,7 +140,6 @@ function CategorieAnnonces() {
           );
         }
         
-        // Charger les photos
         const photosRes = await api.get("/photos");
         
         setAnnonces(annoncesRes.data);

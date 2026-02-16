@@ -15,15 +15,20 @@ const annonceController = {
         }
     },
 
-    getAnnoncesByCategories:  async (req, res) => {
+    getAnnoncesByCategories: async (req, res) => {
         const categorieId = req.params.id;
+        const { filtres, departements } = req.query; // 👈 Récupérer les query params
 
-        try{
-            const annonces = await annoncesService.getAnnoncesByCategories(categorieId);
+        try {
+            const annonces = await annoncesService.getAnnoncesByCategories(
+                categorieId,
+                filtres,
+                departements // 👈 Passer au service
+            );
             res.json(annonces);
         } catch (error) {
-            console.error("Erreur lors de la récupérations des annonces:", error);
-            res.status(500).json({error: "Erreur serveur"});
+            console.error("Erreur lors de la récupération des annonces:", error);
+            res.status(500).json({ error: "Erreur serveur" });
         }
     },
 

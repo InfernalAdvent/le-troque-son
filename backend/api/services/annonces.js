@@ -62,7 +62,7 @@ const updateAnnonceOwner = async (id, data, userId) => {
 };
 
 // 🔹 Récupère les annonces par catégorie (et sous-catégories si besoin)
-const getAnnoncesByCategories = async (categoryId, filterCategoryId = null) => {
+const getAnnoncesByCategories = async (categoryId, filterCategoryId = null, departements = null) => {
     const numCategoryId = parseInt(categoryId, 10);
     if (isNaN(numCategoryId)) return [];
 
@@ -77,8 +77,18 @@ const getAnnoncesByCategories = async (categoryId, filterCategoryId = null) => {
         finalCategoryIds = [numCategoryId, ...descendantIds];
     }
 
+    // 👇 Construire le where avec catégories
+    const where = { 
+        categorie_id: { [Op.in]: finalCategoryIds } 
+    };
+
+    // 👇 Ajouter les départements si présents
+    if (departements) {
+        where.departement_numero = { [Op.in]: departements.split(",") };
+    }
+
     return await Annonce.findAll({
-        where: { categorie_id: { [Op.in]: finalCategoryIds } },
+        where,
         include: AnnonceIncludes,
         order: [['date_publication', 'DESC']]
     });

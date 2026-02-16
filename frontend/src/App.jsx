@@ -2,7 +2,6 @@ import { Routes, Route, useLocation, useParams } from 'react-router-dom';
 import Header from './components/header';
 import Login from './pages/login';
 import SignUp from './pages/signup';
-import Compte from './pages/account';
 import Annonce from './pages/annonce';
 import AnnoncesCard from './components/annoncesCard';
 import AnnoncesAdd from './pages/annoncesAdd';
@@ -155,7 +154,9 @@ function CategorieAnnonces() {
   }, [id, location.search]);
 
   const getPhotoForAnnonce = (annonceId) => {
-    return photos.find(photo => photo.annonce_id === annonceId);
+    return photos.find(photo => 
+    photo.annonce_id === annonceId && photo.ordre === 0
+  ) || photos.find(photo => photo.annonce_id === annonceId); 
   };
 
   if (loading) {
@@ -208,7 +209,7 @@ function App() {
           <Route path="/annonces/:id" element={<Annonce/>} />
           <Route path="/login" element={<Login />} />
           <Route path="/inscription" element={<SignUp />} />
-          <Route path="/compte" element={<Compte />} />
+          <Route path="/compte" element={<UserProfile />} />
           <Route path="/profil/:id" element={<UserProfile />} />
           <Route path="/annonces/add" element={<AnnoncesAdd />} />
         </Routes>

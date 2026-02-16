@@ -124,7 +124,9 @@ export default function UserProfile() {
     }, [profileUserId, isOwnProfile, user, fetchWishlist]);
 
     const getPhotoForAnnonce = (annonceId) => {
-        return photos.find((p) => p.annonce_id === annonceId);
+        return photos.find(photo => 
+        photo.annonce_id === annonceId && photo.ordre === 0
+        ) || photos.find(photo => photo.annonce_id === annonceId); 
     };
 
     if (loading) {
@@ -223,7 +225,7 @@ export default function UserProfile() {
                             {isOwnProfile && (
                                 <button
                                     onClick={() => setEditingWishlist(true)}
-                                    className="mt-2 bg-violet-600 hover:bg-violet-800 transition-colors text-white px-4 py-2 rounded-lg"
+                                    className="mt-2 bg-violet-600 hover:bg-violet-800 transition-colors text-end text-white px-4 py-2 rounded-lg"
                                 >
                                     Modifier
                                 </button>

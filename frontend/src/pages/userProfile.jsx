@@ -5,7 +5,7 @@ import AnnoncesCard from "../components/annoncesCard";
 import api from "../api";
 
 export default function UserProfile() {
-    const { user } = useContext(AuthContext); // Utilisateur connecté
+    const { user, loadingAuth } = useContext(AuthContext); // Utilisateur connecté
     const { id } = useParams(); // ID depuis l'URL (undefined si on est sur /compte)
     
     // Si pas d'ID dans l'URL, on affiche le profil de l'utilisateur connecté
@@ -91,6 +91,8 @@ export default function UserProfile() {
     }, [profileUserId]);
 
     useEffect(() => {
+        if (loadingAuth) return;
+
         if (!profileUserId) return;
 
         const fetchData = async () => {
@@ -121,7 +123,7 @@ export default function UserProfile() {
         };
 
         fetchData();
-    }, [profileUserId, isOwnProfile, user, fetchWishlist]);
+    }, [profileUserId, isOwnProfile, user, loadingAuth , fetchWishlist, id]);
 
     const getPhotoForAnnonce = (annonceId) => {
         return photos.find(photo => 
@@ -225,7 +227,7 @@ export default function UserProfile() {
                             {isOwnProfile && (
                                 <button
                                     onClick={() => setEditingWishlist(true)}
-                                    className="mt-2 bg-violet-600 hover:bg-violet-800 transition-colors text-end text-white px-4 py-2 rounded-lg"
+                                    className="mt-2 bg-violet-600 hover:bg-violet-800 transition-colors text-white px-4 py-2 rounded-lg"
                                 >
                                     Modifier
                                 </button>

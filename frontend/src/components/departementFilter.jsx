@@ -46,12 +46,12 @@ export default function DepartementFilter() {
     pathname.startsWith("/annonces/") ||
     pathname === "/login" ||
     pathname === "/inscription" ||
-    pathname === "/compte"
+    pathname === "/compte" ||
+    pathname === "/messages"
   ) return null;
 
   return (
     <div className="bg-gray-50 shadow-md mb-6">
-      {/* Header de l'accordéon centré */}
       <button
         onClick={() => setOpen(!open)}
         className="w-full px-4 py-3 font-semibold text-violet-600 flex justify-center items-center gap-2"

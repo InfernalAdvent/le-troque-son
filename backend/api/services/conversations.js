@@ -1,11 +1,31 @@
 const { Op } = require('sequelize');
-const { Conversation, Message, User, Annonce } = require('../models');
+const { Conversation, Message, User, Annonce, Photo } = require('../models');
 
 // Configuration pour l'inclusion des relations dans les requêtes
 const ConversationIncludes = [
     { model: User, as: 'initiateur', attributes: ['id', 'pseudo'] },
     { model: User, as: 'receveur', attributes: ['id', 'pseudo'] },
-    { model: Annonce, as: 'annonce', attributes: ['id', 'titre', 'prix'], paranoid: false } 
+    { 
+        model: Annonce, 
+        as: 'annonce', 
+        attributes: ['id', 'titre', 'prix', 'deleted_at'], 
+        paranoid: false,
+        include: [{ 
+            model: Photo,
+            as: 'photos', // 👈 Vérifie que cette association existe dans models/index.js
+            attributes: ['url', 'ordre'],
+            where: { ordre: 0 }, // Photo principale
+            required: false // LEFT JOIN : si pas de photo, retourne quand même l'annonce
+        }]
+    },
+    { 
+        model: Message,
+        as: 'messages',
+        attributes: ['contenu', 'date_envoi', 'expediteur_id', 'lu_par_destinataire'],
+        limit: 1,
+        order: [['date_envoi', 'DESC']],
+        required: false
+    }
 ];
 
 const MessageIncludes = [

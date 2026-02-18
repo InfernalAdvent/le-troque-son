@@ -5,6 +5,7 @@ const AuthContext = createContext();
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [loadingAuth, setLoadingAuth] = useState(true); 
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -13,13 +14,15 @@ export default function AuthProvider({ children }) {
         setUser(res.data);
       } catch {
         setUser(null);
+      } finally {
+        setLoadingAuth(false);
       }
     };
     fetchUser();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthContext.Provider value={{ user, setUser, loadingAuth }}> 
       {children}
     </AuthContext.Provider>
   );

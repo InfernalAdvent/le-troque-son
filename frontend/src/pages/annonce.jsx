@@ -147,6 +147,26 @@ export default function Annonce() {
         }
     };
 
+    const handleContact = async () => {
+        if (!user) {
+            navigate('/login');
+            return;
+        }
+
+        try {
+            // Créer ou récupérer la conversation
+            const res = await api.post('/conversations', {
+                annonceId: annonce.id,
+                receveurId: annonce.user_id
+            });
+
+            // Rediriger vers la page messages avec cette conversation sélectionnée
+            navigate('/messages', { state: { conversationId: res.data.id } });
+        } catch (err) {
+            console.error('Erreur création conversation:', err);
+        }
+    };
+
     useEffect(() => {
         const fetchAnnonce = async () => {
             try {
@@ -460,7 +480,9 @@ export default function Annonce() {
 
                         {!isOwner && (
                             <div className="flex justify-end mt-4">
-                                <button className="px-4 py-2 bg-violet-700 text-white rounded-lg hover:bg-violet-800 transition">
+                                <button
+                                onClick={handleContact} 
+                                className="px-4 py-2 bg-violet-700 text-white rounded-lg hover:bg-violet-800 transition">
                                     Contacter
                                 </button>
                             </div>

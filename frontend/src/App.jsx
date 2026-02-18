@@ -7,6 +7,7 @@ import AnnoncesCard from './components/annoncesCard';
 import AnnoncesAdd from './pages/annoncesAdd';
 import DepartementFilter from "./components/departementFilter";
 import UserProfile from './pages/userProfile';
+import Messages from './pages/messages';
 import api from './api';
 import { useEffect, useState } from 'react';
 
@@ -209,9 +210,10 @@ function App() {
           <Route path="/annonces/:id" element={<Annonce/>} />
           <Route path="/login" element={<Login />} />
           <Route path="/inscription" element={<SignUp />} />
-          <Route path="/compte" element={<UserProfile />} />
+          <Route path="/compte" element={<UserProfile key="own-profile" />} />
           <Route path="/profil/:id" element={<UserProfile />} />
           <Route path="/annonces/add" element={<AnnoncesAdd />} />
+          <Route path="/messages" element={<Messages />} />
         </Routes>
       </main>
     </div>

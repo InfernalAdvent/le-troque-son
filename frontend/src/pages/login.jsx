@@ -33,9 +33,9 @@ export default function Login() {
     };
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-violet-100">
-            <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-                <h2 className="text-2xl font-bold text-violet-800 mb-6">Connexion</h2>
+        <div className="flex justify-center items-center min-h-screen">
+            <div className="p-8 rounded-lg shadow-xl w-full max-w-md">
+                <h2 className="text-2xl font-bold text-green-600 mb-6">Connexion</h2>
                 
                 <form onSubmit={handleLogin} className="space-y-4">
                     {error && (
@@ -53,7 +53,7 @@ export default function Login() {
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-violet-600"
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
                         />
                     </div>
                     
@@ -66,14 +66,14 @@ export default function Login() {
                             required
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-violet-600"
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
                         />
                     </div>
                     
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-violet-600 hover:bg-violet-700 text-white font-medium py-2 rounded-lg transition-colors disabled:bg-gray-400"
+                        className="w-full bg-green-600 hover:bg-green-800 cursor-pointer text-white font-medium py-2 rounded-lg transition-colors disabled:bg-gray-400"
                     >
                         {loading ? "Connexion..." : "Se connecter"}
                     </button>
@@ -81,7 +81,7 @@ export default function Login() {
                 
                 <p className="text-center text-sm text-gray-600 mt-4">
                     Pas encore de compte ?{" "}
-                    <NavLink to="/inscription" className="text-violet-600 hover:underline">
+                    <NavLink to="/inscription" className="text-green-600 hover:underline">
                         S'inscrire
                     </NavLink>
                 </p>

@@ -40,7 +40,15 @@ const getAllWithFilters = async ({ departements, search }) => {
     }
 
     if (search) {
-        where.titre = { [Op.like]: `%${search}%` };
+        // 👇 Diviser la recherche en mots
+        const mots = search.trim().split(/\s+/);
+        
+        const conditions = mots.map(mot => ({
+            titre: { [Op.like]: `%${mot}%` },
+        }));
+
+        // 👇 Ajouter les conditions de recherche au where
+        where[Op.and] = conditions;
     }
 
     return await Annonce.findAll({
@@ -96,8 +104,19 @@ const getAnnoncesByCategories = async (categoryId, filterCategoryId = null, depa
 
 // 🔹 Recherche annonces par titre
 const searchAnnonces = async (titre) => {
+    // Diviser la recherche en mots
+    const mots = titre.trim().split(/\s+/); // Split sur les espaces
+    
+    // Créer une condition WHERE pour chaque mot
+    const conditions = mots.map(mot => ({
+        titre: { [Op.like]: `%${mot}%` },
+    }));
+
     return await Annonce.findAll({
-        where: { titre: { [Op.like]: `%${titre}%` } },
+        where: {
+            [Op.and]: conditions // Tous les mots doivent être présents
+        },
+        include: AnnonceIncludes, // N'oublie pas d'ajouter les includes si besoin
         limit: 20,
     });
 };

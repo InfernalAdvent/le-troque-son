@@ -175,7 +175,7 @@ export default function Messages() {
                                 <button
                                     key={conversation.id}
                                     onClick={() => handleSelectConversation(conversation)}
-                                    className={`w-full text-left px-4 py-4 border-b border-gray-100 hover:bg-violet-50 transition-colors ${isSelected ? 'bg-violet-100' : ''}`}
+                                    className={`w-full text-left px-4 py-4 border-b border-gray-100 hover:bg-gray-100 transition-colors ${isSelected ? 'bg-gray-100' : ''}`}
                                 >
                                     <div className="flex items-center gap-3">
                                         {/* Photo de l'annonce */}
@@ -196,7 +196,7 @@ export default function Messages() {
                                             <div className="flex justify-between items-start gap-2">
                                                 <div className="flex items-center gap-2 min-w-0">
                                                     {unread && (
-                                                        <span className="w-2 h-2 rounded-full bg-violet-600 shrink-0" />
+                                                        <span className="w-2 h-2 rounded-full bg-green-600 shrink-0" />
                                                     )}
 
                                                     <p className="text-sm text-gray-500 truncate">
@@ -221,7 +221,7 @@ export default function Messages() {
                                                         {conversation.messages[0].contenu}
                                                     </>
                                                 ) : (
-                                                    <span className="text-gray-400 italic">Aucun message</span>
+                                                    <span className="text-gray-700 italic">Aucun message</span>
                                                 )}
                                             </p>
                                         </div>
@@ -244,7 +244,7 @@ export default function Messages() {
                             <div className="px-4 py-3 border-b border-gray-200 bg-gray-50 flex items-center gap-3">
                                 <button
                                     onClick={() => setSelectedConversation(null)}
-                                    className="md:hidden text-violet-600 hover:text-violet-800"
+                                    className="md:hidden text-green-600 hover:text-green-800"
                                 >
                                     ←
                                 </button>
@@ -252,7 +252,7 @@ export default function Messages() {
                                 <div>
                                     <Link
                                         to={`/profil/${getInterlocuteur(selectedConversation)?.id}`}
-                                        className="font-semibold text-violet-800 hover:underline"
+                                        className="font-semibold text-green-600 hover:underline"
                                     >
                                         {getInterlocuteur(selectedConversation)?.pseudo}
                                     </Link>
@@ -265,11 +265,11 @@ export default function Messages() {
                                     ) : (
                                         <Link
                                             to={`/annonces/${selectedConversation.annonce?.id}`}
-                                            className="block text-sm text-gray-500 hover:underline truncate"
+                                            className="block text-sm text-gray-700 hover:underline truncate"
                                         >
                                             {selectedConversation.annonce?.titre}
                                             {selectedConversation.annonce?.prix && (
-                                                <span className="ml-2 text-violet-600 font-medium">
+                                                <span className="ml-2 text-green-600 font-medium">
                                                     {selectedConversation.annonce.prix} €
                                                 </span>
                                             )}
@@ -300,11 +300,11 @@ export default function Messages() {
                                                 >
                                                     <div className={`max-w-[70%] rounded-2xl px-4 py-2 ${
                                                         isOwn
-                                                            ? 'bg-violet-600 text-white rounded-br-sm'
-                                                            : 'bg-gray-100 text-gray-800 rounded-bl-sm'
+                                                            ? 'bg-green-600 text-white rounded-br-sm'
+                                                            : 'bg-gray-200 text-gray-700 rounded-bl-sm'
                                                     }`}>
                                                         <p className="text-sm whitespace-pre-wrap">{message.contenu}</p>
-                                                        <p className={`text-xs mt-1 ${isOwn ? 'text-violet-200' : 'text-gray-400'}`}>
+                                                        <p className={`text-xs mt-1 ${isOwn ? 'text-green-200' : 'text-gray-500'}`}>
                                                             {formatDate(message.date_envoi)}
                                                             {isOwn && (
                                                                 <span className="ml-1">
@@ -330,12 +330,12 @@ export default function Messages() {
                                         onKeyDown={handleKeyPress}
                                         placeholder="Écrire un message..."
                                         rows={1}
-                                        className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-violet-500"
+                                        className="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm resize-none focus:outline-none focus:border-green-600"
                                     />
                                     <button
                                         onClick={handleSendMessage}
                                         disabled={!newMessage.trim() || sending}
-                                        className="bg-violet-600 hover:bg-violet-800 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
+                                        className="bg-green-600 hover:bg-green-800 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium"
                                     >
                                         Envoyer
                                     </button>

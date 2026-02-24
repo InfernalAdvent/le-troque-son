@@ -76,7 +76,7 @@ export default function Annonce() {
             alert("Photos enregistrées avec succès !");
         } catch (err) {
             console.error("Erreur ajout photos", err);
-            alert("Erreur lors de l’ajout des photos");
+            alert("Erreur lors de l'ajout des photos");
         } finally {
             setUploading(false);
         }
@@ -214,9 +214,9 @@ export default function Annonce() {
                             <div className="absolute inset-0 flex flex-col items-center justify-center">
                                 <div
                                     onClick={() => fileInputRef.current.click()}
-                                    className="h-20 w-20 flex items-center justify-center border-2 border-dashed border-violet-500 rounded-lg cursor-pointer hover:bg-violet-50 transition"
+                                    className="h-20 w-20 flex items-center justify-center border-2 border-dashed border-green-600 rounded-lg cursor-pointer hover:bg-green-50 transition"
                                 >
-                                    <span className="text-3xl text-violet-600 font-bold">+</span>
+                                    <span className="text-3xl text-green-600 font-bold">+</span>
                                 </div>
                                 <input
                                     ref={fileInputRef}
@@ -248,7 +248,7 @@ export default function Annonce() {
                                         <img
                                             src={`${import.meta.env.VITE_API_URL}${photo.url}`}
                                             alt={annonce.titre}
-                                            className="h-[450px] w-full object-contain cursor-zoom-in rounded-lg"
+                                            className="h-112.5 w-full object-contain cursor-zoom-in rounded-lg"
                                             onClick={() => setIsModalOpen(true)}
                                         />
                                     </SwiperSlide>
@@ -270,7 +270,7 @@ export default function Annonce() {
                                             src={photo.isNew ? photo.url : `${import.meta.env.VITE_API_URL}${photo.url}`}
                                             alt="miniature"
                                             className={`h-20 w-20 object-cover rounded-lg cursor-pointer border-2 ${
-                                                selectedPhotoIndex === index ? "border-violet-700" : "border-transparent"
+                                                selectedPhotoIndex === index ? "border-green-600" : "border-transparent"
                                             } ${editModePhotos ? "cursor-grab" : ""}`}
                                             onClick={() => {
                                                 mainSwiperRef.current?.slideTo(index);
@@ -291,9 +291,9 @@ export default function Annonce() {
                             {isOwner && editModePhotos && (
                                 <div
                                     onClick={() => fileInputRef.current.click()}
-                                    className="h-20 w-20 flex items-center justify-center border-2 border-dashed border-violet-500 rounded-lg cursor-pointer hover:bg-violet-50 transition"
+                                    className="h-20 w-20 flex items-center justify-center border-2 border-dashed border-green-600 rounded-lg cursor-pointer hover:bg-green-50 transition"
                                 >
-                                    <span className="text-3xl text-violet-600 font-bold">+</span>
+                                    <span className="text-3xl text-green-600 font-bold">+</span>
                                     <input
                                         ref={fileInputRef}
                                         type="file"
@@ -353,7 +353,7 @@ export default function Annonce() {
                         !editModePhotos && photos.length > 0 ? (
                             <button
                                 onClick={() => setEditModePhotos(true)}
-                                className="px-4 py-2 bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition"
+                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-800 transition"
                             >
                                 Modifier les photos
                             </button>
@@ -370,10 +370,10 @@ export default function Annonce() {
                         <input
                             value={formData.titre || ""}
                             onChange={(e) => setFormData({ ...formData, titre: e.target.value })}
-                            className="w-full bg-white text-violet-800 text-3xl font-bold border rounded px-2 py-1 mb-4"
+                            className="w-full bg-white text-gray-700 text-3xl font-bold border rounded px-2 py-1 mb-4"
                         />
                     ) : (
-                        <h1 className="text-3xl font-bold text-violet-800 mb-4">{annonce.titre}</h1>
+                        <h1 className="text-3xl font-bold text-green-600 mb-4">{annonce.titre}</h1>
                     )}
                 </div>
                 
@@ -381,7 +381,7 @@ export default function Annonce() {
                 {isOwner && !editMode && (
                     <button
                         onClick={() => setEditMode(true)}
-                        className="p-2 text-violet-600 hover:text-violet-800 transition hover:cursor-pointer"
+                        className="p-2 text-green-600 hover:text-green-800 transition hover:cursor-pointer"
                         title="Modifier l'annonce"
                     >
                         <SquarePen size={28} />
@@ -394,21 +394,21 @@ export default function Annonce() {
                         type="number"
                         value={formData.prix || ""}
                         onChange={(e) => setFormData({ ...formData, prix: Number(e.target.value) })}
-                        className="w-full bg-white text-violet-800 text-xl border rounded px-2 py-1 mb-4"
+                        className="w-64 bg-white text-gray-700 text-xl border rounded px-2 py-1 mb-4"
                     />
                 ) : (
                     <p className="text-xl font-semibold mb-4">{annonce.prix} €</p>
                 )}
                 
-                <p className="text-gray-500">Publiée le {formatDateTime(annonce.date_publication)}</p>
+                <p className="text-gray-700">Publiée le {formatDateTime(annonce.date_publication)}</p>
 
                 <div className="bg-gray-100 rounded-xl p-6 mt-8">
-                    <h2 className="text-xl font-semibold text-violet-800 mb-4">Description</h2>
+                    <h2 className="text-xl font-semibold text-green-600 mb-4">Description</h2>
                     {editMode ? (
                         <textarea
                             value={formData.description || ""}
                             onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            className="w-full h-32 bg-white text-violet-800 text-lg border rounded px-2 py-1 mb-4"
+                            className="w-full h-32 bg-white text-gray-700 text-lg rounded px-2 py-1 mb-4"
                         />
                     ) : (
                         <p className="whitespace-pre-line">{annonce.description}</p>
@@ -417,14 +417,14 @@ export default function Annonce() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                     <div className="bg-gray-100 rounded-xl p-6 mt-8">
-                        <h2 className="text-xl font-semibold text-violet-800 mb-4">Détails de l'annonce</h2>
+                        <h2 className="text-xl font-semibold text-green-600 mb-4">Détails de l'annonce</h2>
                         {editMode ? (
                             <div className="space-y-4">
                                 <label className="block">État :
                                     <select
                                         value={formData.etat || ""}
                                         onChange={(e) => setFormData({ ...formData, etat: e.target.value })}
-                                        className="w-full bg-white text-violet-800 border rounded px-2 py-1 mt-1"
+                                        className="w-full bg-white text-gray-700 border rounded px-2 py-1 mt-1"
                                     >
                                         <option value="Comme neuf">Comme neuf</option>
                                         <option value="Très bon état">Très bon état</option>
@@ -436,21 +436,21 @@ export default function Annonce() {
                                     <input
                                         value={formData.echange_souhaite_texte || ""}
                                         onChange={(e) => setFormData({ ...formData, echange_souhaite_texte: e.target.value })}
-                                        className="w-full bg-white text-violet-800 border rounded px-2 py-1 mt-1"
+                                        className="w-full bg-white text-gray-700 border rounded px-2 py-1 mt-1"
                                     />
                                 </label>
                                 <label className="block">Ville :
                                     <input
                                         value={formData.ville || ""}
                                         onChange={(e) => setFormData({ ...formData, ville: e.target.value })}
-                                        className="w-full bg-white text-violet-800 border rounded px-2 py-1 mt-1"
+                                        className="w-full bg-white text-gray-700 border rounded px-2 py-1 mt-1"
                                     />
                                 </label>
                                 <label className="block">Code Postal :
                                     <input
                                         value={formData.code_postal || ""}
                                         onChange={(e) => setFormData({ ...formData, code_postal: e.target.value })}
-                                        className="w-full bg-white text-violet-800 border rounded px-2 py-1 mt-1"
+                                        className="w-full bg-white text-gray-700 border rounded px-2 py-1 mt-1"
                                     />
                                 </label>
                             </div>
@@ -465,11 +465,11 @@ export default function Annonce() {
                     </div>
 
                     <div className="bg-gray-100 rounded-xl p-6 lg:mt-8">
-                        <h2 className="text-xl font-semibold text-violet-800 mb-4">Vendu par</h2>
+                        <h2 className="text-xl font-semibold text-green-600 mb-4">Vendu par</h2>
                         <div>
                             <p>
                                 <strong>
-                                    <Link to={`/profil/${annonce?.user?.id}`} className="text-violet-600 hover:underline">
+                                    <Link to={`/profil/${annonce?.user?.id}`} className="text-green-600 hover:underline">
                                         {annonce.user?.pseudo || "Utilisateur inconnu"}
                                     </Link>
                                 </strong>
@@ -482,7 +482,7 @@ export default function Annonce() {
                             <div className="flex justify-end mt-4">
                                 <button
                                 onClick={handleContact} 
-                                className="px-4 py-2 bg-violet-700 text-white rounded-lg hover:bg-violet-800 transition">
+                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-800 transition">
                                     Contacter
                                 </button>
                             </div>

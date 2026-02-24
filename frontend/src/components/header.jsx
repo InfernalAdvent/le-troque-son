@@ -129,9 +129,9 @@ export default function Header() {
 
     if (isAuthPage) {
         return (
-            <header className="bg-white shadow-sm sticky top-0 z-50 py-4 px-6">
+            <header className="bg-black shadow-xl sticky top-0 z-50 py-4 px-6">
                 <NavLink to="/" className="block text-center">
-                    <h1 className="text-4xl font-bold text-violet-800">
+                    <h1 className="text-4xl font-bold text-white font-titre">
                         Le Troque Son
                     </h1>
                 </NavLink>
@@ -140,14 +140,14 @@ export default function Header() {
     }
 
     return (
-        <header className="bg-violet-100 sticky top-0 z-50">
+        <header className="bg-black sticky top-0 z-50">
             {/* Partie supérieure : Logo + Searchbar */}
-            <div className="border-b border-gray-200">
+            <div>
                 <div className="max-w-5xl mx-auto px-4">
                     {/* Desktop Layout */}
                     <div className="hidden md:flex items-center justify-between py-4 gap-6">
                         <NavLink to="/" className="shrink-0">
-                            <h1 className="text-2xl font-bold text-violet-800 whitespace-nowrap">
+                            <h1 className="text-2xl font-titre text-white whitespace-nowrap">
                                 Le Troque Son
                             </h1>
                         </NavLink>
@@ -155,14 +155,14 @@ export default function Header() {
                         {user ? (
                             <NavLink
                                 to="/annonces/add"
-                                className="bg-violet-600 hover:bg-violet-800 text-white px-6 py-3 rounded-lg font-medium whitespace-nowrap transition-colors">
+                                className="bg-green-600 hover:bg-green-800 text-white px-6 py-3 rounded-lg font-medium whitespace-nowrap transition-colors">
                                 Déposer une annonce
                             </NavLink>
 
                         ): (
                             <NavLink
                                 to="/login"
-                                className="bg-violet-600 hover:bg-violet-800 text-white px-6 py-3 rounded-lg font-medium whitespace-nowrap transition-colors">
+                                className="bg-green-600 hover:bg-green-800 text-white px-6 py-3 rounded-lg font-medium whitespace-nowrap transition-colors">
                                 Déposer une annonce
                             </NavLink>
                         )}
@@ -173,14 +173,14 @@ export default function Header() {
                                 <input
                                     type="text"
                                     placeholder="Rechercher une annonce..."
-                                    className="w-full border-2 border-violet-600 rounded-lg py-3 pl-4 pr-12 text-sm focus:outline-none focus:border-violet-800"
+                                    className="w-full border-2 bg-white border-white rounded-lg py-3 pl-4 pr-12 text-sm focus:outline-none focus:border-white"
                                     value={search}
                                     onChange={handleSearchChange}
                                     onKeyPress={handleKeyPress}
                                 />
                                 <button 
                                     onClick={handleSearch}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-violet-600 hover:bg-violet-800 text-white p-2 rounded-md"
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-green-600 hover:bg-green-800 text-white p-2 rounded-md cursor-pointer"
                                 >
                                     <Search size={20} />
                                 </button>
@@ -191,7 +191,7 @@ export default function Header() {
                             {user ? (
                                 <NavLink 
                                     to="/compte" 
-                                    className="text-violet-600 hover:text-violet-800 transition-colors p-2"
+                                    className="text-green-600 hover:text-green-800 transition-colors p-2"
                                     title="compte"
                                 >
                                     <UserCircle size={24} />
@@ -200,7 +200,7 @@ export default function Header() {
 
                                 <NavLink 
                                     to="/login" 
-                                    className="text-violet-600 hover:text-violet-800 transition-colors p-2"
+                                    className="text-green-600 hover:text-green-800 transition-colors p-2"
                                     title="Connexion"
                                 >
                                     <LogIn size={24} />
@@ -210,7 +210,7 @@ export default function Header() {
                                   
                             <NavLink 
                                 to="/messages" 
-                                className="text-violet-600 hover:text-violet-800 transition-colors p-2"
+                                className="text-green-600 hover:text-green-800 transition-colors p-2"
                                 title="Messages"
                             >
                                 <MessageSquare size={24} />
@@ -219,7 +219,7 @@ export default function Header() {
                             {user && ( 
                                 <button 
                                     onClick={handleLogout} 
-                                    className="text-violet-600 hover:text-violet-800 transition-colors p-2"
+                                    className="text-green-600 hover:text-green-800 cursor-pointer transition-colors p-2"
                                     title="Déconnexion"
                                 >
                                     <LogOut size={24} />
@@ -233,7 +233,7 @@ export default function Header() {
                     <div className="md:hidden">
                         <div className="flex items-center justify-between py-3">
                             <NavLink to="/" className="flex-1 text-center">
-                                <h1 className="text-xl font-bold text-violet-800">
+                                <h1 className="text-xl font-titre text-white">
                                     Le Troque Son
                                 </h1>
                             </NavLink>
@@ -243,9 +243,9 @@ export default function Header() {
                                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                             >
                                 {mobileMenuOpen ? (
-                                    <X size={24} className="text-violet-600" />
+                                    <X size={24} className="text-green-600 cursor-pointer" />
                                 ) : (
-                                    <Menu size={24} className="text-violet-600" />
+                                    <Menu size={24} className="text-green-600 cursor-pointer" />
                                 )}
                             </button>
                         </div>
@@ -255,14 +255,14 @@ export default function Header() {
                                 <input
                                     type="text"
                                     placeholder="Rechercher..."
-                                    className="w-full border-2 border-violet-600 rounded-lg py-2.5 pl-4 pr-12 text-sm focus:outline-none focus:border-violet-700"
+                                    className="w-full border-2 bg-white border-white rounded-lg py-2.5 pl-4 pr-12 text-sm focus:outline-none focus:border-white"
                                     value={search}
                                     onChange={handleSearchChange}
                                     onKeyPress={handleKeyPress}
                                 />
                                 <button 
                                     onClick={handleSearch}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-violet-600 hover:bg-violet-800 text-white p-1.5 rounded-md"
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-green-600 hover:bg-green-800 transition cursor-pointer text-white p-1.5 rounded-md"
                                 >
                                     <Search size={18} />
                                 </button>
@@ -273,20 +273,17 @@ export default function Header() {
             </div>
 
             {/* Navbar des catégories - Dynamique */}
-            <nav className="bg-gray-50">
+            <nav className="bg-white shadow-lg">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="flex items-center justify-center gap-2 md:gap-6 py-3 overflow-x-auto">
                         {sousCategories.length > 0 ? (
                             <>
                                 <button
                                     onClick={retourArriere}
-                                    className="flex items-center gap-1 text-sm text-violet-600 font-medium hover:text-violet-800 whitespace-nowrap"
+                                    className="flex items-center gap-1 bg-green-600 rounded-xl text-white cursor-pointer font-medium whitespace-nowrap"
                                 >
-                                    <ChevronLeft size={18} />
-                                    <span>Retour</span>
+                                    <ChevronLeft size={24} />
                                 </button>
-                                
-                                
 
                                 {sousCategories.map((sousCat) => (
                                     sousCat.hasChildren ? (
@@ -296,7 +293,7 @@ export default function Header() {
                                                 pathname:`/categorie/${sousCat.id}`,
                                                 search: location.search
                                             }}
-                                            className="text-sm text-violet-600 font-medium transition-colors hover:text-violet-800 whitespace-nowrap"
+                                            className="text-sm text-green-600 font-medium cursor-pointer whitespace-nowrap"
                                         >
                                             {sousCat.nom}
                                         </NavLink>
@@ -306,8 +303,8 @@ export default function Header() {
                                             onClick={() => toggleFiltre(sousCat.id)}
                                             className={`text-sm font-medium transition-all whitespace-nowrap px-3 py-1.5 rounded-md ${
                                                 filtresActifs.includes(sousCat.id)
-                                                    ? 'bg-violet-600 text-white hover:bg-violet-700'
-                                                    : 'text-violet-600'
+                                                    ? 'bg-green-600 text-white cursor-pointer'
+                                                    : 'text-green-600 cursor-pointer'
                                             }`}
                                         >
                                             {sousCat.nom}
@@ -323,7 +320,7 @@ export default function Header() {
                                         pathname:`/categorie/${cat.id}`,
                                         search: location.search
                                     }}
-                                    className="text-sm text-violet-600 font-medium transition-colors hover:text-violet-800 whitespace-nowrap"
+                                    className="text-sm text-green-600 font-medium cursor-pointer whitespace-nowrap"
                                 >
                                     {cat.nom}
                                 </NavLink>
@@ -341,45 +338,45 @@ export default function Header() {
                             {user ? (
                                 <NavLink
                                     to="/compte"
-                                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-violet-100 transition-colors"
+                                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-100 transition-colors"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
-                                    <User size={20} className="text-violet-800" />
+                                    <User size={20} className="text-green-600" />
                                     <span className="font-medium">Mon Compte</span>
                                 </NavLink>
                             ) : (
                                 <NavLink
                                     to="/login"
-                                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-violet-100 transition-colors"
+                                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-100 transition-colors"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
-                                    <User size={20} className="text-violet-800" />
+                                    <User size={20} className="text-green-600" />
                                     <span className="font-medium">Connexion / Inscription</span>
                                 </NavLink>
                             )}
 
                             <NavLink
                                 to="/messages"
-                                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-violet-100 transition-colors"
+                                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-100 transition-colors"
                                 onClick={() => setMobileMenuOpen(false)}
                             >
-                                <MessageSquare size={20} className="text-violet-800" />
+                                <MessageSquare size={20} className="text-green-600" />
                                 <span className="font-medium">Messages</span>
                             </NavLink>
 
                             {user && (
                                 <button
                                 onClick={handleLogout}
-                                className="w-full flex items-center text-left gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-violet-100 transition-colors"
+                                className="w-full flex items-center text-left gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-100 cursor-pointer transition-colors"
                                 title="Déconnexion">
-                                <LogOut size={20} className="text-violet-800" />
+                                <LogOut size={20} className="text-green-600" />
                                 <span className="font-medium">Déconnexion</span>
                                 </button>
                             )}
 
                         </div>
 
-                        <button className="w-full bg-violet-600 hover:bg-violet-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                        <button className="w-full bg-green-600 hover:bg-green-800 text-white px-6 py-3 rounded-lg font-medium transition-colors">
                             Déposer une annonce
                         </button>
                     </nav>

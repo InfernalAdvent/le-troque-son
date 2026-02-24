@@ -1,1 +1,6 @@
 @import "tailwindcss";
+
+@theme {
+  --shadow-custom: 0px 3px 5px #b4b4b4;
+  --font-titre: "New Rocker", system-ui;
+}

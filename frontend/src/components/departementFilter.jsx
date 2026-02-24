@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { X } from "lucide-react";
 import api from "../api";
 
 export default function DepartementFilter() {
   const [departements, setDepartements] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const [open, setOpen] = useState(false);
 
   const location = useLocation();
@@ -36,51 +38,89 @@ export default function DepartementFilter() {
     }
 
     navigate(`${location.pathname}?${params.toString()}`, { replace: true });
+    setSearchTerm(""); // Réinitialiser la recherche après sélection
   };
 
-  const selected = new URLSearchParams(location.search).get("departements")?.split(",") || [];
+  const removeDepartement = (numero) => {
+    toggleDepartement(numero);
+  };
 
-  const pathname = location.pathname;
+  const selectedDeps = new URLSearchParams(location.search).get("departements")?.split(",") || [];
+  
+  // Filtrer les départements selon la recherche
+  const filteredDepartements = departements
+    .filter(dep => dep && dep.numero && dep.nom)
+    .filter(dep => 
+      !selectedDeps.includes(dep.numero) && // Ne pas afficher les déjà sélectionnés
+      (dep.numero.toLowerCase().includes(searchTerm.toLowerCase()) ||
+       dep.nom.toLowerCase().includes(searchTerm.toLowerCase()))
+    );
 
-  if (
-    pathname.startsWith("/annonces/") ||
-    pathname === "/login" ||
-    pathname === "/inscription" ||
-    pathname === "/compte" ||
-    pathname === "/messages"
-  ) return null;
+  const selectedDepartements = departements.filter(dep => selectedDeps.includes(dep.numero));
+
+ 
 
   return (
-    <div className="bg-gray-50 shadow-md mb-6">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full px-4 py-3 font-semibold text-violet-600 flex justify-center items-center gap-2"
-      >
-        <span>Filtrer par département</span>
-        <span
-          className={`transform transition-transform duration-500 ease-in-out ${open ? "rotate-180" : "rotate-0"}`}
-        >
-          ▼
-        </span>
-      </button>
+    <div className="mb-6">
+      <div className="max-w-100 mx-auto sm:mx-0">
+        <div className="flex flex-col gap-3">
+          {/* Barre de recherche */}
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Rechercher un département..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setOpen(e.target.value.length > 0);
+              }}
+              onFocus={() => setOpen(true)}
+              className="w-full px-4 py-2 border-2 border-green-600 text-sm rounded-lg focus:outline-none"
+            />
+            
+            {/* Liste déroulante des suggestions */}
+            {open && searchTerm && (
+              <div className="absolute top-full mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto z-10">
+                {filteredDepartements.length === 0 ? (
+                  <div className="px-4 py-3 text-gray-500 text-sm">
+                    Aucun département trouvé
+                  </div>
+                ) : (
+                  filteredDepartements.map(dep => (
+                    <button
+                      key={dep.numero}
+                      onClick={() => toggleDepartement(dep.numero)}
+                      className="w-full text-left px-4 py-2 hover:bg-green-50 transition-colors text-sm"
+                    >
+                      <span className="font-medium text-green-600">{dep.numero}</span>
+                      {" – "}
+                      <span>{dep.nom}</span>
+                    </button>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
 
-      {/* Contenu déroulant */}
-      <div
-        className={`overflow-hidden transition-[max-height] duration-500 ease-in-out ${open ? "max-h-96" : "max-h-0"}`}
-      >
-        <div className="px-4 py-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-48 overflow-y-auto">
-          {departements
-          .filter(dep => dep && dep.numero && dep.nom)
-          .map(dep => (
-            <label key={dep.numero} className="flex items-center gap-2 text-sm cursor-pointer">
-              <input
-                type="checkbox"
-                checked={selected.includes(dep.numero)}
-                onChange={() => toggleDepartement(dep.numero)}
-              />
-              <span>{dep.numero} – {dep.nom}</span>
-            </label>
-          ))}
+          {/* Départements sélectionnés */}
+          {selectedDepartements.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {selectedDepartements.map(dep => (
+                <div
+                  key={dep.numero}
+                  className="flex items-center gap-2 bg-green-600 text-white px-3 py-1 rounded-full text-sm"
+                >
+                  <span>{dep.numero} – {dep.nom}</span>
+                  <button
+                    onClick={() => removeDepartement(dep.numero)}
+                    className="hover:bg-green-700 rounded-full p-0.5 transition-colors"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

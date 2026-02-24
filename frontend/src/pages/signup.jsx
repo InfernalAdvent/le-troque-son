@@ -62,9 +62,9 @@ export default function Signup() {
     };
 
     return (
-        <div className="flex justify-center items-center min-h-screen bg-violet-100 py-12">
-            <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl">
-                <h2 className="text-3xl font-bold text-violet-600 mb-6">Créer un compte</h2>
+        <div className="flex justify-center items-center min-h-screen py-12">
+            <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl">
+                <h2 className="text-3xl font-bold text-green-600 mb-6">Créer un compte</h2>
                 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {error && (
@@ -85,7 +85,7 @@ export default function Signup() {
                                 required
                                 value={formData.prenom}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-violet-600"
+                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
                             />
                         </div>
                         
@@ -99,7 +99,7 @@ export default function Signup() {
                                 required
                                 value={formData.nom}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-violet-600"
+                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
                             />
                         </div>
                     </div>
@@ -115,7 +115,7 @@ export default function Signup() {
                             required
                             value={formData.pseudo}
                             onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-violet-600"
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
                         />
                     </div>
                     
@@ -130,7 +130,7 @@ export default function Signup() {
                             required
                             value={formData.email}
                             onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-violet-600"
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
                         />
                     </div>
                     
@@ -146,7 +146,7 @@ export default function Signup() {
                                 required
                                 value={formData.password}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-violet-600"
+                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
                             />
                         </div>
                         
@@ -160,7 +160,7 @@ export default function Signup() {
                                 required
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-violet-600"
+                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
                             />
                         </div>
                     </div>
@@ -175,7 +175,7 @@ export default function Signup() {
                             name="telephone"
                             value={formData.telephone}
                             onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-violet-600"
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
                         />
                     </div>
                     
@@ -190,7 +190,7 @@ export default function Signup() {
                             required
                             value={formData.adresse}
                             onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-violet-600"
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
                         />
                     </div>
                     
@@ -206,7 +206,7 @@ export default function Signup() {
                                 required
                                 value={formData.ville}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-violet-600"
+                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
                             />
                         </div>
                         
@@ -220,7 +220,7 @@ export default function Signup() {
                                 required
                                 value={formData.code_postal}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-violet-600"
+                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
                             />
                         </div>
                         
@@ -234,7 +234,7 @@ export default function Signup() {
                                 required
                                 value={formData.departement_id}
                                 onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-violet-600"
+                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
                             />
                         </div>
                     </div>
@@ -242,7 +242,7 @@ export default function Signup() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-violet-600 hover:bg-violet-700 text-white font-medium py-3 rounded-lg transition-colors disabled:bg-gray-400 mt-6"
+                        className="w-full bg-green-600 hover:bg-green-800 cursor-pointer text-white font-medium py-3 rounded-lg transition-colors disabled:bg-gray-400 mt-6"
                     >
                         {loading ? "Inscription en cours..." : "S'inscrire"}
                     </button>
@@ -250,7 +250,7 @@ export default function Signup() {
                 
                 <p className="text-center text-sm text-gray-600 mt-4">
                     Déjà un compte ?{" "}
-                    <NavLink to="/login" className="text-violet-600 hover:underline">
+                    <NavLink to="/login" className="text-green-600 hover:underline">
                         Se connecter
                     </NavLink>
                 </p>

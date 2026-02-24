@@ -72,14 +72,16 @@ function Home() {
   const searchQuery = params.get('search');
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className='text-3xl sm:text-4xl md:text-5xl font-bold text-violet-800 text-left mb-4'>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <h1 className='text-3xl sm:text-4xl md:text-5xl font-bold text-black text-left mb-4'>
         {searchQuery ? `Résultats pour "${searchQuery}"` : 'En ce moment sur Le Troque Son'}
       </h1>
       
-      <p className="text-gray-600 mb-8">
+      <p className="text-gray-700 mb-4">
         {annonces.length} annonce{annonces.length > 1 ? 's' : ''} trouvée{annonces.length > 1 ? 's' : ''}
       </p>
+
+      <DepartementFilter />
       
       {annonces.length === 0 ? (
         <p className="text-gray-600 text-center py-12">Aucune annonce disponible pour le moment.</p>
@@ -170,17 +172,18 @@ function CategorieAnnonces() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className='text-3xl sm:text-4xl md:text-5xl font-bold text-violet-800 text-left mb-4'>
+      <h1 className='text-3xl sm:text-4xl md:text-5xl font-bold text-black text-left mb-4'>
         {categorie?.nom}
       </h1>
 
-      
       <p className="text-gray-600 mb-8">
         {annonces.length} annonce{annonces.length > 1 ? 's' : ''} trouvée{annonces.length > 1 ? 's' : ''}
       </p>
+
+      <DepartementFilter />
       
       {annonces.length === 0 ? (
-        <p className="text-gray-600 text-center py-12">Aucune annonce dans cette catégorie.</p>
+        <p className="text-gray-700 text-center py-12">Aucune annonce dans cette catégorie.</p>
       ) : (
         <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6'>
           {annonces.map((annonce) => (
@@ -198,11 +201,8 @@ function CategorieAnnonces() {
 
 function App() {
   return (
-    <div className="flex flex-col min-h-screen bg-violet-200">
+    <div className="flex flex-col min-h-screen">
       <Header />
-
-      <DepartementFilter />
-      
       <main className='flex-1'>
         <Routes>
           <Route path="/" element={<Home />} />

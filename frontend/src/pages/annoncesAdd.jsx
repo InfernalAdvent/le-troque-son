@@ -199,7 +199,7 @@ export default function AnnoncesAdd() {
 
     return (
         <div className="max-w-2xl mx-auto p-6">
-            <h1 className="text-3xl text-violet-800 font-bold mb-6">Poster une annonce</h1>
+            <h1 className="text-3xl text-green-600 font-bold mb-6">Poster une annonce</h1>
 
             <form onSubmit={handleSubmit} className="space-y-5">
                 {error && <p className="bg-red-100 text-red-700 p-3 rounded">{error}</p>}
@@ -255,7 +255,7 @@ export default function AnnoncesAdd() {
                         
                         {/* Bouton d'ajout si moins de 5 photos */}
                         {uploadedPhotos.length < 5 && (
-                            <label className="aspect-square border-2 border-dashed border-gray-300 hover:border-violet-600 rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors bg-gray-50 hover:bg-gray-100">
+                            <label className="aspect-square border-2 border-dashed border-gray-300 hover:border-green-600 rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors bg-gray-50 hover:bg-gray-100">
                                 <svg className="w-8 h-8 text-gray-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                                 </svg>
@@ -392,7 +392,7 @@ export default function AnnoncesAdd() {
                 <button
                     type="submit"
                     disabled={loading}
-                    className="w-full bg-violet-600 hover:bg-violet-700 text-white p-3 rounded-lg font-semibold transition disabled:bg-gray-400"
+                    className="w-full bg-green-600 hover:bg-green-800 text-white p-3 rounded-lg font-semibold transition disabled:bg-gray-400"
                 >
                     {loading ? "Publication..." : "Publier l'annonce"}
                 </button>

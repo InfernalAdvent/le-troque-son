@@ -142,7 +142,7 @@ export default function UserProfile() {
     if (!profileUser) {
         return (
             <div className="flex justify-center items-center min-h-screen">
-                <p className="text-gray-600 text-lg">Utilisateur introuvable</p>
+                <p className="text-gray-700 text-lg">Utilisateur introuvable</p>
             </div>
         );
     }
@@ -151,27 +151,26 @@ export default function UserProfile() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div className="bg-gray-100 rounded-xl p-6">
-                    <h2 className="text-2xl text-violet-800 font-bold mb-6">
+                    <h2 className="text-2xl text-green-600 font-bold mb-6">
                         {isOwnProfile ? "Mon compte" : `Profil de ${profileUser.pseudo}`}
                     </h2>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <p><strong>Pseudo :</strong> {profileUser.pseudo}</p>
-                        
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">                        
                         {/* Afficher toutes les infos si c'est son propre profil */}
                         {isOwnProfile ? (
                             <>
-                                <p><strong>Email :</strong> {profileUser.email}</p>
-                                <p><strong>Téléphone :</strong> {profileUser.telephone}</p>
-                                <p><strong>Département :</strong> {profileUser.departement_numero}</p>
-                                <p><strong>Adresse :</strong> {profileUser.adresse}</p>
-                                <p><strong>Ville :</strong> {profileUser.ville}</p>
-                                <p><strong>Code postal :</strong> {profileUser.code_postal}</p>
+                                <p className="text-gray-700"><strong className="text-black">Pseudo :</strong> {profileUser.pseudo}</p>
+                                <p className="text-gray-700"><strong className="text-black">Email :</strong> {profileUser.email}</p>
+                                <p className="text-gray-700"><strong className="text-black">Téléphone :</strong> {profileUser.telephone}</p>
+                                <p className="text-gray-700"><strong className="text-black">Département :</strong> {profileUser.departement_numero}</p>
+                                <p className="text-gray-700"><strong className="text-black">Adresse :</strong> {profileUser.adresse}</p>
+                                <p className="text-gray-700"><strong className="text-black">Ville :</strong> {profileUser.ville}</p>
+                                <p className="text-gray-700"><strong className="text-black">Code postal :</strong> {profileUser.code_postal}</p>
                             </>
                         ) : (
                             <>
-                                <p><strong>Département :</strong> {profileUser.departement_numero}</p>
-                                <p><strong>Ville :</strong> {profileUser.ville}</p>
+                                <p className="text-gray-700"><strong className="text-black">Département :</strong> {profileUser.departement_numero}</p>
+                                <p className="text-gray-700"><strong className="text-black">Ville :</strong> {profileUser.ville}</p>
                             </>
                         )}
                         
@@ -182,12 +181,12 @@ export default function UserProfile() {
                 </div>
 
                 <div className="bg-gray-100 rounded-xl p-6">
-                    <h2 className="text-2xl text-violet-800 font-bold mb-6">
+                    <h2 className="text-2xl text-green-600 font-bold mb-6">
                         {isOwnProfile ? "Ma wishlist" : "Wishlist"}
                     </h2>
 
                     {loadingWishlist ? (
-                        <p className="text-gray-600">Chargement...</p>
+                        <p className="text-gray-700">Chargement...</p>
                     ) : isOwnProfile && (wishlist.length === 0 || editingWishlist) ? (
                         // Mode édition (uniquement pour son propre profil)
                         <>
@@ -201,7 +200,7 @@ export default function UserProfile() {
                             <div className="flex gap-2">
                                 <button
                                     onClick={handleSaveWishlist}
-                                    className="bg-violet-600 hover:bg-violet-800 transition-colors text-white px-4 py-2 rounded-lg"
+                                    className="bg-green-600 hover:bg-green-800 transition-colors text-white px-4 py-2 rounded-lg"
                                 >
                                     {editingWishlist ? "Enregistrer" : "Ajouter"}
                                 </button>
@@ -227,7 +226,7 @@ export default function UserProfile() {
                             {isOwnProfile && (
                                 <button
                                     onClick={() => setEditingWishlist(true)}
-                                    className="mt-2 bg-violet-600 hover:bg-violet-800 transition-colors text-white px-4 py-2 rounded-lg"
+                                    className="mt-2 bg-green-600 hover:bg-green-800 transition-colors text-white px-4 py-2 rounded-lg"
                                 >
                                     Modifier
                                 </button>
@@ -238,7 +237,7 @@ export default function UserProfile() {
             </div>
 
             <div className="mt-12">
-                <h1 className="text-4xl text-violet-800 font-bold mb-6">
+                <h1 className="text-4xl text-green-600 font-bold mb-6">
                     {isOwnProfile ? "Mes annonces" : `Annonces de ${profileUser.pseudo}`}
                 </h1>
 

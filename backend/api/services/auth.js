@@ -6,11 +6,18 @@ const saltRounds = 10;
 
 const login = async (email, password) => {
     const user = await User.findOne({ where: { email } });
+        console.log("User trouvé dans service:", user ? `OUI (id: ${user.id})` : "NON");
+
     if (!user) {
         throw new Error("Email ou mot de passe incorrect.");
     }
 
+    console.log("Hash en BDD:", user.password);
+    console.log("Password entré:", password);
+
     const isMatch = await bcrypt.compare(password, user.password);
+        console.log("Mot de passe match:", isMatch);
+
     if (!isMatch) {
         throw new Error("Email ou mot de passe incorrect.");
     }
@@ -39,7 +46,7 @@ const signup = async (email, password, userData) => {
             adresse,
             ville,
             code_postal,
-            departement_id
+            departement_numero
         } = userData;    
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -53,7 +60,7 @@ const signup = async (email, password, userData) => {
         adresse,
         ville,
         code_postal,
-        departement_id,
+        departement_numero,
     });
 
     const token = jwt.sign(

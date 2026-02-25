@@ -63,6 +63,18 @@ const conversationController = {
         } catch (error) {
             res.status(403).json({ error: error.message });
         }
+    },
+    
+    hideConversation: async (req, res) => {
+        const userId = req.user.id;
+        const conversationId = req.params.id;
+
+        try {
+            await conversationService.hideConversation(conversationId, userId);
+            res.status(200).json({ message: "Conversation masquée" });
+        } catch (error) {
+            res.status(403).json({ error: error.message });
+        }
     }
 };
 

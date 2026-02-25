@@ -129,7 +129,7 @@ export default function Header() {
 
     if (isAuthPage) {
         return (
-            <header className="bg-black shadow-xl sticky top-0 z-50 py-4 px-6">
+            <header className="bg-black sticky top-0 z-50 py-4 px-6">
                 <NavLink to="/" className="block text-center">
                     <h1 className="text-4xl font-bold text-white font-titre">
                         Le Troque Son
@@ -180,7 +180,7 @@ export default function Header() {
                                 />
                                 <button 
                                     onClick={handleSearch}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-green-600 hover:bg-green-800 text-white p-2 rounded-md cursor-pointer"
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 bg-green-600 hover:bg-green-800 transition text-white p-2 rounded-md cursor-pointer"
                                 >
                                     <Search size={20} />
                                 </button>
@@ -303,7 +303,7 @@ export default function Header() {
                                             onClick={() => toggleFiltre(sousCat.id)}
                                             className={`text-sm font-medium transition-all whitespace-nowrap px-3 py-1.5 rounded-md ${
                                                 filtresActifs.includes(sousCat.id)
-                                                    ? 'bg-green-600 text-white cursor-pointer'
+                                                    ? 'bg-green-600  text-white cursor-pointer'
                                                     : 'text-green-600 cursor-pointer'
                                             }`}
                                         >
@@ -320,7 +320,7 @@ export default function Header() {
                                         pathname:`/categorie/${cat.id}`,
                                         search: location.search
                                     }}
-                                    className="text-sm text-green-600 font-medium cursor-pointer whitespace-nowrap"
+                                    className="text-sm text-green-600 hover:underline font-medium cursor-pointer whitespace-nowrap"
                                 >
                                     {cat.nom}
                                 </NavLink>

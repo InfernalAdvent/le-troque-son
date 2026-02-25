@@ -373,6 +373,7 @@ export default function AnnoncesAdd() {
                             onChange={handleChange}
                             className="w-full p-3 border rounded"
                             placeholder="Ex: Marseille"
+                            required
                         />
                     </div>
 
@@ -385,6 +386,7 @@ export default function AnnoncesAdd() {
                             onChange={handleChange}
                             className="w-full p-3 border rounded"
                             placeholder="Ex: 13001"
+                            required
                         />
                     </div>
                 </div>

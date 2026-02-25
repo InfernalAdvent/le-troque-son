@@ -102,8 +102,12 @@ const conversationService = {
             return await Conversation.findAll({
                 where: {
                     [Op.or]: [
-                        { utilisateur_initiateur_id: userId },
-                        { utilisateur_receveur_id: userId }
+                        { utilisateur_initiateur_id: userId,
+                            masquee_par_initiateur: false
+                         },
+                        { utilisateur_receveur_id: userId,
+                            masquee_par_receveur: false
+                         }
                     ]
                 },
                 order: [['date_derniere_activite', 'DESC']],
@@ -209,6 +213,36 @@ const conversationService = {
         } catch (error) {
             console.error("Erreur lors de l'envoi du message :", error);
             throw new Error(`Erreur lors de l'envoi du message : ${error.message}`);
+        }
+    },
+
+    // Masquer une conversation pour l'utilisateur actuel
+    hideConversation: async (conversationId, userId) => {
+        try {
+            const conversation = await Conversation.findByPk(conversationId);
+            
+            if (!conversation) {
+                throw new Error("Conversation non trouvée.");
+            }
+
+            const isInitiateur = conversation.utilisateur_initiateur_id === parseInt(userId, 10);
+            const isReceveur = conversation.utilisateur_receveur_id === parseInt(userId, 10);
+
+            if (!isInitiateur && !isReceveur) {
+                throw new Error("Vous n'êtes pas participant à cette conversation.");
+            }
+
+            // Masquer pour l'utilisateur approprié
+            if (isInitiateur) {
+                await conversation.update({ masquee_par_initiateur: true });
+            } else {
+                await conversation.update({ masquee_par_receveur: true });
+            }
+
+            return conversation;
+        } catch (error) {
+            console.error("Erreur masquage conversation:", error);
+            throw new Error(`Erreur lors du masquage : ${error.message}`);
         }
     }
 };

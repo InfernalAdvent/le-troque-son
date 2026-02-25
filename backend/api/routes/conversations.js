@@ -7,5 +7,6 @@ router.post('/', verifyCookieToken, conversationController.startConversation);
 router.get('/', verifyCookieToken, conversationController.getConversations);
 router.get('/:id/messages', verifyCookieToken, conversationController.getHistory);
 router.post('/:id/messages', verifyCookieToken, conversationController.postMessage);
+router.delete('/:id', verifyCookieToken, conversationController.hideConversation);
 
 module.exports = router;

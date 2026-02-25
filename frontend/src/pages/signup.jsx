@@ -14,7 +14,7 @@ export default function Signup() {
         adresse: "",
         ville: "",
         code_postal: "",
-        departement_id: ""
+        departement_numero: ""
     });
     
     const [error, setError] = useState("");
@@ -230,9 +230,9 @@ export default function Signup() {
                             </label>
                             <input
                                 type="text"
-                                name="departement_id"
+                                name="departement_numero"
                                 required
-                                value={formData.departement_id}
+                                value={formData.departement_numero}
                                 onChange={handleChange}
                                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
                             />

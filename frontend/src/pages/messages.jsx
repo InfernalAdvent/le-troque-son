@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState, useRef, useCallback } from "react";
 import { AuthContext } from "../components/authContext";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { X, Trash2 } from "lucide-react";
 import api from "../api";
 
 export default function Messages() {
@@ -107,6 +108,22 @@ export default function Messages() {
         return conversation.messages?.some(
             m => !m.lu_par_destinataire && m.expediteur_id !== user?.id
         );
+    };
+    const handleDeleteConversation = async () => {
+        if (!selectedConversation) return;
+        
+        if (!confirm("Supprimer cette conversation ? Elle ne sera plus visible pour vous.")) return;
+
+        try {
+            await api.delete(`/conversations/${selectedConversation.id}`);
+            
+            // Retirer de la liste
+            setConversations(prev => prev.filter(c => c.id !== selectedConversation.id));
+            setSelectedConversation(null);
+        } catch (err) {
+            console.error("Erreur suppression conversation:", err);
+            alert("Impossible de supprimer la conversation");
+        }
     };
 
     useEffect(() => {
@@ -240,8 +257,9 @@ export default function Messages() {
                         </div>
                     ) : (
                         <>
-                            {/* Header de la conversation */}
-                            <div className="px-4 py-3 border-b border-gray-200 bg-gray-50 flex items-center gap-3">
+                        {/* Header de la conversation */}
+                        <div className="px-4 py-3 border-b border-gray-200 bg-gray-50 flex items-center justify-between"> {/* 👈 Ajouter justify-between */}
+                            <div className="flex items-center gap-3">
                                 <button
                                     onClick={() => setSelectedConversation(null)}
                                     className="md:hidden text-green-600 hover:text-green-800"
@@ -257,7 +275,6 @@ export default function Messages() {
                                         {getInterlocuteur(selectedConversation)?.pseudo}
                                     </Link>
 
-                                    {/* 👇 Si l'annonce est supprimée, pas de lien cliquable */}
                                     {selectedConversation.annonce?.deleted_at ? (
                                         <p className="block text-sm text-gray-400 italic">
                                             Annonce supprimée
@@ -277,6 +294,15 @@ export default function Messages() {
                                     )}
                                 </div>
                             </div>
+
+                            <button
+                                onClick={handleDeleteConversation}
+                                className="text-red-600 hover:text-red-800 p-2 transition-colors"
+                                title="Supprimer la conversation"
+                            >
+                                <Trash2 size={20} />
+                            </button>
+                        </div>
 
                             {/* Messages */}
                             <div className="flex-1 overflow-y-auto p-4 space-y-3">

@@ -2,8 +2,12 @@ const authService = require('../services/auth');
 
 const postLogin = async (req, res) => {
     const { email, password } = req.body;
+        console.log("Tentative de login:", email); // 👈 Ajoute ça
+
     try {
         const { user, token } = await authService.login(email, password);
+        console.log("User trouvé:", user ? "OUI" : "NON"); // 👈 Et ça
+
         await user.update({
             derniere_connexion: new Date()
         });

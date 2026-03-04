@@ -255,7 +255,7 @@ export default function AnnoncesAdd() {
                         
                         {/* Bouton d'ajout si moins de 5 photos */}
                         {uploadedPhotos.length < 5 && (
-                            <label className="aspect-square border-2 border-dashed border-gray-300 hover:border-green-600 rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors bg-gray-50 hover:bg-gray-100">
+                            <label className="aspect-square border-2 border-dashed border-gray-300 hover:border-green-600 rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors bg-gray-50 hover:bg-green-50">
                                 <svg className="w-8 h-8 text-gray-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                                 </svg>

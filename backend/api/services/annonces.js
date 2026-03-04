@@ -58,7 +58,7 @@ const getAllWithFilters = async ({ departements, search }) => {
     });
 };
 
-// 🔹 Met à jour une annonce en vérifiant que l'utilisateur est l'auteur
+//  Met à jour une annonce en vérifiant que l'utilisateur est l'auteur
 const updateAnnonceOwner = async (id, data, userId) => {
     const [rowsAffected] = await Annonce.update(data, {
         where: { id, user_id: userId }
@@ -69,7 +69,7 @@ const updateAnnonceOwner = async (id, data, userId) => {
     return await Annonce.findByPk(id, { include: AnnonceIncludes });
 };
 
-// 🔹 Récupère les annonces par catégorie (et sous-catégories si besoin)
+//  Récupère les annonces par catégorie (et sous-catégories si besoin)
 const getAnnoncesByCategories = async (categoryId, filterCategoryId = null, departements = null) => {
     const numCategoryId = parseInt(categoryId, 10);
     if (isNaN(numCategoryId)) return [];
@@ -85,12 +85,12 @@ const getAnnoncesByCategories = async (categoryId, filterCategoryId = null, depa
         finalCategoryIds = [numCategoryId, ...descendantIds];
     }
 
-    // 👇 Construire le where avec catégories
+    //  Construire le where avec catégories
     const where = { 
         categorie_id: { [Op.in]: finalCategoryIds } 
     };
 
-    // 👇 Ajouter les départements si présents
+    //  Ajouter les départements si présents
     if (departements) {
         where.departement_numero = { [Op.in]: departements.split(",") };
     }
@@ -102,7 +102,7 @@ const getAnnoncesByCategories = async (categoryId, filterCategoryId = null, depa
     });
 };
 
-// 🔹 Recherche annonces par titre
+//  Recherche annonces par titre
 const searchAnnonces = async (titre) => {
     // Diviser la recherche en mots
     const mots = titre.trim().split(/\s+/); // Split sur les espaces
@@ -121,7 +121,6 @@ const searchAnnonces = async (titre) => {
     });
 };
 
-// services/annonces.js
 const deleteAnnonce = async (id, userId) => {
   const whereOwner = { id };
   if (userId) whereOwner.user_id = userId;
@@ -134,7 +133,7 @@ const deleteAnnonce = async (id, userId) => {
   });
 
   if (rowsAffected > 0) {
-    // 2. On supprime REELLEMENT les photos de la base de données
+    // 2. On supprime les photos de la base de données
     // Comme le modèle Photo n'est pas paranoid, Sequelize fait un DELETE FROM photos...
     await Photo.destroy({ 
       where: { annonce_id: id } 

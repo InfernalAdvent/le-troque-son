@@ -14,7 +14,6 @@ export default function Signup() {
         adresse: "",
         ville: "",
         code_postal: "",
-        departement_numero: ""
     });
     
     const [error, setError] = useState("");
@@ -195,7 +194,7 @@ export default function Signup() {
                     </div>
                     
                     {/* Ligne 3 : Ville, Code Postal, Département */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Ville *
@@ -224,19 +223,6 @@ export default function Signup() {
                             />
                         </div>
                         
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Département *
-                            </label>
-                            <input
-                                type="text"
-                                name="departement_numero"
-                                required
-                                value={formData.departement_numero}
-                                onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
-                            />
-                        </div>
                     </div>
                     
                     <button

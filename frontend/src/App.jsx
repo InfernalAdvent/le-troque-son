@@ -1,5 +1,6 @@
 import { Routes, Route, useLocation, useParams } from 'react-router-dom';
 import Header from './components/header';
+import Footer from './components/footer';
 import Login from './pages/login';
 import SignUp from './pages/signup';
 import Annonce from './pages/annonce';
@@ -8,6 +9,8 @@ import AnnoncesAdd from './pages/annoncesAdd';
 import DepartementFilter from "./components/departementFilter";
 import UserProfile from './pages/userProfile';
 import Messages from './pages/messages';
+import NotFound from './pages/404';
+import Construction from './pages/construction';
 import api from './api';
 import { useEffect, useState } from 'react';
 
@@ -73,7 +76,7 @@ function Home() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <h1 className='text-3xl sm:text-4xl md:text-5xl font-bold text-black text-left mb-4'>
+      <h1 className='text-2xl sm:text-3xl md:text-4xl font-bold text-black text-left mb-4'>
         {searchQuery ? `Résultats pour "${searchQuery}"` : 'En ce moment sur Le Troque Son'}
       </h1>
       
@@ -116,7 +119,7 @@ function CategorieAnnonces() {
         const catRes = await api.get(`/categories/${id}`);
         setCategorie(catRes.data);
 
-        // 👇 Construire l'URL avec les query params
+        // Construire l'URL avec les query params
         const params = new URLSearchParams(location.search);
         const filtresParam = params.get('filtres');
         const departementsParam = params.get('departements');
@@ -131,10 +134,10 @@ function CategorieAnnonces() {
           url += "?" + queryParams.join("&");
         }
         
-        // 👇 Utiliser l'URL construite
+        // Utiliser l'URL construite
         let annoncesRes = await api.get(url);
         
-        // 👇 Plus besoin de filtrer côté client si le backend le fait
+        // Plus besoin de filtrer côté client si le backend le fait
         // Garde ce code uniquement si ton backend ne gère pas encore les filtres
         if (filtresParam) {
           const filtresIds = filtresParam.split(',').map(Number);
@@ -172,7 +175,7 @@ function CategorieAnnonces() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <h1 className='text-3xl sm:text-4xl md:text-5xl font-bold text-black text-left mb-4'>
+      <h1 className='text-2xl sm:text-3xl md:text-4xl font-bold text-black text-left mb-4'>
         {categorie?.nom}
       </h1>
 
@@ -214,8 +217,11 @@ function App() {
           <Route path="/profil/:id" element={<UserProfile />} />
           <Route path="/annonces/add" element={<AnnoncesAdd />} />
           <Route path="/messages" element={<Messages />} />
+          <Route path="/construction" element={<Construction />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </main>
+      <Footer />
     </div>
   );
 }

@@ -206,7 +206,7 @@ export default function Annonce() {
     }
 
     return (
-        <div className="max-w-5xl mx-auto px-4 py-4">
+        <div className="max-w-6xl mx-auto px-4 py-8">
             <div className="mb-4">
                 {photos.length === 0 && newPhotos.length === 0 ? (
                     <div className="h-64 bg-gray-200 rounded-lg flex items-center justify-center relative">
@@ -353,7 +353,7 @@ export default function Annonce() {
                         !editModePhotos && photos.length > 0 ? (
                             <button
                                 onClick={() => setEditModePhotos(true)}
-                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-800 transition"
+                                className="px-4 py-2 mb-4 bg-green-600 text-white rounded-lg hover:bg-green-800 transition"
                             >
                                 Modifier les photos
                             </button>
@@ -364,8 +364,9 @@ export default function Annonce() {
                 )}
             </div>
             
-            <div className="flex flex-col md:flex-row justify-between items-start gap-4 pt-6 mb-4">
-                <div className="flex-1 w-full">
+            <div className="bg-gray-100 border border-gray-300 rounded-xl p-6 mt-4">
+            <div className="flex justify-between items-start gap-4 mb-4"> 
+                <div className="flex-1">
                     {editMode ? (
                         <input
                             value={formData.titre || ""}
@@ -381,13 +382,13 @@ export default function Annonce() {
                 {isOwner && !editMode && (
                     <button
                         onClick={() => setEditMode(true)}
-                        className="p-2 text-green-600 hover:text-green-800 transition hover:cursor-pointer"
+                        className="p-2 text-green-600 hover:text-green-800 transition hover:cursor-pointer shrink-0" // 👈 Ajoute shrink-0
                         title="Modifier l'annonce"
                     >
                         <SquarePen size={28} />
                     </button>
                 )}
-                </div>
+            </div>
 
                 {editMode ? (
                     <input
@@ -402,7 +403,7 @@ export default function Annonce() {
                 
                 <p className="text-gray-700">Publiée le {formatDateTime(annonce.date_publication)}</p>
 
-                <div className="bg-gray-100 rounded-xl p-6 mt-8">
+                <div className="bg-white rounded-xl p-6 mt-8">
                     <h2 className="text-xl font-semibold text-green-600 mb-4">Description</h2>
                     {editMode ? (
                         <textarea
@@ -416,7 +417,7 @@ export default function Annonce() {
                 </div>
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div className="bg-gray-100 rounded-xl p-6 mt-8">
+                    <div className="bg-white rounded-xl p-6 mt-8">
                         <h2 className="text-xl font-semibold text-green-600 mb-4">Détails de l'annonce</h2>
                         {editMode ? (
                             <div className="space-y-4">
@@ -464,25 +465,25 @@ export default function Annonce() {
                         )}
                     </div>
 
-                    <div className="bg-gray-100 rounded-xl p-6 lg:mt-8">
+                    <div className="bg-white rounded-xl p-6 lg:mt-8">
                         <h2 className="text-xl font-semibold text-green-600 mb-4">Vendu par</h2>
-                        <div>
+                        <div className="space-y-2">
                             <p>
                                 <strong>
-                                    <Link to={`/profil/${annonce?.user?.id}`} className="text-green-600 hover:underline">
+                                    <Link to={ isOwner? "/compte" : `/profil/${annonce?.user?.id}`} className="text-green-600 hover:underline">
                                         {annonce.user?.pseudo || "Utilisateur inconnu"}
                                     </Link>
                                 </strong>
                             </p>
-                            <p className="text-gray-600">Membre depuis le {formatDateTime(annonce?.user?.date_inscription)}</p>
-                            <p className="text-gray-600">Dernière connexion le {formatDateTime(annonce?.user?.derniere_connexion)}</p>
+                            <p className="text-gray-700">Membre depuis le {formatDateTime(annonce?.user?.date_inscription)}</p>
+                            <p className="text-gray-700">Dernière connexion le {formatDateTime(annonce?.user?.derniere_connexion)}</p>
                         </div>
 
                         {!isOwner && (
                             <div className="flex justify-end mt-4">
                                 <button
                                 onClick={handleContact} 
-                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-800 transition">
+                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-800 transition cursor-pointer">
                                     Contacter
                                 </button>
                             </div>
@@ -491,34 +492,37 @@ export default function Annonce() {
                 </div>
 
                 {isOwner && (
-                    <div className="flex flex-col gap-4 mt-8 pt-6">
+                    <div className="flex flex-col gap-4 mt-8 items-center">
                         {editMode && (
-                            <div className="flex gap-3 mx-auto">
+                            <>
+                                {/* Groupe des actions de modification */}
+                                <div className="flex gap-3">
+                                    <button
+                                        onClick={handleSave}
+                                        className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold"
+                                    >
+                                        Enregistrer
+                                    </button>
+                                    <button
+                                        onClick={() => setEditMode(false)}
+                                        className="px-6 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition font-semibold"
+                                    >
+                                        Annuler
+                                    </button>
+                                </div>
+
+                                {/* Bouton supprimer en dessous */}
                                 <button
-                                    onClick={handleSave}
-                                    className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition font-semibold"
+                                    onClick={handleDeleteAnnonce}
+                                    className="px-4 py-2 bg-red-600 font-semibold text-white rounded-lg hover:bg-red-800 transition"
                                 >
-                                    Enregistrer les modifications
+                                    Supprimer l'annonce
                                 </button>
-                                <button
-                                    onClick={() => setEditMode(false)}
-                                    className="px-6 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 transition font-semibold"
-                                >
-                                    Annuler
-                                </button>
-                            </div>
+                            </>
                         )}
-                        
-                        <div className="mx-auto">
-                            <button
-                                onClick={handleDeleteAnnonce}
-                                className="px-6 py-2 text-sm bg-red-600 font-semibold text-white rounded-lg hover:bg-red-800 transition"
-                            >
-                                Supprimer l’annonce
-                            </button>
-                        </div>
                     </div>
                 )}
             </div>
+        </div>
     );
 }

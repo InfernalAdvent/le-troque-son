@@ -17,11 +17,13 @@ export default function Messages() {
     const [loadingMessages, setLoadingMessages] = useState(false);
     const [sending, setSending] = useState(false);
 
-    const messageEndRef =  useRef(null);
+    const messagesContainerRef = useRef(null); // 👈 Nouvelle ref pour le conteneur
 
     const scrollToBottom = () => {
-        messageEndRef.current?.scrollIntoView();
-    }
+        if (messagesContainerRef.current) {
+            messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+        }
+    };
 
     const formatDate = (dateString) => {
         if (!dateString) return "";
@@ -51,7 +53,7 @@ export default function Messages() {
                 )
             );
 
-            setTimeout(scrollToBottom, 50);
+            setTimeout(scrollToBottom, 10);
         } catch (err) {
             console.error("Erreur chargement messages:", err);
         } finally {
@@ -305,7 +307,9 @@ export default function Messages() {
                         </div>
 
                             {/* Messages */}
-                            <div className="flex-1 overflow-y-auto p-4 space-y-3">
+                            <div
+                                ref={messagesContainerRef}
+                                className="flex-1 overflow-y-auto p-4 space-y-3">
                                 {loadingMessages ? (
                                     <div className="flex justify-center items-center h-full">
                                         <p className="text-gray-500">Chargement...</p>
@@ -342,7 +346,7 @@ export default function Messages() {
                                                 </div>
                                             );
                                         })}
-                                        <div ref={messageEndRef} className="h-4" />
+                                        <div className="h-4" />
                                     </>
                                 )}
                             </div>

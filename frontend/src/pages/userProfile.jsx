@@ -49,6 +49,8 @@ export default function UserProfile() {
             setEditingWishlist(false);
         } catch (err) {
             console.error("Erreur sauvegarde wishlist:", err);
+        } finally {
+            setEditingWishlist(false);
         }
     };
 
@@ -160,7 +162,6 @@ export default function UserProfile() {
                         {isOwnProfile ? (
                             <>
                                 <p className="text-gray-700"><strong className="text-black">Pseudo :</strong> {profileUser.pseudo}</p>
-                                <p className="text-gray-700"><strong className="text-black">Email :</strong> {profileUser.email}</p>
                                 <p className="text-gray-700"><strong className="text-black">Téléphone :</strong> {profileUser.telephone}</p>
                                 <p className="text-gray-700"><strong className="text-black">Département :</strong> {profileUser.departement_numero}</p>
                                 <p className="text-gray-700"><strong className="text-black">Adresse :</strong> {profileUser.adresse}</p>
@@ -194,13 +195,13 @@ export default function UserProfile() {
                                 value={wishlistText}
                                 onChange={(e) => setWishlistText(e.target.value)}
                                 placeholder="Ex: Fender AM Pro II, Marshall JCM 800, Nirvana - Nevermind en vinyle..."
-                                className="w-full h-40 border border-gray-300 rounded-lg p-3 resize-none mb-4"
+                                className="w-full h-40 bg-white border border-gray-300 rounded-lg p-3 resize-none mb-4"
                             />
 
-                            <div className="flex gap-2">
+                            <div className="flex justify-end gap-2">
                                 <button
                                     onClick={handleSaveWishlist}
-                                    className="bg-green-600 hover:bg-green-800 transition-colors text-white px-4 py-2 rounded-lg"
+                                    className="bg-green-600 hover:bg-green-800 cursor-pointer transition-colors text-white px-4 py-2 rounded-lg"
                                 >
                                     {editingWishlist ? "Enregistrer" : "Ajouter"}
                                 </button>
@@ -208,7 +209,7 @@ export default function UserProfile() {
                                 {editingWishlist && wishlist.length > 0 && (
                                     <button
                                         onClick={handleDeleteWishlist}
-                                        className="bg-red-600 hover:bg-red-800 transition-colors text-white px-4 py-2 rounded-lg"
+                                        className="bg-red-600 hover:bg-red-800 cursor-pointer transition-colors text-white px-4 py-2 rounded-lg"
                                     >
                                         Supprimer
                                     </button>
@@ -219,19 +220,23 @@ export default function UserProfile() {
                         <p className="text-gray-600">Aucun article pour le moment</p>
                     ) : (
                         // Mode lecture seule
-                        <div className="bg-white rounded-lg p-4">
-                            <p className="text-gray-800 whitespace-pre-line">{wishlistText}</p>
+                        <>
+                            <div className="bg-white rounded-lg p-4 mb-4"> {/* 👈 Ajoute mb-4 */}
+                                <p className="text-gray-800 whitespace-pre-line">{wishlistText}</p>
+                            </div>
                             
                             {/* Bouton modifier uniquement pour son propre profil */}
                             {isOwnProfile && (
-                                <button
-                                    onClick={() => setEditingWishlist(true)}
-                                    className="mt-2 bg-green-600 hover:bg-green-800 transition-colors text-white px-4 py-2 rounded-lg"
-                                >
-                                    Modifier
-                                </button>
+                                <div className="flex justify-end"> {/* 👈 Ajoute ce wrapper */}
+                                    <button
+                                        onClick={() => setEditingWishlist(true)}
+                                        className="bg-green-600 hover:bg-green-800 cursor-pointer transition-colors text-white px-4 py-2 rounded-lg"
+                                    >
+                                        Modifier
+                                    </button>
+                                </div>
                             )}
-                        </div>
+                        </>
                     )}
                 </div>
             </div>

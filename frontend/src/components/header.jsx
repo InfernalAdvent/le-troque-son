@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, startTransition } from "react";
 import { Menu, X, Search, User, MessageSquare, ChevronLeft, UserCircle, LogIn, LogOut } from "lucide-react";
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "./authContext";
@@ -37,38 +37,50 @@ export default function Header() {
     // Détecter si on est sur une page de catégorie et charger les enfants
     useEffect(() => {
         const match = location.pathname.match(/^\/categorie\/(\d+)/);
-        
-        if (match) {
-            const categorieId = match[1];
-            
-            const fetchSousCategories = async() => {
-                try {
-                    const childrenRes = await api.get(`/categories/${categorieId}/children`);
-                    
-                    const categoriesAvecEnfants = await Promise.all(
-                        childrenRes.data.map(async (cat) => {
-                            try {
-                                const enfantsRes = await api.get(`/categories/${cat.id}/children`);
-                                return {
-                                    ...cat,
-                                    hasChildren: enfantsRes.data.length > 0
-                                };
-                            } catch (err) {
-                                console.error(`Erreur vérification enfants catégorie ${cat.id}:`, err);
-                                return { ...cat, hasChildren: false };
-                            }
-                        })
-                    );
-                    
-                    setSousCategories(categoriesAvecEnfants);
+    
+    // Si on n'est pas sur une page catégorie, réinitialiser
+        if (!match) {
+            // 👇 Vérifier d'abord si on a vraiment besoin de modifier
+            if (sousCategories.length > 0 || filtresActifs.length > 0) {
+                startTransition(() => {
+                    setSousCategories([]);
                     setFiltresActifs([]);
-                } catch (err) {
-                    console.error("Erreur chargement sous-catégories :", err);
-                }
-            };
-            
-            fetchSousCategories();
+                });     
+            }
+            return;
         }
+    
+    // Si on est sur une page catégorie, charger les sous-catégories
+        const categorieId = match[1];
+        
+        const fetchSousCategories = async() => {
+            try {
+                const childrenRes = await api.get(`/categories/${categorieId}/children`);
+                
+                const categoriesAvecEnfants = await Promise.all(
+                    childrenRes.data.map(async (cat) => {
+                        try {
+                            const enfantsRes = await api.get(`/categories/${cat.id}/children`);
+                            return {
+                                ...cat,
+                                hasChildren: enfantsRes.data.length > 0
+                            };
+                        } catch (err) {
+                            console.error(`Erreur vérification enfants catégorie ${cat.id}:`, err);
+                            return { ...cat, hasChildren: false };
+                        }
+                    })
+                );
+                
+                setSousCategories(categoriesAvecEnfants);
+                setFiltresActifs([]);
+            } catch (err) {
+                console.error("Erreur chargement sous-catégories :", err);
+            }
+        };
+        
+        fetchSousCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.pathname]);
 
     // Fonction pour retourner à la page d'accueil
@@ -192,7 +204,7 @@ export default function Header() {
                                 <NavLink 
                                     to="/compte" 
                                     className="text-green-600 hover:text-green-800 transition-colors p-2"
-                                    title="compte"
+                                    title="Compte"
                                 >
                                     <UserCircle size={24} />
                                 </NavLink>

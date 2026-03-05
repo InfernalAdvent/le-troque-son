@@ -13,6 +13,7 @@ const User = sequelize.define('users', {
     adresse: { type: DataTypes.STRING, allowNull: true },
     ville: { type: DataTypes.STRING, allowNull: true },
     code_postal: { type: DataTypes.STRING(5), allowNull: true },
+    avatar_url: { type: DataTypes.STRING, allowNull: true },
     date_inscription: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
     derniere_connexion: { type: DataTypes.DATE, allowNull: true, defaultValue: null }
 });

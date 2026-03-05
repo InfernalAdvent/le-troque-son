@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { X } from "lucide-react"; // Pour l'icône de suppression
+import { X } from "lucide-react";
 import api from "../api";
 
 export default function AnnoncesAdd() {
@@ -20,18 +20,55 @@ export default function AnnoncesAdd() {
     });
 
     const [categories, setCategories] = useState([]);
-    const [departements, setDepartements] = useState([]);
     const [uploadedPhotos, setUploadedPhotos] = useState([]);
     const [draggedIndex, setDraggedIndex] = useState(null);
     const [previewUrls, setPreviewUrls] = useState([]);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const [villesSuggestions, setVillesSuggestions] = useState([]);
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [loadingVilles, setLoadingVilles] = useState(false);
 
     const handleChange = (e) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
         });
+    };
+
+    const handleVilleChange = async (e) => {
+        const value = e.target.value;
+        setFormData({ ...formData, ville: value });
+
+        if (value.length >= 3) {
+            setLoadingVilles(true);
+            try {
+                const res = await fetch(
+                    `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(value)}&fields=nom,codesPostaux,codeDepartement&limit=10`
+                );
+                const data = await res.json();
+                setVillesSuggestions(data);
+                setShowSuggestions(true);
+            } catch (err) {
+                console.error("Erreur API Geo:", err);
+            } finally {
+                setLoadingVilles(false);
+            }
+        } else {
+            setVillesSuggestions([]);
+            setShowSuggestions(false);
+        }
+    };
+
+    const handleSelectVille = (ville) => {
+        setFormData({
+            ...formData,
+            ville: ville.nom,
+            code_postal: ville.codesPostaux[0], // Premier code postal
+            departement_numero: ville.codeDepartement
+        });
+        setShowSuggestions(false);
+        setVillesSuggestions([]);
     };
 
     // Gérer l'ajout de photos
@@ -56,7 +93,6 @@ export default function AnnoncesAdd() {
         setError("");
     };
 
-
     // Supprimer une photo
     const removePhoto = (index) => {
         setPreviewUrls(prev => {
@@ -68,7 +104,6 @@ export default function AnnoncesAdd() {
             prev.filter((_, i) => i !== index)
         );
     };
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -89,9 +124,7 @@ export default function AnnoncesAdd() {
                 });
             }
 
-            // Nettoyer les URLs de prévisualisation
             previewUrls.forEach(url => URL.revokeObjectURL(url));
-
             navigate("/compte");
         } catch (err) {
             console.error(err);
@@ -101,7 +134,6 @@ export default function AnnoncesAdd() {
         }
     };
 
-    // Construire un arbre hiérarchique pour le select
     const buildTree = (categories) => {
         const map = {};
         const roots = [];
@@ -154,18 +186,7 @@ export default function AnnoncesAdd() {
                 console.error("Erreur chargement catégories:", err);
             }
         };
-
-        const fetchDepartements = async () => {
-        try {
-            const res = await api.get("/departements");
-            setDepartements(res.data);
-        } catch (err) {
-            console.error("Erreur chargement départements:", err);
-        }
-    };
-
         fetchCategories();
-        fetchDepartements();
     }, []);
 
     const handleDragStart = (index) => {
@@ -173,7 +194,7 @@ export default function AnnoncesAdd() {
     };
 
     const handleDragOver = (e) => {
-        e.preventDefault(); // obligatoire pour autoriser le drop
+        e.preventDefault();
     };
 
     const handleDrop = (index) => {
@@ -182,7 +203,6 @@ export default function AnnoncesAdd() {
         const newPhotos = [...uploadedPhotos];
         const newPreviews = [...previewUrls];
 
-        // swap
         const draggedPhoto = newPhotos[draggedIndex];
         const draggedPreview = newPreviews[draggedIndex];
 
@@ -216,13 +236,11 @@ export default function AnnoncesAdd() {
                     />
                 </div>
 
-                {/* Zone de photos améliorée */}
+                {/* Zone de photos */}
                 <div>
                     <label className="block font-semibold mb-2">Photos ({uploadedPhotos.length}/5)</label>
                     
-                    {/* Grille de prévisualisation */}
                     <div className="grid grid-cols-5 gap-3 mb-3">
-                        {/* Vignettes des photos uploadées */}
                         {previewUrls.map((url, index) => (
                             <div
                                 key={index}
@@ -246,14 +264,12 @@ export default function AnnoncesAdd() {
                                     <X size={16} />
                                 </button>
 
-                                {/* Indice visuel */}
                                 <span className="absolute bottom-1 right-1 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
                                     {index + 1}
                                 </span>
                             </div>
                         ))}
                         
-                        {/* Bouton d'ajout si moins de 5 photos */}
                         {uploadedPhotos.length < 5 && (
                             <label className="aspect-square border-2 border-dashed border-gray-300 hover:border-green-600 rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors bg-gray-50 hover:bg-green-50">
                                 <svg className="w-8 h-8 text-gray-400 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -343,38 +359,49 @@ export default function AnnoncesAdd() {
                     </select>
                 </div>
 
-                <div>
-                    <label className="block font-semibold mb-1">Département</label>
-                    <select
-                        name="departement_numero"
-                        value={formData.departement_numero}
-                        onChange={handleChange}
-                        className="w-full p-3 border rounded"
-                        required
-                    >
-                        <option value="">Sélectionner un département</option>
-                        {departements
-                        .filter(dep => dep && dep.numero && dep.nom)
-                        .map(dep => (
-                            <option key={dep.id} value={dep.numero}>
-                                {dep.numero} - {dep.nom}
-                            </option>
-                        ))}
-                    </select>
-                </div>
+                <input 
+                    type="hidden" 
+                    name="departement_numero" 
+                    value={formData.departement_numero} 
+                />
 
                 <div className="grid grid-cols-2 gap-4">
-                    <div>
+                    {/* 👇 Champ ville avec autocomplétion */}
+                    <div className="relative">
                         <label className="block font-semibold mb-1">Ville</label>
                         <input
                             type="text"
                             name="ville"
                             value={formData.ville}
-                            onChange={handleChange}
+                            onChange={handleVilleChange}
+                            onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
                             className="w-full p-3 border rounded"
                             placeholder="Ex: Marseille"
                             required
+                            autoComplete="off"
                         />
+                        
+                        {/* Liste des suggestions */}
+                        {showSuggestions && villesSuggestions.length > 0 && (
+                            <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg mt-1 max-h-60 overflow-y-auto shadow-lg">
+                                {loadingVilles ? (
+                                    <li className="p-3 text-gray-500">Chargement...</li>
+                                ) : (
+                                    villesSuggestions.map((ville, index) => (
+                                        <li
+                                            key={index}
+                                            onClick={() => handleSelectVille(ville)}
+                                            className="p-3 hover:bg-green-50 cursor-pointer border-b last:border-b-0"
+                                        >
+                                            <div className="font-medium">{ville.nom}</div>
+                                            <div className="text-sm text-gray-500">
+                                                {ville.codesPostaux.join(", ")}
+                                            </div>
+                                        </li>
+                                    ))
+                                )}
+                            </ul>
+                        )}
                     </div>
 
                     <div>

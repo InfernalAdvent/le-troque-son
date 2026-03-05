@@ -1,4 +1,5 @@
 const defaultService = require("../services/defaultService");
+const usersService = require("../services/users");
 
 const defaultController = (service) => ({
     

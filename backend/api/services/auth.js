@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { User } = require('../models');
+const { User, Departement } = require('../models');
 
 const saltRounds = 10; 
 
@@ -42,10 +42,7 @@ const signup = async (email, password, userData) => {
             prenom, 
             nom, 
             pseudo,
-            telephone,
-            adresse,
-            ville,
-            code_postal
+            departement_numero
         } = userData;    
     const hashedPassword = await bcrypt.hash(password, saltRounds);
 
@@ -55,10 +52,7 @@ const signup = async (email, password, userData) => {
         email,
         pseudo,
         password: hashedPassword,
-        telephone,
-        adresse,
-        ville,
-        code_postal
+        departement_numero
     });
 
     const token = jwt.sign(
@@ -74,6 +68,10 @@ const getCurrentUser = async (userId) => {
     try {
         const user = await User.findByPk(userId, {
             attributes: { exclude: ["password"] },
+            include: {
+                model: Departement,
+                attributes: ["id", "nom", "numero"]
+            }
         });
         return user;
     } catch (err) {

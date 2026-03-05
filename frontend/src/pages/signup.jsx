@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import api from "../api";
 
@@ -10,12 +10,10 @@ export default function Signup() {
         password: "",
         confirmPassword: "",
         pseudo: "",
-        telephone: "",
-        adresse: "",
-        ville: "",
-        code_postal: "",
+        departement_numero: ""
     });
     
+    const [departements, setDepartements] = useState([]);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
@@ -59,6 +57,19 @@ export default function Signup() {
             setLoading(false);
         }
     };
+
+    useEffect(() => {
+        const fetchDepartements = async () => {
+            try {
+                const res = await api.get("/departements");
+                setDepartements(res.data);
+            } catch (err) {
+                console.error("Erreur chargement départements:", err);
+            }
+        };
+        
+        fetchDepartements();
+    }, []);
 
     return (
         <div className="flex justify-center items-center min-h-screen py-12">
@@ -164,65 +175,27 @@ export default function Signup() {
                         </div>
                     </div>
                     
-                    {/* Téléphone */}
+                    {/* Département */}
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Téléphone 
+                            Département *
                         </label>
-                        <input
-                            type="tel"
-                            name="telephone"
-                            value={formData.telephone}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
-                        />
-                    </div>
-                    
-                    {/* Adresse */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Adresse *
-                        </label>
-                        <input
-                            type="text"
-                            name="adresse"
+                        <select
+                            name="departement_numero" // 👈 Corrige le name
                             required
-                            value={formData.adresse}
+                            value={formData.departement_numero}
                             onChange={handleChange}
                             className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
-                        />
-                    </div>
-                    
-                    {/* Ligne 3 : Ville, Code Postal, Département */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Ville *
-                            </label>
-                            <input
-                                type="text"
-                                name="ville"
-                                required
-                                value={formData.ville}
-                                onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
-                            />
-                        </div>
-                        
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Code Postal *
-                            </label>
-                            <input
-                                type="text"
-                                name="code_postal"
-                                required
-                                value={formData.code_postal}
-                                onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
-                            />
-                        </div>
-                        
+                        >
+                            <option value="">Sélectionner un département</option>
+                            {departements
+                                .filter(dep => dep && dep.numero && dep.nom)
+                                .map(dep => (
+                                    <option key={dep.id} value={dep.numero}>
+                                        {dep.numero} - {dep.nom}
+                                    </option>
+                                ))}
+                        </select>
                     </div>
                     
                     <button

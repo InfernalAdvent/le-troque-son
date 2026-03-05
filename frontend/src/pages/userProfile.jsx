@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState, useCallback } from "react";
 import { useParams } from "react-router-dom";
 import { AuthContext } from "../components/authContext";
+import { MapPin } from "lucide-react";
 import AnnoncesCard from "../components/annoncesCard";
 import api from "../api";
 
@@ -154,24 +155,23 @@ export default function UserProfile() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                 <div className="bg-gray-100 rounded-xl p-6">
                     <h2 className="text-2xl text-green-600 font-bold mb-6">
-                        {isOwnProfile ? "Mon compte" : `Profil de ${profileUser.pseudo}`}
+                        {isOwnProfile ? `${profileUser.pseudo}` : `Profil de ${profileUser.pseudo}`}
                     </h2>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">                        
-                        {/* Afficher toutes les infos si c'est son propre profil */}
                         {isOwnProfile ? (
                             <>
-                                <p className="text-gray-700"><strong className="text-black">Pseudo :</strong> {profileUser.pseudo}</p>
-                                <p className="text-gray-700"><strong className="text-black">Téléphone :</strong> {profileUser.telephone}</p>
-                                <p className="text-gray-700"><strong className="text-black">Département :</strong> {profileUser.departement_numero}</p>
-                                <p className="text-gray-700"><strong className="text-black">Adresse :</strong> {profileUser.adresse}</p>
-                                <p className="text-gray-700"><strong className="text-black">Ville :</strong> {profileUser.ville}</p>
-                                <p className="text-gray-700"><strong className="text-black">Code postal :</strong> {profileUser.code_postal}</p>
+                                <p className="text-gray-700 flex items-center gap-1"> 
+                                    <MapPin size={18} /> 
+                                    {profileUser.departement?.nom || profileUser.departement_numero}
+                                </p>
                             </>
                         ) : (
                             <>
-                                <p className="text-gray-700"><strong className="text-black">Département :</strong> {profileUser.departement_numero}</p>
-                                <p className="text-gray-700"><strong className="text-black">Ville :</strong> {profileUser.ville}</p>
+                                <p className="text-gray-700 flex items-center gap-1">
+                                    <MapPin size={18} />
+                                    {profileUser.departement?.nom || profileUser.departement_numero}
+                                </p>
                             </>
                         )}
                         
@@ -195,7 +195,7 @@ export default function UserProfile() {
                                 value={wishlistText}
                                 onChange={(e) => setWishlistText(e.target.value)}
                                 placeholder="Ex: Fender AM Pro II, Marshall JCM 800, Nirvana - Nevermind en vinyle..."
-                                className="w-full h-40 bg-white border border-gray-300 rounded-lg p-3 resize-none mb-4"
+                                className="w-full h-20 bg-white border border-gray-300 rounded-lg p-3 resize-none mb-4"
                             />
 
                             <div className="flex justify-end gap-2">

@@ -271,7 +271,7 @@ export default function UserProfile() {
                             <textarea
                                 value={wishlistText}
                                 onChange={(e) => setWishlistText(e.target.value)}
-                                placeholder="Ex: Fender AM Pro II, Marshall JCM 800, Nirvana - Nevermind en vinyle..."
+                                placeholder="Listez vos souhaits pour que l'on vous propose des échanges !"
                                 className="w-full h-20 bg-white border border-gray-300 rounded-lg p-3 resize-none mb-4"
                             />
 

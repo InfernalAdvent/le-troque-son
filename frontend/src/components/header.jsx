@@ -73,7 +73,16 @@ export default function Header() {
                 );
                 
                 setSousCategories(categoriesAvecEnfants);
-                setFiltresActifs([]);
+                 // 👇 Synchronise filtresActifs avec l'URL au lieu de réinitialiser
+                const params = new URLSearchParams(location.search);
+                const filtresParam = params.get('filtres');
+                
+                if (filtresParam) {
+                    const filtresIds = filtresParam.split(',').map(Number);
+                    setFiltresActifs(filtresIds);
+                } else {
+                    setFiltresActifs([]);
+                }
             } catch (err) {
                 console.error("Erreur chargement sous-catégories :", err);
             }
@@ -81,7 +90,20 @@ export default function Header() {
         
         fetchSousCategories();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [location.pathname]);
+    }, [location.pathname, location.search]);
+
+    useEffect(() => {
+        // Synchroniser filtresActifs avec l'URL
+        const params = new URLSearchParams(location.search);
+        const filtresParam = params.get('filtres');
+        
+        if (filtresParam) {
+            const filtresIds = filtresParam.split(',').map(Number);
+            setFiltresActifs(filtresIds);
+        } else {
+            setFiltresActifs([]);
+        }
+    }, [location.search]);
 
     // Fonction pour retourner à la page d'accueil
     const retourArriere = () => {
@@ -108,6 +130,19 @@ export default function Header() {
             
             return newFiltres;
         });
+    };
+
+    // Fonction pour conserver uniquement les départements
+    const getSearchWithDepartements = () => {
+        const params = new URLSearchParams(location.search);
+        const departements = params.get('departements');
+        
+        const newParams = new URLSearchParams();
+        if (departements) {
+            newParams.set('departements', departements);
+        }
+        
+        return newParams.toString();
     };
 
     // Gérer le changement de texte dans la searchbar
@@ -302,8 +337,8 @@ export default function Header() {
                                         <NavLink
                                             key={sousCat.id}
                                             to={{
-                                                pathname:`/categorie/${sousCat.id}`,
-                                                search: location.search
+                                                pathname: `/categorie/${sousCat.id}`,
+                                                search: getSearchWithDepartements()
                                             }}
                                             className="text-sm text-green-600 font-medium cursor-pointer whitespace-nowrap"
                                         >
@@ -328,9 +363,9 @@ export default function Header() {
                             mainCategories.map((cat) => (
                                 <NavLink
                                     key={cat.id}
-                                    to={{
-                                        pathname:`/categorie/${cat.id}`,
-                                        search: location.search
+                                    to={{ 
+                                        pathname: `/categorie/${cat.id}`,
+                                        search: getSearchWithDepartements()
                                     }}
                                     className="text-sm text-green-600 hover:underline font-medium cursor-pointer whitespace-nowrap"
                                 >

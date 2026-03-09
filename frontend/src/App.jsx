@@ -137,15 +137,6 @@ function CategorieAnnonces() {
         // Utiliser l'URL construite
         let annoncesRes = await api.get(url);
         
-        // Plus besoin de filtrer côté client si le backend le fait
-        // Garde ce code uniquement si ton backend ne gère pas encore les filtres
-        if (filtresParam) {
-          const filtresIds = filtresParam.split(',').map(Number);
-          annoncesRes.data = annoncesRes.data.filter(annonce => 
-            filtresIds.includes(annonce.categorie_id)
-          );
-        }
-        
         const photosRes = await api.get("/photos");
         
         setAnnonces(annoncesRes.data);

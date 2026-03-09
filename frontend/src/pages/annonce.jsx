@@ -364,7 +364,7 @@ export default function Annonce() {
                 )}
             </div>
             
-            <div className="bg-gray-100 border border-gray-300 rounded-xl p-6 mt-4">
+            <div className="bg-gray-100 border border-gray-200 rounded-xl p-6 mt-4">
             <div className="flex justify-between items-start gap-4 mb-4"> 
                 <div className="flex-1">
                     {editMode ? (

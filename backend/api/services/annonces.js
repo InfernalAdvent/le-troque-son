@@ -77,20 +77,23 @@ const getAnnoncesByCategories = async (categoryId, filterCategoryId = null, depa
     let finalCategoryIds = [];
 
     if (filterCategoryId) {
-        const numFilterId = parseInt(filterCategoryId, 10);
-        if (isNaN(numFilterId)) return [];
-        finalCategoryIds = [numFilterId];
+        // Split la chaîne "3,4,5" en tableau [3, 4, 5]
+        const filterIds = filterCategoryId.split(',').map(id => parseInt(id.trim(), 10)).filter(id => !isNaN(id));
+        
+        if (filterIds.length === 0) return [];
+        
+        finalCategoryIds = filterIds; // 👈 Utilise TOUS les filtres
     } else {
         const descendantIds = await categorieService.getAllDescendantIds(numCategoryId);
         finalCategoryIds = [numCategoryId, ...descendantIds];
     }
 
-    //  Construire le where avec catégories
+    // Construire le where avec catégories
     const where = { 
         categorie_id: { [Op.in]: finalCategoryIds } 
     };
 
-    //  Ajouter les départements si présents
+    // Ajouter les départements si présents
     if (departements) {
         where.departement_numero = { [Op.in]: departements.split(",") };
     }

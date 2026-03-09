@@ -17,13 +17,13 @@ const annonceController = {
 
     getAnnoncesByCategories: async (req, res) => {
         const categorieId = req.params.id;
-        const { filtres, departements } = req.query; // 👈 Récupérer les query params
+        const { filtres, departements } = req.query; //  Récupérer les query params
 
         try {
             const annonces = await annoncesService.getAnnoncesByCategories(
                 categorieId,
                 filtres,
-                departements // 👈 Passer au service
+                departements //  Passer au service
             );
             res.json(annonces);
         } catch (error) {
@@ -56,7 +56,7 @@ const annonceController = {
                 const updatedElement = await annoncesService.updateAnnonceOwner(annonceId, req.body, userId);
                 
                 if (!updatedElement) {
-                    return res.status(404).json({ message: 'Annonce non trouvée ou vous n\'êtes pas l\'auteur.'});
+                    return res.status(404).json({ message: 'Vous devez modifier votre annonce avant de l\'enregistrer.'});
                 }
                 
                 res.status(200).json(updatedElement);

@@ -10,9 +10,8 @@ export default function Header() {
     const [filtresActifs, setFiltresActifs] = useState([]);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [search, setSearch] = useState("");
-    const {setUser} = useContext(AuthContext);
 
-    const { user } = useContext(AuthContext);
+    const { user, setUser } = useContext(AuthContext);
     
     const location = useLocation();
     const navigate = useNavigate();
@@ -73,7 +72,8 @@ export default function Header() {
                 );
                 
                 setSousCategories(categoriesAvecEnfants);
-                 // 👇 Synchronise filtresActifs avec l'URL au lieu de réinitialiser
+                
+                 // Synchronise filtresActifs avec l'URL au lieu de réinitialiser
                 const params = new URLSearchParams(location.search);
                 const filtresParam = params.get('filtres');
                 
@@ -91,19 +91,6 @@ export default function Header() {
         fetchSousCategories();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.pathname, location.search]);
-
-    useEffect(() => {
-        // Synchroniser filtresActifs avec l'URL
-        const params = new URLSearchParams(location.search);
-        const filtresParam = params.get('filtres');
-        
-        if (filtresParam) {
-            const filtresIds = filtresParam.split(',').map(Number);
-            setFiltresActifs(filtresIds);
-        } else {
-            setFiltresActifs([]);
-        }
-    }, [location.search]);
 
     // Fonction pour retourner à la page d'accueil
     const retourArriere = () => {
@@ -190,7 +177,7 @@ export default function Header() {
         <header className="bg-black sticky top-0 z-50">
             {/* Partie supérieure : Logo + Searchbar */}
             <div>
-                <div className="max-w-5xl mx-auto px-4">
+                <div className="max-w-6xl mx-auto px-4">
                     {/* Desktop Layout */}
                     <div className="hidden md:flex items-center justify-between py-4 gap-6">
                         <NavLink to="/" className="shrink-0">
@@ -215,7 +202,7 @@ export default function Header() {
                         )}
                         
 
-                        <div className="flex-1 max-w-2xl relative">
+                        <div className="flex-1 max-w-xl relative">
                             <div className="relative">
                                 <input
                                     type="text"
@@ -236,6 +223,7 @@ export default function Header() {
 
                         <div className="flex items-center gap-4 shrink-0">
                             {user ? (
+                                <>
                                 <NavLink 
                                     to="/compte" 
                                     className="text-green-600 hover:text-green-800 transition-colors p-2"
@@ -243,6 +231,15 @@ export default function Header() {
                                 >
                                     <UserCircle size={24} />
                                 </NavLink>
+
+                                <NavLink 
+                                    to="/messages" 
+                                    className="text-green-600 hover:text-green-800 transition-colors p-2"
+                                    title="Messages"
+                                >
+                                    <MessageSquare size={24} />
+                                </NavLink>
+                            </>
                             ) : (
 
                                 <NavLink 
@@ -255,14 +252,7 @@ export default function Header() {
 
                             )}
                                   
-                            <NavLink 
-                                to="/messages" 
-                                className="text-green-600 hover:text-green-800 transition-colors p-2"
-                                title="Messages"
-                            >
-                                <MessageSquare size={24} />
-
-                            </NavLink>
+                            
                             {user && ( 
                                 <button 
                                     onClick={handleLogout} 

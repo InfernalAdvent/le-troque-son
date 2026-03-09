@@ -5,6 +5,7 @@ import { AuthContext } from "../components/authContext";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import { useDragAndDrop } from '../components/useDragAndDrop';
+import CityAutocomplete from "../components/cityAutocomplete";
 import api from "../api";
 
 import "swiper/css";
@@ -421,11 +422,11 @@ export default function Annonce() {
                         <h2 className="text-xl font-semibold text-green-600 mb-4">Détails de l'annonce</h2>
                         {editMode ? (
                             <div className="space-y-4">
-                                <label className="block">État :
+                                <label className="block font-semibold mb-1">État :
                                     <select
                                         value={formData.etat || ""}
                                         onChange={(e) => setFormData({ ...formData, etat: e.target.value })}
-                                        className="w-full bg-white text-gray-700 border rounded px-2 py-1 mt-1"
+                                        className="w-full p-3 border rounded mt-1 mb-1"
                                     >
                                         <option value="Comme neuf">Comme neuf</option>
                                         <option value="Très bon état">Très bon état</option>
@@ -433,27 +434,23 @@ export default function Annonce() {
                                         <option value="Usagé">Usagé</option>
                                     </select>
                                 </label>
-                                <label className="block">Échange possible :
+                                <label className="block font-semibold mb-1">Échange possible :
                                     <input
                                         value={formData.echange_souhaite_texte || ""}
                                         onChange={(e) => setFormData({ ...formData, echange_souhaite_texte: e.target.value })}
-                                        className="w-full bg-white text-gray-700 border rounded px-2 py-1 mt-1"
+                                        className="w-full p-3 border rounded mt-1 mb-1"
                                     />
                                 </label>
-                                <label className="block">Ville :
-                                    <input
-                                        value={formData.ville || ""}
-                                        onChange={(e) => setFormData({ ...formData, ville: e.target.value })}
-                                        className="w-full bg-white text-gray-700 border rounded px-2 py-1 mt-1"
-                                    />
-                                </label>
-                                <label className="block">Code Postal :
-                                    <input
-                                        value={formData.code_postal || ""}
-                                        onChange={(e) => setFormData({ ...formData, code_postal: e.target.value })}
-                                        className="w-full bg-white text-gray-700 border rounded px-2 py-1 mt-1"
-                                    />
-                                </label>
+
+                            <CityAutocomplete
+                                ville={formData.ville}
+                                codePostal={formData.code_postal}
+                                setVille={(v) => setFormData(prev => ({ ...prev, ville: v }))}
+                                setCodePostal={(cp) => setFormData(prev => ({ ...prev, code_postal: cp }))}
+                                setDepartement={(d) => setFormData(prev => ({ ...prev, departement_numero: d }))}
+                                required
+                            />
+
                             </div>
                         ) : ( 
                             <div className="space-y-2">

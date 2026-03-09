@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
+import CityAutocomplete from "../components/cityAutocomplete";
 import api from "../api";
 
 export default function AnnoncesAdd() {
@@ -25,50 +26,14 @@ export default function AnnoncesAdd() {
     const [previewUrls, setPreviewUrls] = useState([]);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
-    const [villesSuggestions, setVillesSuggestions] = useState([]);
-    const [showSuggestions, setShowSuggestions] = useState(false);
-    const [loadingVilles, setLoadingVilles] = useState(false);
+    const [villeValide, setVilleValide] = useState(false);
+    
 
     const handleChange = (e) => {
         setFormData({
             ...formData,
             [e.target.name]: e.target.value
         });
-    };
-
-    const handleVilleChange = async (e) => {
-        const value = e.target.value;
-        setFormData({ ...formData, ville: value });
-
-        if (value.length >= 3) {
-            setLoadingVilles(true);
-            try {
-                const res = await fetch(
-                    `https://geo.api.gouv.fr/communes?nom=${encodeURIComponent(value)}&fields=nom,codesPostaux,codeDepartement&limit=10`
-                );
-                const data = await res.json();
-                setVillesSuggestions(data);
-                setShowSuggestions(true);
-            } catch (err) {
-                console.error("Erreur API Geo:", err);
-            } finally {
-                setLoadingVilles(false);
-            }
-        } else {
-            setVillesSuggestions([]);
-            setShowSuggestions(false);
-        }
-    };
-
-    const handleSelectVille = (ville) => {
-        setFormData({
-            ...formData,
-            ville: ville.nom,
-            code_postal: ville.codesPostaux[0], // Premier code postal
-            departement_numero: ville.codeDepartement
-        });
-        setShowSuggestions(false);
-        setVillesSuggestions([]);
     };
 
     // Gérer l'ajout de photos
@@ -109,6 +74,24 @@ export default function AnnoncesAdd() {
         e.preventDefault();
         setError("");
         setLoading(true);
+
+        if (Number(formData.prix) < 0) {
+            setError("Le prix ne peut pas être négatif");
+            setLoading(false);
+            return;
+        }
+
+        if (!villeValide) {
+            setError("Veuillez sélectionner une ville dans la liste.");
+            setLoading(false);
+            return;
+        }
+
+        if (!formData.code_postal) {
+            setError("Veuillez sélectionner une ville valide.");
+            setLoading(false);
+            return;
+        }
 
         try {
             const res = await api.post("/annonces", formData);
@@ -326,6 +309,7 @@ export default function AnnoncesAdd() {
                         value={formData.prix}
                         onChange={handleChange}
                         className="w-full p-3 border rounded"
+                        min="0"
                         required
                     />
                 </div>
@@ -365,58 +349,15 @@ export default function AnnoncesAdd() {
                     value={formData.departement_numero} 
                 />
 
-                <div className="grid grid-cols-2 gap-4">
-                    {/* 👇 Champ ville avec autocomplétion */}
-                    <div className="relative">
-                        <label className="block font-semibold mb-1">Ville</label>
-                        <input
-                            type="text"
-                            name="ville"
-                            value={formData.ville}
-                            onChange={handleVilleChange}
-                            onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                            className="w-full p-3 border rounded"
-                            placeholder="Ex: Marseille"
-                            required
-                            autoComplete="off"
-                        />
-                        
-                        {/* Liste des suggestions */}
-                        {showSuggestions && villesSuggestions.length > 0 && (
-                            <ul className="absolute z-10 w-full bg-white border border-gray-300 rounded-lg mt-1 max-h-60 overflow-y-auto shadow-lg">
-                                {loadingVilles ? (
-                                    <li className="p-3 text-gray-500">Chargement...</li>
-                                ) : (
-                                    villesSuggestions.map((ville, index) => (
-                                        <li
-                                            key={index}
-                                            onClick={() => handleSelectVille(ville)}
-                                            className="p-3 hover:bg-green-50 cursor-pointer border-b last:border-b-0"
-                                        >
-                                            <div className="font-medium">{ville.nom}</div>
-                                            <div className="text-sm text-gray-500">
-                                                {ville.codesPostaux.join(", ")}
-                                            </div>
-                                        </li>
-                                    ))
-                                )}
-                            </ul>
-                        )}
-                    </div>
-
-                    <div>
-                        <label className="block font-semibold mb-1">Code postal</label>
-                        <input
-                            type="text"
-                            name="code_postal"
-                            value={formData.code_postal}
-                            onChange={handleChange}
-                            className="w-full p-3 border rounded"
-                            placeholder="Ex: 13001"
-                            required
-                        />
-                    </div>
-                </div>
+                <CityAutocomplete
+                    ville={formData.ville}
+                    codePostal={formData.code_postal}
+                    setVille={(v) => setFormData(prev => ({ ...prev, ville: v }))}
+                    setCodePostal={(cp) => setFormData(prev => ({ ...prev, code_postal: cp }))}
+                    setDepartement={(d) => setFormData(prev => ({ ...prev, departement_numero: d }))}
+                    setVilleValide={setVilleValide}
+                    required
+                />
 
                 <button
                     type="submit"

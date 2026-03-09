@@ -9,7 +9,13 @@ const Annonce = sequelize.define('annonces', {
     departement_numero: {type: DataTypes.STRING(3), allowNull: false},
     titre: {type: DataTypes.STRING(25), allowNull: false},
     description: {type: DataTypes.TEXT, allowNull: true},
-    prix: {type: DataTypes.DECIMAL(10,2), allowNull: true},
+    prix: {
+        type: DataTypes.DECIMAL,
+        allowNull: false,
+        validate: {
+            min: 0
+        }
+    },
     etat: {type: DataTypes.STRING, allowNull: false},
     echange_souhaite_texte: {type: DataTypes.STRING(50), allowNull: true},
     echange_categorie_id: {type: DataTypes.INTEGER, allowNull: true},

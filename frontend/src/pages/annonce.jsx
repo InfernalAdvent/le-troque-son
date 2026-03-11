@@ -154,18 +154,14 @@ export default function Annonce() {
             return;
         }
 
-        try {
-            // Créer ou récupérer la conversation
-            const res = await api.post('/conversations', {
-                annonceId: annonce.id,
-                receveurId: annonce.user_id
-            });
-
-            // Rediriger vers la page messages avec cette conversation sélectionnée
-            navigate('/messages', { state: { conversationId: res.data.id } });
-        } catch (err) {
-            console.error('Erreur création conversation:', err);
-        }
+        navigate('/messages', { 
+            state: { 
+                createConversationFor: {
+                    annonceId: annonce.id,
+                    vendeurId: annonce.user_id
+                }
+            } 
+        });
     };
 
     useEffect(() => {

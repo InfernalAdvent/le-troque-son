@@ -12,7 +12,7 @@ const ConversationIncludes = [
         paranoid: false,
         include: [{ 
             model: Photo,
-            as: 'photos', // 👈 Vérifie que cette association existe dans models/index.js
+            as: 'photos', 
             attributes: ['url', 'ordre'],
             where: { ordre: 0 }, // Photo principale
             required: false // LEFT JOIN : si pas de photo, retourne quand même l'annonce
@@ -69,7 +69,8 @@ const conversationService = {
                         // Cas 2: Receveur est initiateur, User est receveur (pour couvrir les deux sens)
                         { utilisateur_initiateur_id: recipientId, utilisateur_receveur_id: initiatorId }
                     ]
-                }
+                },
+                include: ConversationIncludes
             });
 
             if (existingConversation) {
@@ -84,7 +85,11 @@ const conversationService = {
                 date_derniere_activite: new Date()
             });
 
-            return newConversation;
+            const fullConversation = await Conversation.findByPk(newConversation.id, {
+                include: ConversationIncludes
+            });
+
+            return fullConversation;
 
         } catch (error) {
             console.error("Erreur dans findOrCreateConversation:", error);

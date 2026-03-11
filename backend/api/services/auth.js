@@ -12,9 +12,6 @@ const login = async (email, password) => {
         throw new Error("Email ou mot de passe incorrect.");
     }
 
-    console.log("Hash en BDD:", user.password);
-    console.log("Password entré:", password);
-
     const isMatch = await bcrypt.compare(password, user.password);
         console.log("Mot de passe match:", isMatch);
 

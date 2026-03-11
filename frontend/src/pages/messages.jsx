@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState, useRef, useCallback } from "react";
 import { AuthContext } from "../components/authContext";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { X, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import api from "../api";
 
 export default function Messages() {
@@ -17,7 +17,7 @@ export default function Messages() {
     const [loadingMessages, setLoadingMessages] = useState(false);
     const [sending, setSending] = useState(false);
 
-    const messagesContainerRef = useRef(null); // 👈 Nouvelle ref pour le conteneur
+    const messagesContainerRef = useRef(null); // Nouvelle ref pour le conteneur
 
     const scrollToBottom = () => {
         if (messagesContainerRef.current) {
@@ -61,29 +61,71 @@ export default function Messages() {
         }
     }, []);
 
+    useEffect(() => {
+        if (!selectedConversation || selectedConversation.isNew) return;
+
+        // Fonction pour rafraîchir les messages
+        const refreshMessages = async () => {
+            try {
+                const res = await api.get(`/conversations/${selectedConversation.id}/messages`);
+                const newMessages = res.data;
+
+                 const hasChanges = 
+                    newMessages.length !== messages.length ||
+                    newMessages.some((newMsg, index) => {
+                        const oldMsg = messages[index];
+                        return oldMsg && oldMsg.lu_par_destinataire !== newMsg.lu_par_destinataire;
+                    });
+
+                if (hasChanges) {
+                    setMessages(newMessages);
+                    
+                // Vérifier s'il y a de nouveaux messages
+                if (newMessages.length > messages.length) {
+                    setMessages(newMessages);
+                    setTimeout(scrollToBottom, 10);
+                }
+            }
+            } catch (err) {
+                console.error("Erreur rafraîchissement messages:", err);
+            }
+        };
+
+        // Rafraîchir toutes les 3 secondes
+        const interval = setInterval(refreshMessages, 5000);
+
+        // Nettoyer l'intervalle quand on change de conversation ou quitte la page
+        return () => clearInterval(interval);
+    }, [selectedConversation, messages]);
+
     const handleSendMessage = async () => {
         if (!newMessage.trim() || !selectedConversation) return;
 
         setSending(true);
         try {
-            const res = await api.post(`/conversations/${selectedConversation.id}/messages`, {
+            let conversationId = selectedConversation.id;
+            let isNewConversation = selectedConversation.isNew;
+
+            // Si c'est une nouvelle conversation, la créer d'abord
+            if (isNewConversation) {
+                const newConvRes = await api.post("/conversations", {
+                    annonceId: selectedConversation.annonce_id,
+                    receveurId: selectedConversation.receveur_id
+                });
+                conversationId = newConvRes.data.id;
+                setSelectedConversation(newConvRes.data);
+            }
+
+            const res = await api.post(`/conversations/${conversationId}/messages`, {
                 contenu: newMessage.trim()
             });
 
             setMessages(prev => [...prev, res.data]);
             setNewMessage("");
 
-            setConversations(prev =>
-                prev.map(c =>
-                    c.id === selectedConversation.id
-                        ? { ...c, date_derniere_activite: new Date().toISOString(),
-                            messages: [res.data]
-                         }
-                        : c
-                ).sort((a, b) =>
-                    new Date(b.date_derniere_activite) - new Date(a.date_derniere_activite)
-                )
-            );
+            // Recharger les conversations pour avoir la mise à jour
+            const convRes = await api.get("/conversations");
+            setConversations(convRes.data);
 
             setTimeout(scrollToBottom, 100);
         } catch (err) {
@@ -142,11 +184,45 @@ export default function Messages() {
                 const res = await api.get("/conversations");
                 setConversations(res.data);
 
+                // Gérer la création de conversation au premier message
+                const createConvData = location.state?.createConversationFor;
+                if (createConvData) {
+                    // Vérifier si une conversation existe déjà
+                    const existingConv = res.data.find(c => 
+                        c.annonce_id === createConvData.annonceId
+                    );
+
+                    if (existingConv) {
+                        handleSelectConversation(existingConv);
+                    } else {
+                        // Préparer une fausse conversation pour l'UI
+                        // Charger les infos de l'annonce pour l'affichage
+                        try {
+                            const annonceRes = await api.get(`/annonces/${createConvData.annonceId}`);
+                            const vendeurRes = await api.get(`/users/${createConvData.vendeurId}`);
+                            
+                            setSelectedConversation({
+                                isNew: true,
+                                annonce_id: createConvData.annonceId,
+                                receveur_id: createConvData.vendeurId,
+                                annonce: annonceRes.data,
+                                receveur: vendeurRes.data,
+                                initiateur: user
+                            });
+                            setMessages([]);
+                        } catch (err) {
+                            console.error("Erreur chargement infos conversation:", err);
+                        }
+                    }
+                    
+                    // Nettoyer le state
+                    navigate(location.pathname, { replace: true, state: {} });
+                }
+
                 const conversationIdToOpen = location.state?.conversationId;
                 if (conversationIdToOpen) {
                     const conv = res.data.find(c => c.id === conversationIdToOpen);
                     if (conv) {
-                        // Ouvrir la conversation automatiquement
                         handleSelectConversation(conv);
                     }
                 }
@@ -158,7 +234,7 @@ export default function Messages() {
         };
 
         fetchConversations();
-    }, [user, loadingAuth, navigate, location.state?.conversationId, handleSelectConversation]);
+    }, [user, loadingAuth, navigate, location, handleSelectConversation]);
 
     if (loading) {
         return (
@@ -297,13 +373,15 @@ export default function Messages() {
                                 </div>
                             </div>
 
-                            <button
-                                onClick={handleDeleteConversation}
-                                className="text-red-600 hover:text-red-800 p-2 transition-colors"
-                                title="Supprimer la conversation"
-                            >
-                                <Trash2 size={20} />
-                            </button>
+                            {!selectedConversation.isNew && (
+                                <button
+                                    onClick={handleDeleteConversation}
+                                    className="text-red-600 hover:text-red-800 p-2 transition-colors"
+                                    title="Supprimer la conversation"
+                                >
+                                    <Trash2 size={20} />
+                                </button>
+                            )}
                         </div>
 
                             {/* Messages */}

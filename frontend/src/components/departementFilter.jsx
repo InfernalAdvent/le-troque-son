@@ -90,7 +90,7 @@ export default function DepartementFilter() {
                     <button
                       key={dep.numero}
                       onClick={() => toggleDepartement(dep.numero)}
-                      className="w-full text-left px-4 py-2 hover:bg-green-50 transition-colors text-sm"
+                      className="w-full text-left px-4 py-2 hover:bg-green-100 transition-colors text-sm"
                     >
                       <span className="font-medium text-green-600">{dep.numero}</span>
                       {" – "}

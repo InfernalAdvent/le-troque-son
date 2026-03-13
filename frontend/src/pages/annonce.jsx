@@ -26,6 +26,7 @@ export default function Annonce() {
     const [newPhotos, setNewPhotos] = useState([]);
     const [uploading, setUploading] = useState(false);
     const [editModePhotos, setEditModePhotos] = useState(false);
+    const [errors, setErrors] = useState({});
     const fileInputRef = useRef(null);
     const navigate = useNavigate();
 
@@ -41,6 +42,18 @@ export default function Annonce() {
     };
 
     const handleSave = async () => {
+        const newErrors = {};
+    
+        if (formData.prix < 0) {
+            newErrors.prix = "Le prix doit être supérieur ou égal à 0";
+        }
+        
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return; // Arrêter si erreurs
+        }
+        
+        setErrors({});
         try {
             await api.put(`/annonces/${annonce.id}`, formData);
             setAnnonce({ ...annonce, ...formData });
@@ -74,7 +87,6 @@ export default function Annonce() {
             newPhotos.forEach(p => URL.revokeObjectURL(p.url));
             setNewPhotos([]);
             setEditModePhotos(false);
-            alert("Photos enregistrées avec succès !");
         } catch (err) {
             console.error("Erreur ajout photos", err);
             alert("Erreur lors de l'ajout des photos");
@@ -388,12 +400,25 @@ export default function Annonce() {
             </div>
 
                 {editMode ? (
-                    <input
-                        type="number"
-                        value={formData.prix || ""}
-                        onChange={(e) => setFormData({ ...formData, prix: Number(e.target.value) })}
-                        className="w-64 bg-white text-gray-700 text-xl border rounded px-2 py-1 mb-4"
-                    />
+                    <div>
+                        <input
+                            type="number"
+                            value={formData.prix || ""}
+                            onChange={(e) => {
+                                setFormData({ ...formData, prix: Number(e.target.value) });
+                                // Effacer l'erreur quand l'utilisateur modifie
+                                if (errors.prix) {
+                                    setErrors({ ...errors, prix: null });
+                                }
+                            }}
+                            className={`w-64 bg-white text-gray-700 text-xl border rounded px-2 py-1 mb-1 ${
+                                errors.prix ? 'border-red-600' : ''
+                            }`}
+                        />
+                        {errors.prix && (
+                            <p className="text-red-600 text-sm mb-4">{errors.prix}</p>
+                        )}
+                    </div>
                 ) : (
                     <p className="text-xl font-semibold mb-4">{annonce.prix} €</p>
                 )}
@@ -422,7 +447,7 @@ export default function Annonce() {
                                     <select
                                         value={formData.etat || ""}
                                         onChange={(e) => setFormData({ ...formData, etat: e.target.value })}
-                                        className="w-full p-3 border rounded mt-1 mb-1"
+                                        className="w-full p-3 border rounded font-normal mt-1 mb-1"
                                     >
                                         <option value="Comme neuf">Comme neuf</option>
                                         <option value="Très bon état">Très bon état</option>
@@ -434,7 +459,7 @@ export default function Annonce() {
                                     <input
                                         value={formData.echange_souhaite_texte || ""}
                                         onChange={(e) => setFormData({ ...formData, echange_souhaite_texte: e.target.value })}
-                                        className="w-full p-3 border rounded mt-1 mb-1"
+                                        className="w-full p-3 border rounded font-normal mt-1 mb-1"
                                     />
                                 </label>
 
@@ -451,7 +476,9 @@ export default function Annonce() {
                         ) : ( 
                             <div className="space-y-2">
                                 <p><strong>État :</strong> {annonce.etat}</p>
-                                <p><strong>Échange possible contre :</strong> {annonce.echange_souhaite_texte}</p>
+                                {annonce.echange_souhaite_texte && (
+                                    <p><strong>Échange possible contre :</strong> {annonce.echange_souhaite_texte}</p>
+                                )}                                
                                 <p><strong>Ville :</strong> {annonce.ville}</p>
                                 <p><strong>Code Postal :</strong> {annonce.code_postal}</p>
                             </div>

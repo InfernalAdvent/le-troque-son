@@ -9,6 +9,7 @@ export default function Header() {
     const [sousCategories, setSousCategories] = useState([]);
     const [filtresActifs, setFiltresActifs] = useState([]);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [hasUnread, setHasUnread] = useState(false);
     const [search, setSearch] = useState("");
 
     const { user, setUser } = useContext(AuthContext);
@@ -91,6 +92,29 @@ export default function Header() {
         fetchSousCategories();
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.pathname, location.search]);
+
+    useEffect(() => {
+        if (!user) return;
+
+        // Fetch les conversations pour indiquer les messages non lus
+        const checkUnread = async () => {
+            try {
+                const res = await api.get("/conversations");
+                const unread = res.data.some(conv =>
+                    conv.messages?.some(m => 
+                        !m.lu_par_destinataire && m.expediteur_id !== user.id
+                    )
+                );
+                setHasUnread(unread);
+            } catch (err) {
+                console.error("Erreur vérification messages non lus:", err);
+            }
+        };
+
+        checkUnread();
+        const interval = setInterval(checkUnread, 3000);
+        return () => clearInterval(interval);
+    }, [user]);
 
     // Fonction pour retourner à la page d'accueil
     const retourArriere = () => {
@@ -234,10 +258,13 @@ export default function Header() {
 
                                 <NavLink 
                                     to="/messages" 
-                                    className="text-green-600 hover:text-green-800 transition-colors p-2"
+                                    className="text-green-600 hover:text-green-800 transition-colors p-2 relative"
                                     title="Messages"
                                 >
                                     <MessageSquare size={24} />
+                                    {hasUnread && (
+                                        <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-red-500 rounded-full" />
+                                    )}
                                 </NavLink>
                             </>
                             ) : (
@@ -394,11 +421,16 @@ export default function Header() {
 
                             <NavLink
                                 to="/messages"
-                                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-100 transition-colors"
+                                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-100 transition-colors relative"
                                 onClick={() => setMobileMenuOpen(false)}
-                            >
-                                <MessageSquare size={20} className="text-green-600" />
-                                <span className="font-medium">Messages</span>
+                            >   
+                                <div className="relative">
+                                    <MessageSquare size={20} className="text-green-600" />
+                                    {hasUnread && (
+                                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full" />
+                                    )}
+                                </div>
+                                <span className="font-medium">Messages</span>    
                             </NavLink>
 
                             {user && (

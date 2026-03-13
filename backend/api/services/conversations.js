@@ -249,6 +249,23 @@ const conversationService = {
             console.error("Erreur masquage conversation:", error);
             throw new Error(`Erreur lors du masquage : ${error.message}`);
         }
+    },
+
+    markAsRead: async (conversationId, userId) => {
+        try {
+            await Message.update(
+                {lu_par_destinataire: true},
+                {
+                    where: {
+                        conversation_id: conversationId,
+                        expediteur_id: { [Op.ne]: userId }
+                    }
+                }
+            );
+        } catch (error) {
+            console.error("Erreur markAsRead:", error);
+            throw new Error(`Erreur lors du read : ${error.message}`)
+        }
     }
 };
 

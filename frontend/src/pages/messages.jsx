@@ -45,10 +45,20 @@ export default function Messages() {
             const res = await api.get(`/conversations/${conversation.id}/messages`);
             setMessages(res.data);
 
+            await api.put(`/conversations/${conversation.id}/read`);
+
+             // Mettre à jour l'état local immédiatement
             setConversations(prev =>
                 prev.map(c =>
                     c.id === conversation.id
-                        ? { ...c, hasUnread: false }
+                        ? {
+                            ...c,
+                            messages: c.messages?.map(m =>
+                                m.expediteur_id !== user?.id
+                                    ? { ...m, lu_par_destinataire: true }
+                                    : m
+                            )
+                        }
                         : c
                 )
             );
@@ -59,7 +69,7 @@ export default function Messages() {
         } finally {
             setLoadingMessages(false);
         }
-    }, []);
+    }, [user]);
 
     useEffect(() => {
         if (!selectedConversation || selectedConversation.isNew) return;
@@ -91,12 +101,31 @@ export default function Messages() {
             }
         };
 
-        // Rafraîchir toutes les 3 secondes
+        
+
+        // Rafraîchir toutes les 5 secondes
         const interval = setInterval(refreshMessages, 5000);
 
         // Nettoyer l'intervalle quand on change de conversation ou quitte la page
         return () => clearInterval(interval);
     }, [selectedConversation, messages]);
+
+    useEffect(() => {
+        if (!user) return;
+
+        // Rafraîchir la conversation pour afficher le dernier message
+        const refreshConversations = async () => {
+            try {
+                const res = await api.get("/conversations");
+                setConversations(res.data);
+            } catch (err) {
+                console.error("Erreur rafraîchissement conversations:", err);
+            }
+        };
+
+        const interval = setInterval(refreshConversations, 5000);
+        return () => clearInterval(interval);
+    }, [user]);
 
     const handleSendMessage = async () => {
         if (!newMessage.trim() || !selectedConversation) return;
@@ -156,7 +185,7 @@ export default function Messages() {
     const handleDeleteConversation = async () => {
         if (!selectedConversation) return;
         
-        if (!confirm("Supprimer cette conversation ? Elle ne sera plus visible pour vous.")) return;
+        if (!confirm("Supprimer cette conversation ?")) return;
 
         try {
             await api.delete(`/conversations/${selectedConversation.id}`);

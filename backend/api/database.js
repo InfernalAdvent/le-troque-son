@@ -1,4 +1,5 @@
 const { Sequelize } = require('sequelize');
+const logger = require('./logger');
 
 const sequelize = new Sequelize(
   process.env.DB_NAME,
@@ -17,7 +18,7 @@ const sequelize = new Sequelize(
 );
 
 sequelize.authenticate()
-  .then(() => console.log('Connexion à la base de données réussie.'))
-  .catch(err => console.error('Erreur de connexion :', err));
+  .then(() => logger.info('Connexion à la base de données réussie.'))
+  .catch(err => logger.error('Erreur de connexion :', err));
 
 module.exports = sequelize;

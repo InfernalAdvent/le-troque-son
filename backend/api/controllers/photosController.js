@@ -1,4 +1,5 @@
 const photoService = require("../services/photos");
+const logger = require("../logger");
 
 const photoController = {
 
@@ -16,7 +17,7 @@ const photoController = {
             res.status(201).json(photos);
 
         } catch (error) {
-            console.error(error);
+            logger.error("Erreur upload photos:", error);
             res.status(500).json({ error: error.message });
         }
     },
@@ -29,7 +30,7 @@ const photoController = {
 
             res.json(photos);
         } catch (err) {
-            console.error("Erreur récupération photos par annonce:", err);
+            logger.error("Erreur récupération photos par annonce:", err);
             res.status(500).json({ message: "Erreur récupération photos"});
         }
     }, 
@@ -37,10 +38,10 @@ const photoController = {
     updateOrder: async (req, res) => {
         try {
             const { annonceId } = req.params;
-            const { photoIds } = req.body; // [{ id: 5, ordre: 0 }, { id: 3, ordre: 1 }, ...]
+            const { photoIds } = req.body; 
 
-            console.log("🔍 Annonce ID:", annonceId);
-            console.log("🔍 Photo IDs reçus:", photoIds);
+            logger.debug("Annonce ID:", annonceId);
+            logger.debug("Photo IDs reçus:", photoIds);
 
             if (!photoIds || !Array.isArray(photoIds)) {
                 return res.status(400).json({ error: "Format invalide pour photoIds" });
@@ -51,7 +52,7 @@ const photoController = {
             res.json(result);
 
         } catch (error) {
-            console.error("Erreur mise à jour ordre photos:", error);
+            logger.error("Erreur mise à jour ordre photos:", error);
             res.status(500).json({ error: error.message });
         }
     }

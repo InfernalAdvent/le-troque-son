@@ -1,12 +1,13 @@
 const authService = require('../services/auth');
+const logger = require('../logger');
 
 const postLogin = async (req, res) => {
     const { email, password } = req.body;
-        console.log("Tentative de login:", email); // 👈 Ajoute ça
+        logger.debug("Tentative de login:", email);
 
     try {
         const { user, token } = await authService.login(email, password);
-        console.log("User trouvé:", user ? "OUI" : "NON"); // 👈 Et ça
+        logger.debug("User trouvé:", user ? "OUI" : "NON");
 
         await user.update({
             derniere_connexion: new Date()
@@ -48,7 +49,7 @@ const postSignUp = async (req, res) => {
         if (error.message.includes("déjà utilisé")) {
             return res.status(409).json({ error: error.message });
         }
-        console.error("Erreur d'inscription:", error);
+        logger.error("Erreur d'inscription:", error);
         res.status(500).json({ error: "Erreur serveur lors de l'inscription." });
     }
 };

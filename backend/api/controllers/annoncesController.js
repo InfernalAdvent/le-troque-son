@@ -1,4 +1,5 @@
 const annoncesService = require('../services/annonces');
+const logger = require('../logger');
 
 const annonceController = {
     getAnnonceWithUser: async (req, res) => {
@@ -8,9 +9,9 @@ const annonceController = {
                 return res.status(404).json({ error: "Annonce introuvable"});
             }
             res.json(annonce);
-            console.log(annonce.toJSON());
+            logger.debug("Annonce récupérée:", annonce.toJSON());
         } catch (err) {
-            console.error(err);
+            logger.error("Erreur récupération annonce:", err);
             res.status(500).json({ error: "Erreur serveur"});
         }
     },
@@ -27,7 +28,7 @@ const annonceController = {
             );
             res.json(annonces);
         } catch (error) {
-            console.error("Erreur lors de la récupération des annonces:", error);
+            logger.error("Erreur lors de la récupération des annonces:", error);
             res.status(500).json({ error: "Erreur serveur" });
         }
     },
@@ -38,7 +39,7 @@ const annonceController = {
         const annonces = await annoncesService.getAllWithFilters({ departements, search });
         res.json(annonces);
         } catch (err) {
-        console.error("Erreur filtres annonces :", err);
+        logger.error("Erreur filtres annonces :", err);
         res.status(500).json({ error: "Erreur serveur" });
         }
     },
@@ -62,7 +63,7 @@ const annonceController = {
                 res.status(200).json(updatedElement);
                 
             } catch (error) {
-                console.error("Erreur lors de la mise à jour de l'annonce:", error);
+                logger.error("Erreur lors de la mise à jour de l'annonce:", error);
                 res.status(500).json({ error: error.message}); 
             };
         },
@@ -75,10 +76,10 @@ const annonceController = {
         }
         try {
             const annonces = await annoncesService.searchAnnonces(titre);
-            console.log("Résultats trouvés:", annonces);
+            logger.debug("Résultats trouvés:", annonces);
             res.json(annonces);
         } catch(err) {
-            console.error('Erreur lors de la recherche des annonces:', err);
+            logger.error('Erreur lors de la recherche des annonces:', err);
             res.status(500).json({error: "Erreur serveur"});
         };
     },
@@ -96,7 +97,7 @@ const annonceController = {
             }
             res.status(204).send();
         } catch (error) {
-            console.error("Erreur lors de la suppression de l'annonce:", error);
+            logger.error("Erreur lors de la suppression de l'annonce:", error);
             res.status(500).json({ error: error.message });
         };
     }

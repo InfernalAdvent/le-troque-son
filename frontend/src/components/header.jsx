@@ -164,7 +164,10 @@ export default function Header() {
     // Fonction pour lancer la recherche
     const handleSearch = () => {
         if (search.trim().length > 0) {
-            navigate(`/?search=${encodeURIComponent(search.trim())}`);
+            const departementsParams = getSearchWithDepartements();
+            const newParams = new URLSearchParams(departementsParams);
+            newParams.set('search', search.trim());
+            navigate(`/?${newParams.toString()}`);
         }
     };
 

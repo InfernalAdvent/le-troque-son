@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const Annonce = require('../models/annonce');
+const { Annonce } = require('../models');
 
 const verifyCookieToken = require('../middlewares/auth');
 
@@ -16,10 +16,10 @@ const annoncesDefaultController = defaultController(annoncesDefaultService);
 router.get('/search', annoncesSpecificController.searchAnnonces);
 router.get('/user/:userId', annoncesDefaultController.getByUserId);
 router.get('/categorie/:id', annoncesSpecificController.getAnnoncesByCategories);
-router.get('/', annoncesDefaultController.getAll);
-router.get('/:id', annoncesDefaultController.getById);
+router.get('/', annoncesSpecificController.getAllWithFilters);
+router.get('/:id', annoncesSpecificController.getAnnonceWithUser);
 router.post('/', verifyCookieToken,  annoncesDefaultController.add);
 router.put('/:id', verifyCookieToken, annoncesSpecificController.updateAnnonceOwner);
-router.delete('/:id', verifyCookieToken, annoncesDefaultController.delete);
+router.delete('/:id', verifyCookieToken, annoncesSpecificController.deleteAnnonce);
 
 module.exports = router;

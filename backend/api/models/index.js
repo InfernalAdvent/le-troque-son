@@ -8,10 +8,11 @@ const User = require('./user');
 const Wishlist = require('./wishlist');
 
 
-Annonce.belongsTo(User, { foreignKey: 'user_id' });
+Annonce.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 Annonce.belongsTo(Categorie, { foreignKey: 'categorie_id', as: 'categoriePrincipale' });
 Annonce.belongsTo(Categorie, { foreignKey: 'echange_categorie_id', as: 'echangeCategorie' });
-Annonce.belongsTo(Departement, { foreignKey: 'departement_id' });
+Annonce.belongsTo(Departement, { foreignKey: 'departement_numero', targetKey: 'numero' });
+Annonce.hasMany(Photo, { foreignKey: 'annonce_id', as: "photos", hooks: true });
 
 
 Categorie.belongsTo(Categorie, { foreignKey: 'parent_id', as: 'parent' });
@@ -20,18 +21,19 @@ Categorie.belongsTo(Categorie, { foreignKey: 'parent_id', as: 'parent' });
 Conversation.belongsTo(Annonce, { foreignKey: 'annonce_id' });
 Conversation.belongsTo(User, { foreignKey: 'utilisateur_initiateur_id', as: 'initiateur' });
 Conversation.belongsTo(User, { foreignKey: 'utilisateur_receveur_id', as: 'receveur' });
+Conversation.hasMany(Message, { foreignKey: 'conversation_id', as: 'messages' });
 
 
 Message.belongsTo(Conversation, { foreignKey: 'conversation_id' });
 Message.belongsTo(User, { foreignKey: 'expediteur_id', as: 'expediteur' });
 
 
-Photo.belongsTo(Annonce, { foreignKey: 'annonce_id' });
+Photo.belongsTo(Annonce, { foreignKey: 'annonce_id'});
 Photo.belongsTo(Wishlist, { foreignKey: 'wishlist_id' });
 Photo.belongsTo(User, { foreignKey: 'user_id'})
 
 
-User.belongsTo(Departement, { foreignKey: 'departement_id' });
+User.belongsTo(Departement, { foreignKey: 'departement_numero', targetKey: 'numero' });
 
 
 Wishlist.belongsTo(User, { foreignKey: 'user_id' });

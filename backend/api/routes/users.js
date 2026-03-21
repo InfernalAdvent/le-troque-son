@@ -1,14 +1,17 @@
 const express = require('express');
 const router = express.Router();
-
-const User = require('../models/user');
-const defaultService = require('../services/defaultService');
+const usersService = require('../services/users');
 const defaultController = require('../controllers/defaultController');
+const usersController = require('../controllers/usersController'); 
+const verifyCookieToken = require('../middlewares/auth');
+const upload = require('../middlewares/upload');
 
-const usersService = defaultService(User);
-const usersController = defaultController(usersService);
+const controller = defaultController(usersService);
 
-router.get('/', usersController.getAll);
-router.get('/:id', usersController.getById);
+router.get('/', controller.getAll);
+router.get('/:id', controller.getById);
+
+router.post('/avatar', verifyCookieToken, upload.single('avatar'), usersController.uploadAvatar);
+router.delete('/avatar', verifyCookieToken, usersController.deleteAvatar);
 
 module.exports = router;

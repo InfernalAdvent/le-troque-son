@@ -1,119 +1,159 @@
 const { Op } = require('sequelize');
-const { Annonce, User, Categorie, Departement } = require('../models'); // Importation des Modèles requis
-const defaultService = require('./defaultService'); // Importation du service par défaut
-const categorieService = require('./categories'); // Importation du service catégorie pour la récursivité
+const { Annonce, User, Categorie, Departement, Photo } = require('../models'); 
+const defaultService = require('./defaultService'); 
+const categorieService = require('./categories'); 
 
-const annonceDefaultService = defaultService(Annonce);
+// Service par défaut
+const defaultAnnonceService = defaultService(Annonce);
 
-// Définition des inclusions pour la récupération des annonces
+// Définition des inclusions pour récupérer les relations
 const AnnonceIncludes = [
-    { model: User, attributes: ['id', 'nom', 'prenom'] },
-    { model: Categorie, as: 'categoriePrincipale', attributes: ['id', 'nom'],
-        include: [{
-            model: Categorie,
-            as: 'parent',
-            attributes: ['id', 'nom']
-        }]
-     },
-    { model: Categorie, as: 'echangeCategorie', attributes: ['id', 'nom'] },
-    { model: Departement, attributes: ['id', 'nom'] },
-    // Ajoutez ici l'inclusion des photos si vous en avez besoin, ex: { model: Photo, as: 'photos', attributes: ['url'] }
+    { model: User,
+        as: "user",
+        attributes: ['id','pseudo', "date_inscription", "derniere_connexion"] },
+    { model: Categorie, 
+        as: 'categoriePrincipale',
+        attributes: ['id', 'nom'],
+        include: [{ model: Categorie, as: 'parent', attributes: ['id', 'nom'] }] 
+    },
+    { model: Categorie,
+        as: 'echangeCategorie',
+        attributes: ['id', 'nom'] },
+    { model: Departement,
+        attributes: ['id', 'nom'] },
+    // Ajouter Photo si nécessaire
 ];
 
-/**
- * Met à jour une annonce en vérifiant que l'utilisateur connecté en est bien l'auteur.
- */
+const getAnnonceWithUser = async (id) => {
+    return await Annonce.findOne({
+        where: {id},
+        include: AnnonceIncludes
+    });
+};
+
+// 🔹 Récupération de toutes les annonces avec filtres (départements + recherche)
+const getAllWithFilters = async ({ departements, search }) => {
+    const where = {};
+
+    if (departements) {
+        where.departement_numero = { [Op.in]: departements.split(",") };
+    }
+
+    if (search) {
+        // 👇 Diviser la recherche en mots
+        const mots = search.trim().split(/\s+/);
+        
+        const conditions = mots.map(mot => ({
+            titre: { [Op.like]: `%${mot}%` },
+        }));
+
+        // 👇 Ajouter les conditions de recherche au where
+        where[Op.and] = conditions;
+    }
+
+    return await Annonce.findAll({
+        where,
+        include: AnnonceIncludes,
+        order: [["date_publication", "DESC"]],
+    });
+};
+
+//  Met à jour une annonce en vérifiant que l'utilisateur est l'auteur
 const updateAnnonceOwner = async (id, data, userId) => {
-    try {
-        const [rowsAffected] = await Annonce.update(data, {
-            where: { 
-                id: id,
-                user_id: userId
-            }
-        });
+    const [rowsAffected] = await Annonce.update(data, {
+        where: { id, user_id: userId }
+    });
 
-        if (rowsAffected === 0) {
-            return null;
-        }
+    if (rowsAffected === 0) return null;
 
-        const updatedElement = await Annonce.findByPk(id, { include: AnnonceIncludes });
-        
-        return updatedElement;
-        
-    } catch (error) {
-        throw new Error(`Erreur lors de la vérification et de la mise à jour de l'annonce: ${error.message}`);
-    }
+    return await Annonce.findByPk(id, { include: AnnonceIncludes });
 };
 
-/**
- * Récupère les annonces selon la catégorie cliquée (navigation) et le filtre optionnel (sous-catégorie).
- * Cette méthode utilise la recherche récursive sur la table Categorie via categorieService.
- * @param {number} categoryId - L'ID de la catégorie cliquée (navigation ou catégorie principale).
- * @param {number | null} filterCategoryId - L'ID de la sous-catégorie utilisée comme filtre précis.
- * @returns {Array<object>} Liste des annonces correspondantes.
- */
-const getAnnoncesByCategories = async(categoryId, filterCategoryId = null) => {
-    try {
-        const numCategoryId = parseInt(categoryId, 10);
-        if (isNaN(numCategoryId)) {
-            throw new Error("L'ID de catégorie fourni n'est pas valide.");
-        }
-        
-        let finalCategoryIds = [];
-        
-        if (filterCategoryId) {
-            // Logique de Filtrage (Filtrage précis par sous-catégorie)
-            const numFilterId = parseInt(filterCategoryId, 10);
-            if (isNaN(numFilterId)) {
-                throw new Error("L'ID de filtre fourni n'est pas un nombre valide.");
-            }
-            finalCategoryIds = [numFilterId];
+//  Récupère les annonces par catégorie (et sous-catégories si besoin)
+const getAnnoncesByCategories = async (categoryId, filterCategoryId = null, departements = null) => {
+    const numCategoryId = parseInt(categoryId, 10);
+    if (isNaN(numCategoryId)) return [];
 
-        } else {
-            // Logique de Navigation (Catégorie cliquée, inclut tous les descendants)
-            // 1. Récupérer tous les IDs descendants (enfants, petits-enfants) de la catégorie cliquée.
-            const descendantIds = await categorieService.getAllDescendantIds(numCategoryId);
+    let finalCategoryIds = [];
 
-            // 2. Le résultat final inclut la catégorie cliquée elle-même plus tous ses descendants.
-            finalCategoryIds = [numCategoryId, ...descendantIds];
-        }
+    if (filterCategoryId) {
+        // Split la chaîne "3,4,5" en tableau [3, 4, 5]
+        const filterIds = filterCategoryId.split(',').map(id => parseInt(id.trim(), 10)).filter(id => !isNaN(id));
         
-        if (finalCategoryIds.length === 0) {
-             // Si la liste est vide (ID de filtre incorrect, etc.)
-             return []; 
-        }
-
-        // Exécuter la requête Annonce en utilisant l'opérateur [Op.in]
-        return await Annonce.findAll({
-            where: {
-                // Chercher les annonces dont la categorie_id est DANS la liste des IDs ciblés
-                categorie_id: { [Op.in]: finalCategoryIds }
-            },
-            include: AnnonceIncludes,
-            order: [['date_publication', 'DESC']]
-        });
+        if (filterIds.length === 0) return [];
         
-    } catch (error) {
-        console.error("Erreur dans getAnnoncesByCategories (Service):", error);
-        throw new Error(`Erreur lors de la récupération des annonces par catégorie : ${error.message}`);
+        finalCategoryIds = filterIds; // 👈 Utilise TOUS les filtres
+    } else {
+        const descendantIds = await categorieService.getAllDescendantIds(numCategoryId);
+        finalCategoryIds = [numCategoryId, ...descendantIds];
     }
+
+    // Construire le where avec catégories
+    const where = { 
+        categorie_id: { [Op.in]: finalCategoryIds } 
+    };
+
+    // Ajouter les départements si présents
+    if (departements) {
+        where.departement_numero = { [Op.in]: departements.split(",") };
+    }
+
+    return await Annonce.findAll({
+        where,
+        include: AnnonceIncludes,
+        order: [['date_publication', 'DESC']]
+    });
 };
 
-const searchAnnonces = async(titre) => {
+//  Recherche annonces par titre
+const searchAnnonces = async (titre) => {
+    // Diviser la recherche en mots
+    const mots = titre.trim().split(/\s+/); // Split sur les espaces
+    
+    // Créer une condition WHERE pour chaque mot
+    const conditions = mots.map(mot => ({
+        titre: { [Op.like]: `%${mot}%` },
+    }));
+
     return await Annonce.findAll({
         where: {
-            titre: {
-                [Op.like]: `%${titre}%`
-            }
+            [Op.and]: conditions // Tous les mots doivent être présents
         },
+        include: AnnonceIncludes, // N'oublie pas d'ajouter les includes si besoin
         limit: 20,
     });
 };
 
-// Exportation de toutes les méthodes (celles par défaut et celles spécifiques)
+const deleteAnnonce = async (id, userId) => {
+  const whereOwner = { id };
+  if (userId) whereOwner.user_id = userId;
+
+  // 1. On effectue le soft delete de l'annonce
+  // Sequelize va générer un : UPDATE annonces SET deleted_at = NOW() ...
+  const rowsAffected = await Annonce.destroy({
+    where: whereOwner,
+    force: false 
+  });
+
+  if (rowsAffected > 0) {
+    // 2. On supprime les photos de la base de données
+    // Comme le modèle Photo n'est pas paranoid, Sequelize fait un DELETE FROM photos...
+    await Photo.destroy({ 
+      where: { annonce_id: id } 
+    });
+    return true;
+  }
+
+  return false;
+};
+
+
 module.exports = {
-    annonceDefaultService, 
-    getAnnoncesByCategories, 
+    defaultAnnonceService,
+    getAllWithFilters,
+    getAnnoncesByCategories,
     updateAnnonceOwner,
-    searchAnnonces
+    searchAnnonces,
+    getAnnonceWithUser,
+    deleteAnnonce
 };

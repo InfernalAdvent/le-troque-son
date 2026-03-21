@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const Departement = require('../models/departement');
+const { Departement } = require('../models');
 const defaultService = require('../services/defaultService');
 const defaultController = require('../controllers/defaultController');
 

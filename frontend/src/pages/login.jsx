@@ -1,0 +1,103 @@
+import { useState, useContext } from "react";
+import { useNavigate, NavLink } from "react-router-dom";
+import { AuthContext } from "../components/authContext";
+import { Eye, EyeOff } from "lucide-react";
+import api from "../api";
+
+export default function Login() {
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
+    const {setUser} = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setError("");
+        setLoading(true);
+        
+        try {
+            const res = await api.post("/auth/login", {email, password});
+            const userRes = await api.get("/auth/me");
+            setUser(userRes.data);
+            
+            console.log("Connexion réussie :", res.data);
+            navigate("/");
+            
+        } catch (err) {
+            console.error("Erreur de connexion :", err);
+            setError(err.response?.data?.message || "Identifiants incorrects");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    return (
+        <div className="flex justify-center items-center min-h-screen">
+            <div className="p-8 rounded-lg shadow-xl w-full max-w-md">
+                <h2 className="text-2xl font-bold text-green-600 mb-6">Connexion</h2>
+                
+                <form onSubmit={handleLogin} className="space-y-4">
+                    {error && (
+                        <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">
+                            {error}
+                        </div>
+                    )}
+                    
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Email
+                        </label>
+                        <input
+                            type="email"
+                            required
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
+                        />
+                    </div>
+                    
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                            Mot de passe
+                        </label>
+                        <div className="relative">
+                            <input
+                                type={showPassword ? "text" : "password"}
+                                required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-12 focus:outline-none focus:border-green-600"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setShowPassword(!showPassword)}
+                                className="absolute right-3 top-2 text-gray-600 hover:text-green-600 cursor-pointer text-xl"
+                                title={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                            >
+                                {showPassword ? <EyeOff /> : <Eye />}
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="w-full bg-green-600 hover:bg-green-800 cursor-pointer text-white font-medium py-2 rounded-lg transition-colors disabled:bg-gray-400"
+                    >
+                        {loading ? "Connexion..." : "Se connecter"}
+                    </button>
+                </form>
+                
+                <p className="text-center text-sm text-gray-600 mt-4">
+                    Pas encore de compte ?{" "}
+                    <NavLink to="/inscription" className="text-green-600 hover:underline">
+                        S'inscrire
+                    </NavLink>
+                </p>
+            </div>
+        </div>
+    );
+}

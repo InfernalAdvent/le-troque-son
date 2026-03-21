@@ -1,9 +1,14 @@
 const authService = require('../services/auth');
+const logger = require('../logger');
 
 const postLogin = async (req, res) => {
     const { email, password } = req.body;
+        logger.debug("Tentative de login:", email);
+
     try {
         const { user, token } = await authService.login(email, password);
+        logger.debug("User trouvé:", user ? "OUI" : "NON");
+
         await user.update({
             derniere_connexion: new Date()
         });
@@ -44,7 +49,7 @@ const postSignUp = async (req, res) => {
         if (error.message.includes("déjà utilisé")) {
             return res.status(409).json({ error: error.message });
         }
-        console.error("Erreur d'inscription:", error);
+        logger.error("Erreur d'inscription:", error);
         res.status(500).json({ error: "Erreur serveur lors de l'inscription." });
     }
 };
@@ -55,4 +60,16 @@ const postLogout = (req, res) => {
     res.status(200).json({ message: 'Déconnexion réussie. Le token doit être supprimé côté client.' });
 };
 
-module.exports = { postLogin, postSignUp ,postLogout };
+const me = async (req, res) => {
+    try {
+        const user = await authService.getCurrentUser(req.user.id);
+        if (!user) {
+            return res.status(404).json({ message : "Utilisateur non trouvé" });
+        }
+        res.json(user);
+    } catch (err) {
+        res.status(500).json({ message: "Erreur serveur" });
+    }
+};
+
+module.exports = { postLogin, postSignUp, postLogout, me };

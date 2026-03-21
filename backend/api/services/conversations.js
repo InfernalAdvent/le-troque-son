@@ -1,11 +1,31 @@
 const { Op } = require('sequelize');
-const { Conversation, Message, User, Annonce } = require('../models');
+const { Conversation, Message, User, Annonce, Photo } = require('../models');
 
 // Configuration pour l'inclusion des relations dans les requêtes
 const ConversationIncludes = [
     { model: User, as: 'initiateur', attributes: ['id', 'pseudo'] },
     { model: User, as: 'receveur', attributes: ['id', 'pseudo'] },
-    { model: Annonce, as: 'annonce', attributes: ['id', 'titre', 'prix'] } 
+    { 
+        model: Annonce, 
+        as: 'annonce', 
+        attributes: ['id', 'titre', 'prix', 'deleted_at'], 
+        paranoid: false,
+        include: [{ 
+            model: Photo,
+            as: 'photos', 
+            attributes: ['url', 'ordre'],
+            where: { ordre: 0 }, // Photo principale
+            required: false // LEFT JOIN : si pas de photo, retourne quand même l'annonce
+        }]
+    },
+    { 
+        model: Message,
+        as: 'messages',
+        attributes: ['contenu', 'date_envoi', 'expediteur_id', 'lu_par_destinataire'],
+        limit: 1,
+        order: [['date_envoi', 'DESC']],
+        required: false
+    }
 ];
 
 const MessageIncludes = [
@@ -22,6 +42,13 @@ const conversationService = {
      * @returns {object} La conversation (existante ou nouvelle).
      */
     findOrCreateConversation: async (userId, receveurId, annonceId) => {
+        
+        const annonce = await Annonce.findByPk(annonceId);
+
+        if (!annonce || annonce.deleted_at) {
+        throw new Error("Cette annonce n'existe plus ou a été supprimée.");
+        }
+
         try {
             // CONVERSION DE TYPE POUR S'ASSURER QUE LA COMPARAISON DE SÉCURITÉ FONCTIONNE
             const initiatorId = parseInt(userId, 10);
@@ -42,7 +69,8 @@ const conversationService = {
                         // Cas 2: Receveur est initiateur, User est receveur (pour couvrir les deux sens)
                         { utilisateur_initiateur_id: recipientId, utilisateur_receveur_id: initiatorId }
                     ]
-                }
+                },
+                include: ConversationIncludes
             });
 
             if (existingConversation) {
@@ -57,7 +85,11 @@ const conversationService = {
                 date_derniere_activite: new Date()
             });
 
-            return newConversation;
+            const fullConversation = await Conversation.findByPk(newConversation.id, {
+                include: ConversationIncludes
+            });
+
+            return fullConversation;
 
         } catch (error) {
             console.error("Erreur dans findOrCreateConversation:", error);
@@ -75,8 +107,12 @@ const conversationService = {
             return await Conversation.findAll({
                 where: {
                     [Op.or]: [
-                        { utilisateur_initiateur_id: userId },
-                        { utilisateur_receveur_id: userId }
+                        { utilisateur_initiateur_id: userId,
+                            masquee_par_initiateur: false
+                         },
+                        { utilisateur_receveur_id: userId,
+                            masquee_par_receveur: false
+                         }
                     ]
                 },
                 order: [['date_derniere_activite', 'DESC']],
@@ -182,6 +218,53 @@ const conversationService = {
         } catch (error) {
             console.error("Erreur lors de l'envoi du message :", error);
             throw new Error(`Erreur lors de l'envoi du message : ${error.message}`);
+        }
+    },
+
+    // Masquer une conversation pour l'utilisateur actuel
+    hideConversation: async (conversationId, userId) => {
+        try {
+            const conversation = await Conversation.findByPk(conversationId);
+            
+            if (!conversation) {
+                throw new Error("Conversation non trouvée.");
+            }
+
+            const isInitiateur = conversation.utilisateur_initiateur_id === parseInt(userId, 10);
+            const isReceveur = conversation.utilisateur_receveur_id === parseInt(userId, 10);
+
+            if (!isInitiateur && !isReceveur) {
+                throw new Error("Vous n'êtes pas participant à cette conversation.");
+            }
+
+            // Masquer pour l'utilisateur approprié
+            if (isInitiateur) {
+                await conversation.update({ masquee_par_initiateur: true });
+            } else {
+                await conversation.update({ masquee_par_receveur: true });
+            }
+
+            return conversation;
+        } catch (error) {
+            console.error("Erreur masquage conversation:", error);
+            throw new Error(`Erreur lors du masquage : ${error.message}`);
+        }
+    },
+
+    markAsRead: async (conversationId, userId) => {
+        try {
+            await Message.update(
+                {lu_par_destinataire: true},
+                {
+                    where: {
+                        conversation_id: conversationId,
+                        expediteur_id: { [Op.ne]: userId }
+                    }
+                }
+            );
+        } catch (error) {
+            console.error("Erreur markAsRead:", error);
+            throw new Error(`Erreur lors du read : ${error.message}`)
         }
     }
 };

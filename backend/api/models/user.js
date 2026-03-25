@@ -8,11 +8,7 @@ const User = sequelize.define('users', {
     email: { type: DataTypes.STRING, allowNull: false },
     pseudo: { type: DataTypes.STRING(15), allowNull: false },
     password: { type: DataTypes.STRING(255), allowNull: false },
-    telephone: { type: DataTypes.STRING(15), allowNull: true },
     departement_numero: { type: DataTypes.STRING(3), allowNull: true },
-    adresse: { type: DataTypes.STRING, allowNull: true },
-    ville: { type: DataTypes.STRING, allowNull: true },
-    code_postal: { type: DataTypes.STRING(5), allowNull: true },
     avatar_url: { type: DataTypes.STRING, allowNull: true },
     date_inscription: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
     derniere_connexion: { type: DataTypes.DATE, allowNull: true, defaultValue: null }

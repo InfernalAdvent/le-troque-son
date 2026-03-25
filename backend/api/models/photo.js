@@ -11,7 +11,6 @@ const Photo = sequelize.define('photos', {
             model: "annonces",
             key: 'id'
         }},
-    wishlist_id:{ type: DataTypes.INTEGER, allowNull: true },
     url:{ type: DataTypes.STRING, allowNull: false },
     ordre: { type: DataTypes.INTEGER, defaultValue: 0 },
     date_ajout: {type: DataTypes.DATE, defaultValue: DataTypes.NOW}

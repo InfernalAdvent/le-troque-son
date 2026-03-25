@@ -13,7 +13,10 @@ const postLogin = async (req, res) => {
             derniere_connexion: new Date()
         });
        
-        res.cookie('jwt', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+        res.cookie('jwt', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'Strict' });
         res.status(200).json({ message: 'Connexion réussie' });
         
 
@@ -37,7 +40,8 @@ const postSignUp = async (req, res) => {
         res.cookie('jwt', token, { 
             httpOnly: true, 
             secure: process.env.NODE_ENV === 'production', 
-            maxAge: 3600000 
+            maxAge: 3600000,
+            sameSite : 'Strict' 
         });
 
         res.status(201).json({ 

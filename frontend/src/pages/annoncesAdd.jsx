@@ -16,7 +16,6 @@ export default function AnnoncesAdd() {
         echange_souhaite_texte: "",
         ville: "",
         code_postal: "",
-        statut: "",
         departement_numero: ""
     });
 

@@ -1,7 +1,18 @@
 const wishlistService = require('../services/wishlists');
+const Joi = require('joi');
+
+const updateWishlistSchema = Joi.object({
+    souhait_texte: Joi.string().max(2000).optional().allow('').messages({
+        'string.max': 'Le souhait ne doit pas dépasser 2000 caractères.'
+    })
+}).unknown(true);
 
 const wishlistController = {
     updateWishlistOwner: async (req, res) => {
+        const { error } = updateWishlistSchema.validate(req.body);
+        if (error) {
+            return res.status(400).json({ error: error.details[0].message });
+        }
             try {
                 const wishlistId = parseInt(req.params.id, 10);
                     

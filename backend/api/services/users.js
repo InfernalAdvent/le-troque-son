@@ -10,7 +10,7 @@ const usersService = {
     
     getById: async (id) => {        
         const user = await User.findByPk(id, {
-            attributes: { exclude: ["password"] },
+            attributes: { exclude: ["email", "password"] },
             include: {
                 model: Departement,
                 attributes: ["id", "nom", "numero"]

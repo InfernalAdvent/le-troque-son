@@ -8,7 +8,6 @@ const upload = require('../middlewares/upload');
 
 const controller = defaultController(usersService);
 
-router.get('/', controller.getAll);
 router.get('/:id', controller.getById);
 
 router.post('/avatar', verifyCookieToken, upload.single('avatar'), usersController.uploadAvatar);

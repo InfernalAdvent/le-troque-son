@@ -76,7 +76,7 @@ app.use('/uploads', (req, res, next) => {
 // Rate limiting : Limite les requêtes pour éviter DoS
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limite les requêtes pour éviter les abus
+  max: 500, // Limite les requêtes pour éviter les abus
   message: 'Trop de requêtes, réessayez plus tard.',
   standardHeaders: true,
   legacyHeaders: false,

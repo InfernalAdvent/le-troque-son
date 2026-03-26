@@ -55,13 +55,16 @@ export default function Annonce() {
         
         setErrors({});
         try {
+            console.log("Données envoyées:", formData); // Log pour déboguer
             await api.put(`/annonces/${annonce.id}`, formData);
             setAnnonce({ ...annonce, ...formData });
             setEditMode(false);
         } catch (err) {
-            console.error("Erreur mise à jour annonce", err);
+            console.error("Erreur mise à jour annonce:", err);
             if (err.response) {
-                alert(`Erreur serveur : ${err.response.data.message || err.response.statusText}`);
+                const errorMsg = err.response.data.error || err.response.data.message || err.response.statusText;
+                console.error("Message du serveur:", errorMsg);
+                alert(`Erreur serveur : ${errorMsg}`);
             } else {
                 alert("Erreur lors de la mise à jour");
             }

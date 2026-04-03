@@ -1,7 +1,4 @@
 const { Wishlist } = require('../models');
-const defaultService = require('./defaultService');
-
-const wishlistDefaultService = defaultService(Wishlist);
 
 const updateWishlistOwner = async (id, data, userId) => {
     try {

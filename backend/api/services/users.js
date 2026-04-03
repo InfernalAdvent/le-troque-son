@@ -27,7 +27,7 @@ const usersService = {
             throw new Error("Utilisateur non trouvé");
         }
 
-        const avatarUrl = `/uploads/${file.filename}`;
+        const avatarUrl = `/uploads/avatars/${file.filename}`;
 
         // Supprimer l'ancien avatar si existant
         if (user.avatar_url) {

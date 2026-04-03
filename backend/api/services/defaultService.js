@@ -19,31 +19,6 @@ const defaultService = (Model) => ({
         });
     },
 
-    add: async (data) => {
-       try {
-            const newElement = new Model(data);
-            const savedElement = await newElement.save();
-            return savedElement;
-       } catch (error) {
-            throw new Error(`Erreur lors de la création : ${error.message}`);
-        };
-    },
-
-    update: async(id, data) => { 
-        try {
-            const [rowsAffected] = await Model.update(data, {
-                where: { id: id }
-            });
-            if (rowsAffected === 0) {
-                return null; 
-            }
-            const updatedElement = await Model.findByPk(id);
-            return updatedElement;
-        } catch (error) {
-            throw new Error(`Erreur lors de la mise à jour de l'élément: ${error.message}`);
-        }
-    },
-
     delete: async(id, userId) => {
         try {
             const whereOwner = {id: id}

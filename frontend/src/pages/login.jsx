@@ -19,11 +19,10 @@ export default function Login() {
         setLoading(true);
         
         try {
-            const res = await api.post("/auth/login", {email, password});
+            await api.post("/auth/login", {email, password});
             const userRes = await api.get("/auth/me");
             setUser(userRes.data);
             
-            console.log("Connexion réussie :", res.data);
             navigate("/");
             
         } catch (err) {

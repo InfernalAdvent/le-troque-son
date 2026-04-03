@@ -12,11 +12,11 @@ import Messages from './pages/messages';
 import NotFound from './pages/404';
 import Construction from './pages/construction';
 import api from './api';
+import { getPhotoForAnnonce } from './utils/getPhotoForAnnonce';
 import { useEffect, useState } from 'react';
 
 function Home() {
   const [annonces, setAnnonces] = useState([]);
-  const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [itemsPerPage, setItemsPerPage] = useState(25);
   const [currentPage, setCurrentPage] = useState(1);
@@ -37,9 +37,7 @@ function Home() {
         if (queryParams.length > 0) url += "?" + queryParams.join("&");
 
         const annoncesRes = await api.get(url);
-        const photosRes = await api.get("/photos");
         setAnnonces(annoncesRes.data);
-        setPhotos(photosRes.data);
         setCurrentPage(1);
         setLoading(false);
       } catch (err) {
@@ -56,11 +54,6 @@ function Home() {
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
-
-  const getPhotoForAnnonce = (annonceId) => {
-    return photos.find(photo => photo.annonce_id === annonceId && photo.ordre === 0)
-      || photos.find(photo => photo.annonce_id === annonceId);
-  };
 
   if (loading) {
     return (
@@ -94,7 +87,7 @@ function Home() {
               <AnnoncesCard
                 key={annonce.id}
                 annonce={annonce}
-                photo={getPhotoForAnnonce(annonce.id)}
+                photo={getPhotoForAnnonce(annonce.photos)}
               />
             ))}
           </div>
@@ -172,7 +165,6 @@ function Home() {
 
 function CategorieAnnonces() {
   const [annonces, setAnnonces] = useState([]);
-  const [photos, setPhotos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [categorie, setCategorie] = useState(null);
   const { id } = useParams();
@@ -196,10 +188,7 @@ function CategorieAnnonces() {
         if (queryParams.length > 0) url += "?" + queryParams.join("&");
 
         const annoncesRes = await api.get(url);
-        const photosRes = await api.get("/photos");
-
         setAnnonces(annoncesRes.data);
-        setPhotos(photosRes.data);
         setLoading(false);
       } catch (err) {
         console.error("Erreur lors du chargement des données :", err);
@@ -208,11 +197,6 @@ function CategorieAnnonces() {
     };
     fetchData();
   }, [id, location.search]);
-
-  const getPhotoForAnnonce = (annonceId) => {
-    return photos.find(photo => photo.annonce_id === annonceId && photo.ordre === 0)
-      || photos.find(photo => photo.annonce_id === annonceId);
-  };
 
   if (loading) {
     return (
@@ -242,7 +226,7 @@ function CategorieAnnonces() {
             <AnnoncesCard
               key={annonce.id}
               annonce={annonce}
-              photo={getPhotoForAnnonce(annonce.id)}
+              photo={getPhotoForAnnonce(annonce.photos)}
             />
           ))}
         </div>

@@ -32,6 +32,16 @@ const updateOrderSchema = Joi.object({
 
 const photoController = {
 
+    getAllPublic: async (req, res) => {
+        try {
+            const photos = await photoService.getAllPublic();
+            res.json(photos);
+        } catch (err) {
+            logger.error("Erreur récupération photos publiques:", err);
+            res.status(500).json({ error: "Erreur serveur" });
+        }
+    },
+
     upload: async (req, res) => {
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({ error: "Aucune photo reçue." });
@@ -50,7 +60,7 @@ const photoController = {
             res.status(201).json(photos);
         } catch (error) {
             logger.error("Erreur upload photos:", error);
-            res.status(500).json({ error: error.message });
+            res.status(500).json({ error: "Erreur serveur lors de l'upload." });
         }
     },
 
@@ -89,8 +99,9 @@ const photoController = {
             res.json(result);
         } catch (error) {
             logger.error("Erreur mise à jour ordre photos:", error);
-            const status = error.message.includes("autorisé") ? 403 : 500;
-            res.status(status).json({ error: error.message });
+            const isForbidden = error.message.includes("autorisé") || error.message.includes("propriétaire");
+            const status = isForbidden ? 403 : 500;
+            res.status(status).json({ error: isForbidden ? error.message : "Erreur serveur." });
         }
     }
 };

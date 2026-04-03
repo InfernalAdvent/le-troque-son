@@ -63,40 +63,6 @@ const defaultController = (service) => ({
         }
     },
 
-    add: async (req, res) => {
-        if (!req.user?.id) {
-            return res.status(401).json({ error: "Utilisateur non identifié après l'authentification." });
-        }
-
-        req.body.user_id = req.user.id;
-
-        try {
-            const newElement = await service.add(req.body);
-            res.status(201).json(newElement);
-        } catch (error) {
-            logger.error("Erreur lors de l'ajout:", error);
-            res.status(400).json({ error: error.message });
-        }
-    },
-
-    update: async (req, res) => {
-        const { error, value } = idSchema.validate({ id: parseInt(req.params.id, 10) });
-        if (error) {
-            return res.status(400).json({ error: error.details[0].message });
-        }
-
-        try {
-            const updatedElement = await service.update(value.id, req.body);
-            if (!updatedElement) {
-                return res.status(404).json({ message: "Élément non trouvé." });
-            }
-            res.status(200).json(updatedElement);
-        } catch (error) {
-            logger.error("Erreur lors de la mise à jour:", error);
-            res.status(500).json({ error: error.message });
-        }
-    },
-
     delete: async (req, res) => {
         const { error, value } = idSchema.validate({ id: parseInt(req.params.id, 10) });
         if (error) {
@@ -116,7 +82,7 @@ const defaultController = (service) => ({
             res.status(204).send();
         } catch (error) {
             logger.error("Erreur lors de la suppression de l'élément:", error);
-            res.status(500).json({ error: error.message });
+            res.status(500).json({ error: "Erreur serveur lors de la suppression." });
         }
     }
 });

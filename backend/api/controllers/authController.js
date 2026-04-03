@@ -3,11 +3,18 @@ const logger = require('../logger');
 const Joi = require('joi');
 
 const loginSchema = Joi.object({
-    email: Joi.string().email().required().messages({
+    email: Joi.string()
+    .email()
+    .required()
+    .messages({
         'string.email': "L'email doit être valide.",
         'string.empty': "L'email est requis."
     }),
-    password: Joi.string().min(1).required().messages({
+    password: Joi.string()
+    .min(1)
+    .required()
+    .messages({
+        'string.min': "Le mot de passe doit faire au moins 1 caractère.",
         'string.empty': "Le mot de passe est requis."
     })
 });
@@ -31,6 +38,7 @@ const postLogin = async (req, res) => {
         res.cookie('jwt', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
+            maxAge: 3600000,
             sameSite: 'Strict' });
         res.status(200).json({ message: 'Connexion réussie' });
         
@@ -60,7 +68,7 @@ const signUpSchema = Joi.object({
     .pattern(/^(?=.*[A-Z])(?=.*[0-9])/)
     .required()
     .messages({
-        'string.min': "Le mot de passe doit faire au moins 8 caractères.",
+        'string.min': "Le mot de passe doit faire au moins 8 caractères et contenir au moins une majuscule et un chiffre.",
         'string.empty': "Le mot de passe est requis."
     }),
     departement_numero: Joi.string().required().messages({
@@ -101,7 +109,12 @@ const postSignUp = async (req, res) => {
 
 
 const postLogout = (req, res) => {
-    res.cookie('jwt', '', { httpOnly: true, expires: new Date(0) }); 
+    res.cookie('jwt', '', { 
+        httpOnly: true, 
+        secure: process.env.NODE_ENV === 'production', 
+        sameSite: 'Strict', 
+        expires: new Date(0) 
+    }); 
     res.status(200).json({ message: 'Déconnexion réussie.' });
 };
 

@@ -15,7 +15,7 @@ const wishlistDefaultController = defaultController(wishlistDefaultService);
 router.get('/user/:userId', wishlistDefaultController.getByUserId);
 router.get('/', wishlistDefaultController.getAll);
 router.get('/:id', wishlistDefaultController.getById);
-router.post('/', verifyCookieToken, wishlistDefaultController.add);
+router.post('/', verifyCookieToken, wishlistSpecificController.createWishlist);
 router.put('/:id', verifyCookieToken, wishlistSpecificController.updateWishlistOwner);
 router.delete('/:id', verifyCookieToken, wishlistDefaultController.delete);
 

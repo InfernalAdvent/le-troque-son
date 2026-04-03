@@ -4,6 +4,7 @@ import { AuthContext } from "../components/authContext";
 import { MapPin, Camera } from "lucide-react";
 import AvatarDefault from '../assets/avatar-default.svg'
 import AnnoncesCard from "../components/annoncesCard";
+import { getPhotoForAnnonce } from "../utils/getPhotoForAnnonce";
 import api from "../api";
 
 export default function UserProfile() {
@@ -16,7 +17,6 @@ export default function UserProfile() {
 
     const [profileUser, setProfileUser] = useState(null);
     const [annoncesUser, setAnnoncesUser] = useState([]);
-    const [photos, setPhotos] = useState([]);
     const [loading, setLoading] = useState(true);
     const [wishlist, setWishlist] = useState([]);
     const [loadingWishlist, setLoadingWishlist] = useState(true);
@@ -36,6 +36,20 @@ export default function UserProfile() {
 
     const handleSaveWishlist = async () => {
         try {
+            const trimmed = wishlistText.trim();
+
+            if (!trimmed) {
+                // Texte vide → supprimer la wishlist existante si elle existe
+                const existingId = wishlist[0]?.id;
+                if (existingId) {
+                    await api.delete(`/wishlist/${existingId}`);
+                }
+                setWishlistText("");
+                await fetchWishlist();
+                setEditingWishlist(false);
+                return;
+            }
+
             if (editingWishlist) {
                 const existingId = wishlist[0]?.id;
                 if (existingId) {
@@ -146,9 +160,6 @@ export default function UserProfile() {
                 
                 const annoncesRes = await api.get(`/annonces/user/${profileUserId}`);
                 setAnnoncesUser(annoncesRes.data);
-
-                const photosRes = await api.get("/photos");
-                setPhotos(photosRes.data);
             } catch (err) {
                 console.error("Erreur chargement profil:", err);
             } finally {
@@ -161,11 +172,7 @@ export default function UserProfile() {
         fetchData();
     }, [profileUserId, isOwnProfile, user, loadingAuth , fetchWishlist, id]);
 
-    const getPhotoForAnnonce = (annonceId) => {
-        return photos.find(photo => 
-        photo.annonce_id === annonceId && photo.ordre === 0
-        ) || photos.find(photo => photo.annonce_id === annonceId); 
-    };
+    const getPhoto = (annonce) => getPhotoForAnnonce(annonce.photos);
 
     if (loading) {
         return (
@@ -335,7 +342,7 @@ export default function UserProfile() {
                             <AnnoncesCard
                                 key={annonce.id}
                                 annonce={annonce}
-                                photo={getPhotoForAnnonce(annonce.id)}
+                                photo={getPhoto(annonce)}
                             />
                         ))}
                     </div>

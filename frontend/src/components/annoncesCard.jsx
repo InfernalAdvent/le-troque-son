@@ -10,7 +10,7 @@ export default function AnnoncesCard({ annonce, photo }) {
                 {photo ? (
                     <img 
                         src={photo.url.startsWith("/uploads")
-                            ? `http://localhost:5000${photo.url}` 
+                            ? `${import.meta.env.VITE_API_URL}${photo.url}` 
                             : photo.url
                         }
                          

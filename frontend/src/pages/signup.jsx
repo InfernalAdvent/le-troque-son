@@ -1,5 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
+import { AuthContext } from "../components/authContext";
 import api from "../api";
 
 export default function Signup() {
@@ -16,6 +17,7 @@ export default function Signup() {
     const [departements, setDepartements] = useState([]);
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
+    const { setUser } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -34,8 +36,13 @@ export default function Signup() {
             return;
         }
         
-        if (formData.password.length < 6) {
-            setError("Le mot de passe doit contenir au moins 6 caractères");
+        if (formData.password.length < 8) {
+            setError("Le mot de passe doit contenir au moins 8 caractères");
+            return;
+        }
+
+        if (!/(?=.*[A-Z])(?=.*[0-9])/.test(formData.password)) {
+            setError("Le mot de passe doit contenir au moins une majuscule et un chiffre");
             return;
         }
         
@@ -44,11 +51,13 @@ export default function Signup() {
         try {
             const { confirmPassword: _confirmPassword, ...dataToSend } = formData;
             
-            const res = await api.post("/auth/signup", dataToSend);
+            await api.post("/auth/signup", dataToSend);
             
-            console.log("Inscription réussie :", res.data);
+            // Le backend set le cookie JWT automatiquement, on récupère l'utilisateur
+            const userRes = await api.get("/auth/me");
+            setUser(userRes.data);
             
-            navigate("/login");
+            navigate("/");
             
         } catch (err) {
             console.error("Erreur inscription :", err);

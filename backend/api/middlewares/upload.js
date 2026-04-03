@@ -1,18 +1,34 @@
 const multer = require("multer");
 const path = require("path");
 const crypto = require("crypto");
+const fs = require("fs");
 
 const ALLOWED_MIMETYPES = ['image/jpeg', 'image/png', 'image/webp'];
 const ALLOWED_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp'];
 
-const storage = multer.diskStorage({
+// Créer le sous-dossier avatars s'il n'existe pas
+const avatarsDir = path.join(__dirname, '..', 'uploads', 'avatars');
+if (!fs.existsSync(avatarsDir)) {
+    fs.mkdirSync(avatarsDir, { recursive: true });
+}
+
+// Génère un nom de fichier aléatoire sécurisé
+const generateFilename = (req, file, cb) => {
+    const randomName = crypto.randomBytes(16).toString('hex');
+    const ext = path.extname(file.originalname).toLowerCase();
+    cb(null, `${Date.now()}-${randomName}${ext}`);
+};
+
+// Storage pour les photos d'annonces
+const photosStorage = multer.diskStorage({
     destination: "uploads/",
-    filename: (req, file, cb) => {
-        // Nom aléatoire — supprime tout risque lié au nom original
-        const randomName = crypto.randomBytes(16).toString('hex');
-        const ext = path.extname(file.originalname).toLowerCase();
-        cb(null, `${Date.now()}-${randomName}${ext}`);
-    }
+    filename: generateFilename
+});
+
+// Storage pour les avatars
+const avatarStorage = multer.diskStorage({
+    destination: "uploads/avatars/",
+    filename: generateFilename
 });
 
 const fileFilter = (req, file, cb) => {
@@ -33,11 +49,22 @@ const fileFilter = (req, file, cb) => {
     cb(null, true);
 };
 
-module.exports = multer({ 
-    storage, 
+const photos = multer({ 
+    storage: photosStorage, 
     fileFilter, 
     limits: { 
         fileSize: 5 * 1024 * 1024,  // 5MB
         files: 5                    // max 5 fichiers par requête
     } 
 });
+
+const avatar = multer({ 
+    storage: avatarStorage, 
+    fileFilter, 
+    limits: { 
+        fileSize: 2 * 1024 * 1024,  // 2MB pour les avatars
+        files: 1                    // 1 seul fichier
+    } 
+});
+
+module.exports = { photos, avatar };

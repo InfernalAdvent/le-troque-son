@@ -18,7 +18,6 @@ const Annonce = sequelize.define('annonces', {
     },
     etat: {type: DataTypes.STRING, allowNull: false},
     echange_souhaite_texte: {type: DataTypes.STRING(50), allowNull: true},
-    echange_categorie_id: {type: DataTypes.INTEGER, allowNull: true},
     ville: {type: DataTypes.STRING(45), allowNull: false},
     code_postal: {type: DataTypes.STRING(5), allowNull: false},
     date_publication: {type: DataTypes.DATE, defaultValue: DataTypes.NOW},

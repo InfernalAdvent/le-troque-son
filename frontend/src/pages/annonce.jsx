@@ -55,16 +55,13 @@ export default function Annonce() {
         
         setErrors({});
         try {
-            console.log("Données envoyées:", formData); // Log pour déboguer
             await api.put(`/annonces/${annonce.id}`, formData);
             setAnnonce({ ...annonce, ...formData });
             setEditMode(false);
         } catch (err) {
-            console.error("Erreur mise à jour annonce:", err);
+            console.error("Erreur mise à jour annonce", err);
             if (err.response) {
-                const errorMsg = err.response.data.error || err.response.data.message || err.response.statusText;
-                console.error("Message du serveur:", errorMsg);
-                alert(`Erreur serveur : ${errorMsg}`);
+                alert(`Erreur serveur : ${err.response.data.message || err.response.statusText}`);
             } else {
                 alert("Erreur lors de la mise à jour");
             }
@@ -185,9 +182,7 @@ export default function Annonce() {
                 setLoading(true);
                 const annonceRes = await api.get(`/annonces/${id}`);
                 setAnnonce(annonceRes.data);
-
-                const photosRes = await api.get(`/photos/annonce/${id}`);
-                setPhotos(photosRes.data || []);
+                setPhotos(annonceRes.data.photos || []);
             } catch (err) {
                 console.error("Erreur chargement annonce :", err);
             } finally {

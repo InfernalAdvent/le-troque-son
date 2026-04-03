@@ -57,7 +57,7 @@ const conversationController = {
             res.status(200).json(conversations);
         } catch (error) {
             logger.error("Erreur lors de la récupération des conversations:", error);
-            res.status(500).json({ error: error.message });
+            res.status(500).json({ error: "Erreur serveur." });
         }
     },
 

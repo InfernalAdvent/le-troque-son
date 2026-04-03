@@ -20,7 +20,7 @@ const categorieController = {
             res.json(categories);
         } catch (error) {
             logger.error("Erreur récupération catégories principales:", error);
-            res.status(500).json({ error: error.message });
+            res.status(500).json({ error: "Erreur serveur." });
         }
     },
 
@@ -42,7 +42,7 @@ const categorieController = {
             res.json(categories);
         } catch (error) {
             logger.error("Erreur récupération sous-catégories:", error);
-            res.status(500).json({ error: error.message });
+            res.status(500).json({ error: "Erreur serveur." });
         }
     }
 };

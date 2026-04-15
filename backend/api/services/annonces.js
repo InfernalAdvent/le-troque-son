@@ -1,10 +1,6 @@
 const { Op } = require('sequelize');
 const { Annonce, User, Categorie, Departement, Photo } = require('../models'); 
-const defaultService = require('./defaultService'); 
 const categorieService = require('./categories'); 
-
-// Service par défaut
-const defaultAnnonceService = defaultService(Annonce);
 
 // Définition des inclusions pour récupérer les relations
 const AnnonceIncludes = [
@@ -16,13 +12,13 @@ const AnnonceIncludes = [
         attributes: ['id', 'nom'],
         include: [{ model: Categorie, as: 'parent', attributes: ['id', 'nom'] }] 
     },
-    { model: Categorie,
-        as: 'echangeCategorie',
-        attributes: ['id', 'nom'] },
     { model: Departement,
         attributes: ['id', 'nom'] },
-    // Ajouter Photo si nécessaire
-];
+    { model: Photo,
+        as: 'photos',
+        attributes: ['id', 'url', 'ordre'],
+        required: false },
+    ];
 
 const getAnnonceWithUser = async (id) => {
     return await Annonce.findOne({
@@ -148,12 +144,25 @@ const deleteAnnonce = async (id, userId) => {
 };
 
 
+const createAnnonce = async (data) => {
+    return await Annonce.create(data);
+};
+
+const getByUserId = async (userId) => {
+    return await Annonce.findAll({
+        where: { user_id: userId },
+        include: AnnonceIncludes,
+        order: [['date_publication', 'DESC']],
+    });
+};
+
 module.exports = {
-    defaultAnnonceService,
     getAllWithFilters,
     getAnnoncesByCategories,
     updateAnnonceOwner,
     searchAnnonces,
     getAnnonceWithUser,
-    deleteAnnonce
+    deleteAnnonce,
+    getByUserId,
+    createAnnonce
 };

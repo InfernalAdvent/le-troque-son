@@ -103,8 +103,8 @@ export default function Messages() {
 
         
 
-        // Rafraîchir toutes les 5 secondes
-        const interval = setInterval(refreshMessages, 5000);
+        // Rafraîchir toutes les 30 secondes
+        const interval = setInterval(refreshMessages, 30000);
 
         // Nettoyer l'intervalle quand on change de conversation ou quitte la page
         return () => clearInterval(interval);
@@ -123,7 +123,7 @@ export default function Messages() {
             }
         };
 
-        const interval = setInterval(refreshConversations, 5000);
+        const interval = setInterval(refreshConversations, 30000);
         return () => clearInterval(interval);
     }, [user]);
 
@@ -292,7 +292,7 @@ export default function Messages() {
 
                             const photo = conversation.annonce?.photos?.[0];
                             const photoUrl = photo?.url?.startsWith("/uploads")
-                                ? `http://localhost:5000${photo.url}`
+                                ? `${import.meta.env.VITE_API_URL}${photo.url}`
                                 : photo?.url;
 
                             return (

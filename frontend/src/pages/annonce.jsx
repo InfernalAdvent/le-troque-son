@@ -47,7 +47,17 @@ export default function Annonce() {
         if (formData.prix < 0) {
             newErrors.prix = "Le prix doit être supérieur ou égal à 0";
         }
-        
+
+        if (!formData.description || formData.description.trim().length < 10) {
+            newErrors.description = "La description doit comporter au moins 10 caractères";
+        } else if (formData.description.length > 2000) {
+            newErrors.description = "La description ne doit pas dépasser 2000 caractères";
+        }
+
+        if (formData.echange_souhaite_texte && formData.echange_souhaite_texte.length > 50) {
+            newErrors.echange_souhaite_texte = "Le texte ne doit pas dépasser 50 caractères";
+        }
+
         if (Object.keys(newErrors).length > 0) {
             setErrors(newErrors);
             return; // Arrêter si erreurs
@@ -182,9 +192,7 @@ export default function Annonce() {
                 setLoading(true);
                 const annonceRes = await api.get(`/annonces/${id}`);
                 setAnnonce(annonceRes.data);
-
-                const photosRes = await api.get(`/photos/annonce/${id}`);
-                setPhotos(photosRes.data || []);
+                setPhotos(annonceRes.data.photos || []);
             } catch (err) {
                 console.error("Erreur chargement annonce :", err);
             } finally {
@@ -353,7 +361,7 @@ export default function Annonce() {
                         editModePhotos && photos.length > 0 ? (
                             <button
                                 onClick={() => setEditModePhotos(false)}
-                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+                                className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition cursor-pointer"
                             >
                                 Terminer
                             </button>
@@ -362,7 +370,7 @@ export default function Annonce() {
                         !editModePhotos && photos.length > 0 ? (
                             <button
                                 onClick={() => setEditModePhotos(true)}
-                                className="px-4 py-2 mb-4 bg-green-600 text-white rounded-lg hover:bg-green-800 transition"
+                                className="px-4 py-2 mb-4 bg-green-600 text-white rounded-lg hover:bg-green-800 transition cursor-pointer"
                             >
                                 Modifier les photos
                             </button>
@@ -428,11 +436,24 @@ export default function Annonce() {
                 <div className="bg-white rounded-xl p-6 mt-8">
                     <h2 className="text-xl font-semibold text-green-600 mb-4">Description</h2>
                     {editMode ? (
+                        <>
                         <textarea
                             value={formData.description || ""}
-                            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                            className="w-full h-32 bg-white text-gray-700 text-lg rounded px-2 py-1 mb-4"
+                            onChange={(e) => {
+                                setFormData({ ...formData, description: e.target.value });
+                                if (errors.description) {
+                                    setErrors({ ...errors, description: null });
+                                }
+                            }}
+                            rows={6}
+                            className={`w-full h-32 bg-white text-gray-700 text-lg rounded px-2 py-1 mb-1 ${
+                                errors.description ? 'border border-red-600' : ''
+                            }`}
                         />
+                        {errors.description && (
+                            <p className="text-red-600 text-sm mb-4">{errors.description}</p>
+                        )}
+                        </>
                     ) : (
                         <p className="whitespace-pre-line">{annonce.description}</p>
                     )}
@@ -458,9 +479,19 @@ export default function Annonce() {
                                 <label className="block font-semibold mb-1">Échange possible :
                                     <input
                                         value={formData.echange_souhaite_texte || ""}
-                                        onChange={(e) => setFormData({ ...formData, echange_souhaite_texte: e.target.value })}
-                                        className="w-full p-3 border rounded font-normal mt-1 mb-1"
+                                        onChange={(e) => {
+                                            setFormData({ ...formData, echange_souhaite_texte: e.target.value });
+                                            if (errors.echange_souhaite_texte) {
+                                                setErrors({ ...errors, echange_souhaite_texte: null });
+                                            }
+                                        }}
+                                        placeholder="Ex: Échange possible contre un vélo"
+                                        className={`w-full p-3 border rounded font-normal mt-1 mb-1 ${
+                                            errors.echange_souhaite_texte ? 'border-red-600' : ''}`}
                                     />
+                                    {errors.echange_souhaite_texte && (
+                                        <p className="text-red-600 text-sm mb-1">{errors.echange_souhaite_texte}</p>
+                                    )}
                                 </label>
 
                             <CityAutocomplete

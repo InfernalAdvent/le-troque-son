@@ -1,9 +1,32 @@
+const { Op } = require('sequelize');
 const Photo  = require('../models/photo');
+const Annonce = require('../models/annonce');
+
+const checkAnnonceOwnership = async (annonceId, userId) => {
+        const annonce = await Annonce.findByPk(annonceId);
+        if (!annonce) {
+            throw new Error("Annonce non trouvée");
+        }
+        if (annonce.user_id !== userId) {
+            throw new Error("Vous n'êtes pas le propriétaire de cette annonce");
+        }
+    };
 
 const photoService = {
 
+    getAllPublic: async () => {
+        return Photo.findAll({
+            where: { annonce_id: { [Op.ne]: null } },
+            attributes: ['id', 'annonce_id', 'url', 'ordre'],
+            order: [['ordre', 'ASC']]
+        });
+    },
+
     uploadPhotos: async (files, userId, annonceId = null) => {
         try {
+            if (annonceId) {
+                await checkAnnonceOwnership(annonceId, userId);
+            }
             const savedPhotos = await Promise.all(
                 files.map((file, index) =>
                     Photo.create({
@@ -28,8 +51,10 @@ const photoService = {
             order: [["ordre", "ASC"]],
         });
     },
-    updateOrder: async (photoIds, annonceId) => {
+    updateOrder: async (photoIds, annonceId, userId) => {
         try {
+            await checkAnnonceOwnership(annonceId, userId); // Vérifier la propriété de l'annonce
+
             // Vérifier que toutes les photos appartiennent bien à l'annonce
             const photos = await Photo.findAll({
                 where: { annonce_id: annonceId }

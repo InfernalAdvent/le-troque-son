@@ -1,5 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
+import { AuthContext } from "../components/authContext";
+import { Eye, EyeOff } from "lucide-react";
 import api from "../api";
 
 export default function Signup() {
@@ -15,7 +17,9 @@ export default function Signup() {
     
     const [departements, setDepartements] = useState([]);
     const [error, setError] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
+    const { setUser } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -34,8 +38,13 @@ export default function Signup() {
             return;
         }
         
-        if (formData.password.length < 6) {
-            setError("Le mot de passe doit contenir au moins 6 caractères");
+        if (formData.password.length < 8) {
+            setError("Le mot de passe doit contenir au moins 8 caractères");
+            return;
+        }
+
+        if (!/(?=.*[A-Z])(?=.*[0-9])/.test(formData.password)) {
+            setError("Le mot de passe doit contenir au moins une majuscule et un chiffre");
             return;
         }
         
@@ -44,11 +53,13 @@ export default function Signup() {
         try {
             const { confirmPassword: _confirmPassword, ...dataToSend } = formData;
             
-            const res = await api.post("/auth/signup", dataToSend);
+            await api.post("/auth/signup", dataToSend);
             
-            console.log("Inscription réussie :", res.data);
+            // Le backend set le cookie JWT automatiquement, on récupère l'utilisateur
+            const userRes = await api.get("/auth/me");
+            setUser(userRes.data);
             
-            navigate("/login");
+            navigate("/");
             
         } catch (err) {
             console.error("Erreur inscription :", err);
@@ -150,28 +161,48 @@ export default function Signup() {
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Mot de passe *
                             </label>
-                            <input
-                                type="password"
-                                name="password"
-                                required
-                                value={formData.password}
-                                onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
-                            />
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    name="password"
+                                    required
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-12 focus:outline-none focus:border-green-600"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-2 text-gray-600 hover:text-green-600 cursor-pointer text-xl"
+                                    title={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                                >
+                                    {showPassword ? <EyeOff /> : <Eye />}
+                                </button>
+                            </div>
                         </div>
                         
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Confirmer le mot de passe *
                             </label>
-                            <input
-                                type="password"
-                                name="confirmPassword"
-                                required
-                                value={formData.confirmPassword}
-                                onChange={handleChange}
-                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
-                            />
+                            <div className="relative">
+                                <input
+                                    type={showPassword ? "text" : "password"}
+                                    name="confirmPassword"
+                                    required
+                                    value={formData.confirmPassword}
+                                    onChange={handleChange}
+                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-12 focus:outline-none focus:border-green-600"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-2 text-gray-600 hover:text-green-600 cursor-pointer text-xl"
+                                    title={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                                >
+                                    {showPassword ? <EyeOff /> : <Eye />}
+                                </button>
+                            </div>
                         </div>
                     </div>
                     

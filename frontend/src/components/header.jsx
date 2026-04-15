@@ -112,7 +112,7 @@ export default function Header() {
         };
 
         checkUnread();
-        const interval = setInterval(checkUnread, 3000);
+        const interval = setInterval(checkUnread, 30000);
         return () => clearInterval(interval);
     }, [user]);
 
@@ -204,7 +204,7 @@ export default function Header() {
         <header className="bg-black sticky top-0 z-50">
             {/* Partie supérieure : Logo + Searchbar */}
             <div>
-                <div className="max-w-6xl mx-auto px-4">
+                <div className="max-w-7xl mx-auto px-4">
                     {/* Desktop Layout */}
                     <div className="hidden md:flex items-center justify-between py-4 gap-6">
                         <NavLink to="/" className="shrink-0">
@@ -422,19 +422,21 @@ export default function Header() {
                                 </NavLink>
                             )}
 
-                            <NavLink
-                                to="/messages"
-                                className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-100 transition-colors relative"
-                                onClick={() => setMobileMenuOpen(false)}
-                            >   
-                                <div className="relative">
-                                    <MessageSquare size={20} className="text-green-600" />
-                                    {hasUnread && (
-                                        <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full" />
-                                    )}
-                                </div>
-                                <span className="font-medium">Messages</span>    
-                            </NavLink>
+                            {user ? (
+                                <NavLink
+                                    to="/messages"
+                                    className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-100 transition-colors relative"
+                                    onClick={() => setMobileMenuOpen(false)}
+                                >   
+                                    <div className="relative">
+                                        <MessageSquare size={20} className="text-green-600" />
+                                        {hasUnread && (
+                                            <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full" />
+                                        )}
+                                    </div>
+                                    <span className="font-medium">Messages</span>    
+                                </NavLink>
+                            ) : null}
 
                             {user && (
                                 <button
@@ -448,9 +450,13 @@ export default function Header() {
 
                         </div>
 
-                        <button className="w-full bg-green-600 hover:bg-green-800 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                        <NavLink
+                            to={user ? "/annonces/add" : "/login"}
+                            className="w-full block text-center bg-green-600 hover:bg-green-800 text-white px-6 py-3 rounded-lg font-medium transition-colors"
+                            onClick={() => setMobileMenuOpen(false)}
+                        >
                             Déposer une annonce
-                        </button>
+                        </NavLink>
                     </nav>
                 </div>
             )}

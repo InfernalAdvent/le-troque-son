@@ -1,5 +1,6 @@
 const { Op } = require('sequelize');
 const { Conversation, Message, User, Annonce, Photo } = require('../models');
+const logger = require('../logger');
 
 // Configuration pour l'inclusion des relations dans les requêtes
 const ConversationIncludes = [
@@ -92,7 +93,7 @@ const conversationService = {
             return fullConversation;
 
         } catch (error) {
-            console.error("Erreur dans findOrCreateConversation:", error);
+            logger.error("Erreur dans findOrCreateConversation:", error);
             throw new Error(`Erreur lors de la création/recherche de la conversation : ${error.message}`);
         }
     },
@@ -119,7 +120,7 @@ const conversationService = {
                 include: ConversationIncludes
             });
         } catch (error) {
-            console.error("Erreur dans getUserConversations:", error);
+            logger.error("Erreur dans getUserConversations:", error);
             throw new Error(`Erreur lors de la récupération des conversations : ${error.message}`);
         }
     },
@@ -171,7 +172,7 @@ const conversationService = {
             return messages;
 
         } catch (error) {
-            console.error("Erreur dans getConversationHistory:", error);
+            logger.error("Erreur dans getConversationHistory:", error);
             throw new Error(`Erreur lors de la récupération de l'historique : ${error.message}`);
         }
     },
@@ -210,18 +211,33 @@ const conversationService = {
                 // lu_par_destinataire sera false par défaut, c'est l'autre partie qui le marquera comme lu.
             });
 
-            // 3. Mettre à jour la date de dernière activité de la conversation
-            await conversation.update({ date_derniere_activite: new Date() });
+            // 3. Mettre à jour la date de dernière activité et réafficher pour le destinataire
+            const isInitiateur = conversation.utilisateur_initiateur_id === senderId;
+            const updateData = { date_derniere_activite: new Date() };
+
+            if (isInitiateur) {
+                updateData.masquee_par_receveur = false;
+            } else {
+                updateData.masquee_par_initiateur = false;
+            }
+
+            await conversation.update(updateData);
 
             return newMessage;
 
         } catch (error) {
-            console.error("Erreur lors de l'envoi du message :", error);
+            logger.error("Erreur lors de l'envoi du message :", error);
             throw new Error(`Erreur lors de l'envoi du message : ${error.message}`);
         }
     },
 
-    // Masquer une conversation pour l'utilisateur actuel
+    
+    /**
+     * Masquer une conversation pour l'utilisateur actuel
+     * @param {number} conversationId - L'ID de la conversation.
+     * @param {number} userId - L'ID de l'utilisateur connecté.
+     * @returns {object} La conversation masquée.
+     */
     hideConversation: async (conversationId, userId) => {
         try {
             const conversation = await Conversation.findByPk(conversationId);
@@ -246,11 +262,16 @@ const conversationService = {
 
             return conversation;
         } catch (error) {
-            console.error("Erreur masquage conversation:", error);
+            logger.error("Erreur masquage conversation:", error);
             throw new Error(`Erreur lors du masquage : ${error.message}`);
         }
     },
 
+    /**
+     * Marquer comme lu un message
+     * @param {number} conversationId - L'ID de la conversation.
+     * @param {number} userId - L'ID de l'utilisateur connecté.
+     */
     markAsRead: async (conversationId, userId) => {
         try {
             await Message.update(
@@ -263,7 +284,7 @@ const conversationService = {
                 }
             );
         } catch (error) {
-            console.error("Erreur markAsRead:", error);
+            logger.error("Erreur markAsRead:", error);
             throw new Error(`Erreur lors du read : ${error.message}`)
         }
     }

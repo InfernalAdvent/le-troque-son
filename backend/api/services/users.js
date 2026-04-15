@@ -10,7 +10,7 @@ const usersService = {
     
     getById: async (id) => {        
         const user = await User.findByPk(id, {
-            attributes: { exclude: ["password"] },
+            attributes: { exclude: ["email", "password"] },
             include: {
                 model: Departement,
                 attributes: ["id", "nom", "numero"]
@@ -27,7 +27,7 @@ const usersService = {
             throw new Error("Utilisateur non trouvé");
         }
 
-        const avatarUrl = `/uploads/${file.filename}`;
+        const avatarUrl = `/uploads/avatars/${file.filename}`;
 
         // Supprimer l'ancien avatar si existant
         if (user.avatar_url) {

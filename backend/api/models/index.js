@@ -10,7 +10,6 @@ const Wishlist = require('./wishlist');
 
 Annonce.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 Annonce.belongsTo(Categorie, { foreignKey: 'categorie_id', as: 'categoriePrincipale' });
-Annonce.belongsTo(Categorie, { foreignKey: 'echange_categorie_id', as: 'echangeCategorie' });
 Annonce.belongsTo(Departement, { foreignKey: 'departement_numero', targetKey: 'numero' });
 Annonce.hasMany(Photo, { foreignKey: 'annonce_id', as: "photos", hooks: true });
 
@@ -29,15 +28,13 @@ Message.belongsTo(User, { foreignKey: 'expediteur_id', as: 'expediteur' });
 
 
 Photo.belongsTo(Annonce, { foreignKey: 'annonce_id'});
-Photo.belongsTo(Wishlist, { foreignKey: 'wishlist_id' });
-Photo.belongsTo(User, { foreignKey: 'user_id'})
+Photo.belongsTo(User, { foreignKey: 'user_id'});
 
 
 User.belongsTo(Departement, { foreignKey: 'departement_numero', targetKey: 'numero' });
 
 
 Wishlist.belongsTo(User, { foreignKey: 'user_id' });
-Wishlist.belongsTo(Categorie, { foreignKey: 'categorie_id' });
 
 
 module.exports = {

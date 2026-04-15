@@ -8,9 +8,9 @@ const sequelize = require('./database');
 const logger = require('./logger');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
+const { csrfProtection, csrfToken } = require('./middlewares/csrf');
 const PORT = process.env.PORT || 5000;
 
-const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
 const departementsRouter = require('./routes/departements');
 const annoncesRouter = require('./routes/annonces');
@@ -19,7 +19,7 @@ const wishlistsRouter = require('./routes/wishlists')
 const authRouter = require('./routes/auth');
 const photosRouter = require('./routes/photos');
 const conversationsRouter = require('./routes/conversations');
-const allowedOrigins = ['http://localhost:5000', 'http://localhost:5173'];
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5000,http://localhost:5173').split(',');
 
 const app = express();
 
@@ -43,28 +43,49 @@ app.use(cors({
 
 app.use(loggerMorgan('dev'));
 app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
+
+// Middleware CSRF : Génère un secret et vérifie le token pour les requêtes non-GET
+app.use(csrfProtection);
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 // Fichiers statiques AVANT le rate limiting pour éviter les blocages
-app.use('/uploads', (req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET');
-  next();
-}, express.static('uploads'));
+app.use('/uploads', express.static('uploads'));
 
 // Rate limiting : Limite les requêtes pour éviter DoS
 const limiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10000, // Augmenté pour éviter les blocages en dev
+  max: 500, // Limite les requêtes pour éviter les abus
   message: 'Trop de requêtes, réessayez plus tard.',
+  standardHeaders: true,
+  legacyHeaders: false,
+  skip: (req) => req.path.startsWith('/conversations') || req.path.startsWith('/auth') // Exclure les routes avec leur propre rate limiter
+});
+// Rate limiting spécifique pour la messagerie (polling toutes les 5s)
+const messagingLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 2000, // Plus permissif pour le polling
+  message: 'Trop de requêtes de messagerie, réessayez plus tard.',
   standardHeaders: true,
   legacyHeaders: false,
 });
 app.use(limiter);
 
-app.use('/', indexRouter);
+// Rate limiting strict pour l'authentification (anti brute-force)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 10, // 10 tentatives max par IP
+  message: 'Trop de tentatives de connexion, réessayez dans 15 minutes.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/auth/login', authLimiter);
+app.use('/auth/signup', authLimiter);
+
+// Appliquer le rate limit spécifique aux conversations
+app.use('/conversations', messagingLimiter);
+
 app.use('/users', usersRouter);
 app.use('/departements', departementsRouter);
 app.use('/annonces', annoncesRouter);
@@ -74,11 +95,15 @@ app.use('/photos', photosRouter);
 app.use('/auth', authRouter);
 app.use('/conversations', conversationsRouter);
 
+// Route pour obtenir le token CSRF
+app.get('/csrf-token', csrfToken);
+
 app.listen(PORT, () => {
   logger.info(`Serveur démarré sur le port ${PORT}`);
 });
 
-sequelize.sync({ alter: true }) // alter: true pour mettre à jour la base sans supprimer les données
+const syncOptions = process.env.NODE_ENV === 'production' ? {} : { alter: true };
+sequelize.sync(syncOptions)
   .then(() => logger.info('Modèles synchronisés !'))
   .catch(err => logger.error('Erreur de synchronisation :', err));
 

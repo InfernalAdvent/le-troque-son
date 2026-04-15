@@ -1,9 +1,31 @@
 const authService = require('../services/auth');
 const logger = require('../logger');
+const Joi = require('joi');
+
+const loginSchema = Joi.object({
+    email: Joi.string()
+    .email()
+    .required()
+    .messages({
+        'string.email': "L'email doit être valide.",
+        'string.empty': "L'email est requis."
+    }),
+    password: Joi.string()
+    .min(1)
+    .required()
+    .messages({
+        'string.min': "Le mot de passe doit faire au moins 1 caractère.",
+        'string.empty': "Le mot de passe est requis."
+    })
+});
 
 const postLogin = async (req, res) => {
-    const { email, password } = req.body;
-        logger.debug("Tentative de login:", email);
+    const { error, value } = loginSchema.validate(req.body);
+    if (error) {
+        return res.status(400).json({ error: error.details[0].message });
+    }
+    const { email, password } = value;
+    logger.debug("Tentative de login:", email);
 
     try {
         const { user, token } = await authService.login(email, password);
@@ -13,7 +35,11 @@ const postLogin = async (req, res) => {
             derniere_connexion: new Date()
         });
        
-        res.cookie('jwt', token, { httpOnly: true, secure: process.env.NODE_ENV === 'production' });
+        res.cookie('jwt', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: 3600000,
+            sameSite: 'Strict' });
         res.status(200).json({ message: 'Connexion réussie' });
         
 
@@ -23,13 +49,39 @@ const postLogin = async (req, res) => {
     
 };
 
-const postSignUp = async (req, res) => {
-    const { email, password, ...rest } = req.body; 
+const signUpSchema = Joi.object({
+    prenom: Joi.string().required().messages({
+        'string.empty': "Le prénom est requis."
+    }),
+    nom: Joi.string().required().messages({
+        'string.empty': "Le nom est requis."
+    }),
+    pseudo: Joi.string().required().messages({
+        'string.empty': "Le pseudo est requis."
+    }),
+    email: Joi.string().email().required().messages({
+        'string.email': "L'email doit être valide.",
+        'string.empty': "L'email est requis."
+    }),
+    password: Joi.string()
+    .min(8)
+    .pattern(/^(?=.*[A-Z])(?=.*[0-9])/)
+    .required()
+    .messages({
+        'string.min': "Le mot de passe doit faire au moins 8 caractères et contenir au moins une majuscule et un chiffre.",
+        'string.empty': "Le mot de passe est requis."
+    }),
+    departement_numero: Joi.string().required().messages({
+        'string.empty': "Le numéro de département est requis."
+    })
+});
 
-    // Validation basique (à améliorer)
-    if (!email || !password) {
-        return res.status(400).json({ message: "L'email et le mot de passe sont obligatoires." });
+const postSignUp = async (req, res) => {
+    const { error, value } = signUpSchema.validate(req.body);
+    if (error) {
+        return res.status(400).json({ error: error.details[0].message });
     }
+    const { email, password, ...rest } = value;
 
     try {
         const { user, token } = await authService.signup(email, password, rest);
@@ -37,7 +89,8 @@ const postSignUp = async (req, res) => {
         res.cookie('jwt', token, { 
             httpOnly: true, 
             secure: process.env.NODE_ENV === 'production', 
-            maxAge: 3600000 
+            maxAge: 3600000,
+            sameSite : 'Strict' 
         });
 
         res.status(201).json({ 
@@ -56,8 +109,13 @@ const postSignUp = async (req, res) => {
 
 
 const postLogout = (req, res) => {
-    res.cookie('jwt', '', { httpOnly: true, expires: new Date(0) }); 
-    res.status(200).json({ message: 'Déconnexion réussie. Le token doit être supprimé côté client.' });
+    res.cookie('jwt', '', { 
+        httpOnly: true, 
+        secure: process.env.NODE_ENV === 'production', 
+        sameSite: 'Strict', 
+        expires: new Date(0) 
+    }); 
+    res.status(200).json({ message: 'Déconnexion réussie.' });
 };
 
 const me = async (req, res) => {

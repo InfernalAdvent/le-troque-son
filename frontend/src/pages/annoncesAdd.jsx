@@ -80,6 +80,22 @@ export default function AnnoncesAdd() {
             return;
         }
 
+        if (formData.description && formData.description.length < 10) {
+            setError("La description doit comporter au moins 10 caractères");
+            setLoading(false);
+            return;
+        } else if (formData.description && formData.description.length > 2000) {
+            setError("La description ne doit pas dépasser 2000 caractères");
+            setLoading(false);
+            return;
+        }
+
+        if (formData.echange_souhaite_texte && formData.echange_souhaite_texte.length > 50) {
+            setError("Le texte des échanges possibles ne doit pas dépasser 50 caractères");
+            setLoading(false);
+            return;
+        }
+        
         if (!villeValide) {
             setError("Veuillez sélectionner une ville dans la liste.");
             setLoading(false);

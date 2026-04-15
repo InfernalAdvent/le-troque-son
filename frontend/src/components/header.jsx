@@ -112,7 +112,7 @@ export default function Header() {
         };
 
         checkUnread();
-        const interval = setInterval(checkUnread, 3000);
+        const interval = setInterval(checkUnread, 30000);
         return () => clearInterval(interval);
     }, [user]);
 

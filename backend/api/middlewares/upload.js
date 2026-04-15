@@ -20,14 +20,15 @@ const generateFilename = (req, file, cb) => {
 };
 
 // Storage pour les photos d'annonces
+const uploadsDir = path.join(__dirname, '..', 'uploads');
 const photosStorage = multer.diskStorage({
-    destination: "uploads/",
+    destination: uploadsDir,
     filename: generateFilename
 });
 
 // Storage pour les avatars
 const avatarStorage = multer.diskStorage({
-    destination: "uploads/avatars/",
+    destination: path.join(uploadsDir, 'avatars'),
     filename: generateFilename
 });
 

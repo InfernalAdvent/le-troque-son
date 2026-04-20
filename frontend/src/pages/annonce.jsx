@@ -263,7 +263,7 @@ export default function Annonce() {
                                 .map((photo) => (
                                     <SwiperSlide key={photo.id}>
                                         <img
-                                            src={`${import.meta.env.VITE_API_URL}${photo.url}`}
+                                            src={photo.url}
                                             alt={annonce.titre}
                                             className="h-112.5 w-full object-contain cursor-zoom-in rounded-lg"
                                             onClick={() => setIsModalOpen(true)}
@@ -284,7 +284,7 @@ export default function Annonce() {
                                         onDrop={() => handleDrop(index)}
                                     >
                                         <img
-                                            src={photo.isNew ? photo.url : `${import.meta.env.VITE_API_URL}${photo.url}`}
+                                            src={photo.url}
                                             alt="miniature"
                                             className={`h-20 w-20 object-cover rounded-lg cursor-pointer border-2 ${
                                                 selectedPhotoIndex === index ? "border-green-600" : "border-transparent"
@@ -329,7 +329,7 @@ export default function Annonce() {
                                 onClick={() => setIsModalOpen(false)}
                             >
                                 <img
-                                    src={`${import.meta.env.VITE_API_URL}${photos[selectedPhotoIndex].url}`}
+                                    src={photos[selectedPhotoIndex].url}
                                     alt="Agrandissement"
                                     className="max-h-[90vh] max-w-[90vw] rounded-lg"
                                     onClick={(e) => e.stopPropagation()}

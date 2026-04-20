@@ -199,7 +199,7 @@ export default function UserProfile() {
                         <div className="relative">
                             <img
                                 src={profileUser.avatar_url 
-                                    ? `${import.meta.env.VITE_API_URL}${profileUser.avatar_url}`
+                                    ? profileUser.avatar_url
                                     : AvatarDefault
                                 }
                                 alt="Avatar"

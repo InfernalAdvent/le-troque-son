@@ -1,7 +1,7 @@
 const { User, Departement } = require('../models');
 const defaultService = require('./defaultService');
-const fs = require('fs');
-const path = require('path');
+const { uploadToCloudinary } = require('../middlewares/upload');
+const cloudinary = require('cloudinary').v2;
 
 const baseService = defaultService(User);
 
@@ -22,41 +22,31 @@ const usersService = {
 
     uploadAvatar: async (userId, file) => {
         const user = await User.findByPk(userId);
-        
-        if (!user) {
-            throw new Error("Utilisateur non trouvé");
+        if (!user) throw new Error("Utilisateur non trouvé");
+
+        // Supprimer l'ancien avatar sur Cloudinary si existant
+        if (user.avatar_public_id) {
+            await cloudinary.uploader.destroy(user.avatar_public_id);
         }
 
-        const avatarUrl = `/uploads/avatars/${file.filename}`;
+        const result = await uploadToCloudinary(file.buffer, 'avatars');
 
-        // Supprimer l'ancien avatar si existant
-        if (user.avatar_url) {
-            const oldPath = path.join(__dirname, '..', user.avatar_url);
-            if (fs.existsSync(oldPath)) {
-                fs.unlinkSync(oldPath);
-            }
-        }
+        await user.update({ 
+            avatar_url: result.secure_url,
+            avatar_public_id: result.public_id
+        });
 
-        // Mettre à jour l'avatar
-        await user.update({ avatar_url: avatarUrl });
-
-        return { avatar_url: avatarUrl };
+        return { avatar_url: result.secure_url };
     },
 
+    // Remplace deleteAvatar :
     deleteAvatar: async (userId) => {
         const user = await User.findByPk(userId);
-        
-        if (!user) {
-            throw new Error("Utilisateur non trouvé");
-        }
+        if (!user) throw new Error("Utilisateur non trouvé");
 
-        if (user.avatar_url) {
-            const filePath = path.join(__dirname, '..', user.avatar_url);
-            if (fs.existsSync(filePath)) {
-                fs.unlinkSync(filePath);
-            }
-
-            await user.update({ avatar_url: null });
+        if (user.avatar_public_id) {
+            await cloudinary.uploader.destroy(user.avatar_public_id);
+            await user.update({ avatar_url: null, avatar_public_id: null });
         }
 
         return { message: 'Avatar supprimé' };

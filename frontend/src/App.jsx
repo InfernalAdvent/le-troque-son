@@ -1,19 +1,24 @@
+import { lazy, Suspense, useEffect, useState } from 'react';
 import { Routes, Route, useLocation, useParams } from 'react-router-dom';
+
+// 1. IMPORTS CLASSIQUES (Composants immédiats et outils)
 import Header from './components/header';
 import Footer from './components/footer';
-import Login from './pages/login';
-import SignUp from './pages/signup';
-import Annonce from './pages/annonce';
-import AnnoncesCard from './components/annoncesCard';
-import AnnoncesAdd from './pages/annoncesAdd';
-import DepartementFilter from "./components/departementFilter";
-import UserProfile from './pages/userProfile';
-import Messages from './pages/messages';
-import NotFound from './pages/404';
-import Construction from './pages/construction';
+import AnnoncesCard from './components/annoncesCard'; // Trop petit pour être lazy
+import DepartementFilter from "./components/departementFilter"; // Utile de suite
+import ErrorBoundary from './components/errorBoundary'; // Doit être présent direct
 import api from './api';
 import { getPhotoForAnnonce } from './utils/getPhotoForAnnonce';
-import { useEffect, useState } from 'react';
+
+// 2. IMPORTS LAZY (Uniquement les pages lourdes et distantes)
+const Login = lazy(() => import('./pages/login'));
+const SignUp = lazy(() => import('./pages/signup'));
+const Annonce = lazy(() => import('./pages/annonce'));
+const AnnoncesAdd = lazy(() => import('./pages/annoncesAdd'));
+const UserProfile = lazy(() => import('./pages/userProfile'));
+const Messages = lazy(() => import('./pages/messages'));
+const NotFound = lazy(() => import('./pages/404'));
+const Construction = lazy(() => import('./pages/construction'));
 
 function Home() {
   const [annonces, setAnnonces] = useState([]);
@@ -240,19 +245,28 @@ function App() {
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className='flex-1'>
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/categorie/:id" element={<CategorieAnnonces />} />
-          <Route path="/annonces/:id" element={<Annonce/>} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/inscription" element={<SignUp />} />
-          <Route path="/compte" element={<UserProfile key="own-profile" />} />
-          <Route path="/profil/:id" element={<UserProfile />} />
-          <Route path="/annonces/add" element={<AnnoncesAdd />} />
-          <Route path="/messages" element={<Messages />} />
-          <Route path="/construction" element={<Construction />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
+          <Suspense fallback={
+            <div className="flex justify-center items-center min-h-screen">
+              <p className="text-gray-600 text-lg">Chargement...</p>
+            </div>
+          }>
+            <Routes>
+              {/* Home est défini localement, donc pas de lazy possible ici */}
+              <Route path="/" element={<Home />} />
+              <Route path="/categorie/:id" element={<CategorieAnnonces />} />
+              
+              {/* Ces composants seront chargés dynamiquement */}
+              <Route path="/annonces/:id" element={<Annonce/>} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/inscription" element={<SignUp />} />
+              <Route path="/compte" element={<UserProfile key="own-profile" />} />
+              <Route path="/profil/:id" element={<UserProfile />} />
+              <Route path="/annonces/add" element={<AnnoncesAdd />} />
+              <Route path="/messages" element={<Messages />} />
+              <Route path="/construction" element={<Construction />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
       </main>
       <Footer />
     </div>

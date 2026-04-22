@@ -5,11 +5,12 @@ import { MapPin, Camera } from "lucide-react";
 import AvatarDefault from '../assets/avatar-default.svg'
 import AnnoncesCard from "../components/annoncesCard";
 import { getPhotoForAnnonce } from "../utils/getPhotoForAnnonce";
+import { Helmet } from "react-helmet-async";
 import api from "../api";
 
 export default function UserProfile() {
     const { user, loadingAuth } = useContext(AuthContext); // Utilisateur connecté
-    const { id } = useParams(); // ID depuis l'URL (undefined si on est sur /compte)
+    const { id } = useParams(); // ID depuis l'URL (undefined si on est sur /mon-profil)
     
     // Si pas d'ID dans l'URL, on affiche le profil de l'utilisateur connecté
     const profileUserId = id || user?.id;
@@ -191,163 +192,184 @@ export default function UserProfile() {
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <div className="bg-gray-100 rounded-xl p-6">
-                    <div className="flex items-center gap-4 mb-6">
-                        {/* Avatar */}
-                        <div className="relative">
-                            <img
-                                src={profileUser.avatar_url 
-                                    ? profileUser.avatar_url
-                                    : AvatarDefault
-                                }
-                                alt="Avatar"
-                                className="w-24 h-24 rounded-full object-cover border-4 border-green-600"
-                            />
-                            
-                            {isOwnProfile && (
-                                <button
-                                    onClick={() => avatarInputRef.current.click()}
-                                    disabled={uploadingAvatar}
-                                    className="absolute bottom-0 right-0 bg-green-600 text-white p-2 rounded-full hover:bg-green-800 cursor-pointer disabled:opacity-50"
-                                >
-                                    <Camera size={16} />
-                                </button>
-                            )}
-                            
-                            <input
-                                ref={avatarInputRef}
-                                type="file"
-                                accept="image/*"
-                                onChange={handleAvatarChange}
-                                className="hidden"
-                            />
-                        </div>
-                        
-                        {/* Nom + bouton supprimer avatar */}
-                        <div className="flex-1">
-                            <h2 className="text-2xl text-green-600 font-bold mb-2">
-                                {isOwnProfile ? `${profileUser.pseudo}` : `Profil de ${profileUser.pseudo}`}
-                            </h2>
-                            
-                            {isOwnProfile && profileUser.avatar_url && (
-                                <button
-                                    onClick={handleDeleteAvatar}
-                                    className="text-sm text-red-600 hover:underline cursor-pointer"
-                                >
-                                    Supprimer l'avatar
-                                </button>
-                            )}
-                        </div>
-                    </div>
+        <>
+            <Helmet>
+                <title>
+                    {isOwnProfile
+                    ? `Mon Profil | Le Troque Son | Profil de {profileUser.pseudo}`
+                    : `Profil de ${profileUser.pseudo} | Le Troque Son`
+                    }
+                </title>
+                <meta
+                    name="robots"
+                    content={isOwnProfile ? "noindex, nofollow" : "index, follow"}
+                />
+                {!isOwnProfile && (
+                    <meta 
+                        name="description" 
+                        content={`Découvrez le profil de ${profileUser.pseudo} sur Le Troque Son : annonces, wishlist et plus encore !`} 
+                    />
+                )}
+            </Helmet>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">                        
-                        {isOwnProfile ? (
-                            <>
-                                <p className="text-gray-700 flex items-center gap-1"> 
-                                    <MapPin size={18} /> 
-                                    {profileUser.departement?.nom || profileUser.departement_numero}
-                                </p>
-                            </>
-                        ) : (
-                            <>
-                                <p className="text-gray-700 flex items-center gap-1">
-                                    <MapPin size={18} />
-                                    {profileUser.departement?.nom || profileUser.departement_numero}
-                                </p>
-                            </>
-                        )}
-                        
-                        <p className="font-light sm:col-span-2">
-                            Membre depuis {formatDate(profileUser.date_inscription)}
-                        </p>
-                    </div>
-                </div>
-
-                <div className="bg-gray-100 rounded-xl p-6">
-                    <h2 className="text-2xl text-green-600 font-bold mb-6">
-                        {isOwnProfile ? "Ma wishlist" : "Wishlist"}
-                    </h2>
-
-                    {loadingWishlist ? (
-                        <p className="text-gray-700">Chargement...</p>
-                    ) : isOwnProfile && (wishlist.length === 0 || editingWishlist) ? (
-                        // Mode édition (uniquement pour son propre profil)
-                        <>
-                            <textarea
-                                value={wishlistText}
-                                onChange={(e) => setWishlistText(e.target.value)}
-                                placeholder="Listez vos souhaits pour que l'on vous propose des échanges !"
-                                className="w-full h-20 bg-white border border-gray-300 rounded-lg p-3 resize-none mb-4"
-                            />
-
-                            <div className="flex justify-end gap-2">
-                                <button
-                                    onClick={handleSaveWishlist}
-                                    className="bg-green-600 hover:bg-green-800 cursor-pointer transition-colors text-white px-4 py-2 rounded-lg"
-                                >
-                                    {editingWishlist ? "Enregistrer" : "Ajouter"}
-                                </button>
-
-                                {editingWishlist && wishlist.length > 0 && (
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="bg-gray-100 rounded-xl p-6">
+                        <div className="flex items-center gap-4 mb-6">
+                            {/* Avatar */}
+                            <div className="relative">
+                                <img
+                                    src={profileUser.avatar_url 
+                                        ? profileUser.avatar_url
+                                        : AvatarDefault
+                                    }
+                                    alt="Avatar"
+                                    className="w-24 h-24 rounded-full object-cover border-4 border-green-600"
+                                />
+                                
+                                {isOwnProfile && (
                                     <button
-                                        onClick={handleDeleteWishlist}
-                                        className="bg-red-600 hover:bg-red-800 cursor-pointer transition-colors text-white px-4 py-2 rounded-lg"
+                                        onClick={() => avatarInputRef.current.click()}
+                                        disabled={uploadingAvatar}
+                                        className="absolute bottom-0 right-0 bg-green-600 text-white p-2 rounded-full hover:bg-green-800 cursor-pointer disabled:opacity-50"
                                     >
-                                        Supprimer
+                                        <Camera size={16} />
+                                    </button>
+                                )}
+                                
+                                <input
+                                    ref={avatarInputRef}
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleAvatarChange}
+                                    className="hidden"
+                                />
+                            </div>
+                            
+                            {/* Nom + bouton supprimer avatar */}
+                            <div className="flex-1">
+                                <h2 className="text-2xl text-green-600 font-bold mb-2">
+                                    {isOwnProfile ? `${profileUser.pseudo}` : `Profil de ${profileUser.pseudo}`}
+                                </h2>
+                                
+                                {isOwnProfile && profileUser.avatar_url && (
+                                    <button
+                                        onClick={handleDeleteAvatar}
+                                        className="text-sm text-red-600 hover:underline cursor-pointer"
+                                    >
+                                        Supprimer l'avatar
                                     </button>
                                 )}
                             </div>
-                        </>
-                    ) : wishlist.length === 0 ? (
-                        <p className="text-gray-600">Aucun article pour le moment</p>
-                    ) : (
-                        // Mode lecture seule
-                        <>
-                            <div className="bg-white rounded-lg p-4 mb-4"> {/* 👈 Ajoute mb-4 */}
-                                <p className="text-gray-800 whitespace-pre-line">{wishlistText}</p>
-                            </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">                        
+                            {isOwnProfile ? (
+                                <>
+                                    <p className="text-gray-700 flex items-center gap-1"> 
+                                        <MapPin size={18} /> 
+                                        {profileUser.departement?.nom || profileUser.departement_numero}
+                                    </p>
+                                </>
+                            ) : (
+                                <>
+                                    <p className="text-gray-700 flex items-center gap-1">
+                                        <MapPin size={18} />
+                                        {profileUser.departement?.nom || profileUser.departement_numero}
+                                    </p>
+                                </>
+                            )}
                             
-                            {/* Bouton modifier uniquement pour son propre profil */}
-                            {isOwnProfile && (
-                                <div className="flex justify-end"> {/* 👈 Ajoute ce wrapper */}
+                            <p className="font-light sm:col-span-2">
+                                Membre depuis {formatDate(profileUser.date_inscription)}
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="bg-gray-100 rounded-xl p-6">
+                        <h2 className="text-2xl text-green-600 font-bold mb-6">
+                            {isOwnProfile ? "Ma wishlist" : "Wishlist"}
+                        </h2>
+
+                        {loadingWishlist ? (
+                            <p className="text-gray-700">Chargement...</p>
+                        ) : isOwnProfile && (wishlist.length === 0 || editingWishlist) ? (
+                            // Mode édition (uniquement pour son propre profil)
+                            <>
+                                <textarea
+                                    value={wishlistText}
+                                    onChange={(e) => setWishlistText(e.target.value)}
+                                    placeholder="Listez vos souhaits pour que l'on vous propose des échanges !"
+                                    className="w-full h-20 bg-white border border-gray-300 rounded-lg p-3 resize-none mb-4"
+                                />
+
+                                <div className="flex justify-end gap-2">
                                     <button
-                                        onClick={() => setEditingWishlist(true)}
+                                        onClick={handleSaveWishlist}
                                         className="bg-green-600 hover:bg-green-800 cursor-pointer transition-colors text-white px-4 py-2 rounded-lg"
                                     >
-                                        Modifier
+                                        {editingWishlist ? "Enregistrer" : "Ajouter"}
                                     </button>
+
+                                    {editingWishlist && wishlist.length > 0 && (
+                                        <button
+                                            onClick={handleDeleteWishlist}
+                                            className="bg-red-600 hover:bg-red-800 cursor-pointer transition-colors text-white px-4 py-2 rounded-lg"
+                                        >
+                                            Supprimer
+                                        </button>
+                                    )}
                                 </div>
-                            )}
-                        </>
+                            </>
+                        ) : wishlist.length === 0 ? (
+                            <p className="text-gray-600">Aucun article pour le moment</p>
+                        ) : (
+                            // Mode lecture seule
+                            <>
+                                <div className="bg-white rounded-lg p-4 mb-4"> {/* 👈 Ajoute mb-4 */}
+                                    <p className="text-gray-800 whitespace-pre-line">{wishlistText}</p>
+                                </div>
+                                
+                                {/* Bouton modifier uniquement pour son propre profil */}
+                                {isOwnProfile && (
+                                    <div className="flex justify-end"> {/* 👈 Ajoute ce wrapper */}
+                                        <button
+                                            onClick={() => setEditingWishlist(true)}
+                                            className="bg-green-600 hover:bg-green-800 cursor-pointer transition-colors text-white px-4 py-2 rounded-lg"
+                                        >
+                                            Modifier
+                                        </button>
+                                    </div>
+                                )}
+                            </>
+                        )}
+                    </div>
+                </div>
+
+                <div className="mt-12">
+                    <h1 className="text-4xl text-green-600 font-bold mb-6">
+                        {isOwnProfile ? "Mes annonces" : `Annonces de ${profileUser.pseudo}`}
+                    </h1>
+
+                    {annoncesUser.length === 0 ? (
+                        <p className="text-gray-600">
+                            {isOwnProfile 
+                                ? "Vous n'avez pas encore posté d'annonce." 
+                                : "Aucune annonce publiée."}
+                        </p>
+                    ) : (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {annoncesUser.map((annonce) => (
+                                <AnnoncesCard
+                                    key={annonce.id}
+                                    annonce={annonce}
+                                    photo={getPhoto(annonce)}
+                                />
+                            ))}
+                        </div>
                     )}
                 </div>
             </div>
-
-            <div className="mt-12">
-                <h1 className="text-4xl text-green-600 font-bold mb-6">
-                    {isOwnProfile ? "Mes annonces" : `Annonces de ${profileUser.pseudo}`}
-                </h1>
-
-                {annoncesUser.length === 0 ? (
-                    <p className="text-gray-600">
-                        {isOwnProfile 
-                            ? "Vous n'avez pas encore posté d'annonce." 
-                            : "Aucune annonce publiée."}
-                    </p>
-                ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                        {annoncesUser.map((annonce) => (
-                            <AnnoncesCard
-                                key={annonce.id}
-                                annonce={annonce}
-                                photo={getPhoto(annonce)}
-                            />
-                        ))}
-                    </div>
-                )}
-            </div>
-        </div>
+        </>
     );
 }

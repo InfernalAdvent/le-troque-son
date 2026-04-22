@@ -252,9 +252,9 @@ export default function Header() {
                             {user ? (
                                 <>
                                 <NavLink 
-                                    to="/compte" 
+                                    to="/mon-profil" 
                                     className="text-green-600 hover:text-green-800 transition-colors p-2"
-                                    title="Compte"
+                                    title="Profil"
                                 >
                                     <UserCircle size={24} />
                                 </NavLink>
@@ -404,12 +404,12 @@ export default function Header() {
                         <div className="space-y-2 mb-4 pb-4 border-b border-gray-200">
                             {user ? (
                                 <NavLink
-                                    to="/compte"
+                                    to="/mon-profil"
                                     className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-100 transition-colors"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
                                     <User size={20} className="text-green-600" />
-                                    <span className="font-medium">Mon Compte</span>
+                                    <span className="font-medium">Mon Profil</span>
                                 </NavLink>
                             ) : (
                                 <NavLink

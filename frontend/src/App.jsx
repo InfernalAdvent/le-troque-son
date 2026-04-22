@@ -1,5 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from 'react';
 import { Routes, Route, useLocation, useParams } from 'react-router-dom';
+import { Helmet } from 'react-helmet-async';
 
 // 1. IMPORTS CLASSIQUES (Composants immédiats et outils)
 import Header from './components/header';
@@ -72,99 +73,108 @@ function Home() {
   const searchQuery = params.get('search');
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <h1 className='text-2xl sm:text-3xl md:text-4xl font-bold text-black text-left mb-4'>
-        {searchQuery ? `Résultats pour "${searchQuery}"` : 'En ce moment sur Le Troque Son'}
-      </h1>
+    <>
+      <Helmet>
+        <title>Le Troque Son | Achetez et échangez vos instruments de musique, vos vinyles et vos CDs !</title>
+        <meta 
+          name="description" 
+          content="Le Troque Son est la marketplace dédiée à la musique et aux instruments d'occasion. Achetez, vendez et échangez guitares, basses, vinyles et bien plus." 
+        />
+      </Helmet>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <h1 className='text-2xl sm:text-3xl md:text-4xl font-bold text-black text-left mb-4'>
+          {searchQuery ? `Résultats pour "${searchQuery}"` : 'En ce moment sur Le Troque Son'}
+        </h1>
 
-      <p className="text-gray-700 mb-4">
-        {annonces.length} annonce{annonces.length > 1 ? 's' : ''} trouvée{annonces.length > 1 ? 's' : ''}
-      </p>
+        <p className="text-gray-700 mb-4">
+          {annonces.length} annonce{annonces.length > 1 ? 's' : ''} trouvée{annonces.length > 1 ? 's' : ''}
+        </p>
 
-      <DepartementFilter />
+        <DepartementFilter />
 
-      {annonces.length === 0 ? (
-        <p className="text-gray-600 text-center py-12">Aucune annonce disponible pour le moment.</p>
-      ) : (
-        <>
-          <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8'>
-            {paginatedAnnonces.map((annonce) => (
-              <AnnoncesCard
-                key={annonce.id}
-                annonce={annonce}
-                photo={getPhotoForAnnonce(annonce.photos)}
-              />
-            ))}
-          </div>
-
-          <div className="flex flex-col items-center justify-end gap-4 mt-8">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <span>Afficher :</span>
-              {[25, 50, 100].map(n => (
-                <button
-                  key={n}
-                  onClick={() => {
-                    setItemsPerPage(n);
-                    setCurrentPage(1);
-                  }}
-                  className={`px-3 py-1.5 rounded-lg border transition ${
-                    itemsPerPage === n
-                      ? 'bg-green-600 text-white border-green-600'
-                      : 'border-gray-300 hover:border-green-600 hover:text-green-600 cursor-pointer'
-                  }`}
-                >
-                  {n}
-                </button>
+        {annonces.length === 0 ? (
+          <p className="text-gray-600 text-center py-12">Aucune annonce disponible pour le moment.</p>
+        ) : (
+          <>
+            <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-8'>
+              {paginatedAnnonces.map((annonce) => (
+                <AnnoncesCard
+                  key={annonce.id}
+                  annonce={annonce}
+                  photo={getPhotoForAnnonce(annonce.photos)}
+                />
               ))}
             </div>
 
-            {totalPages > 1 && (
-              <div className="flex items-center gap-2 text-sm">
-                <button
-                  onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1.5 rounded-lg border border-gray-300 hover:border-green-600 hover:text-green-600 disabled:opacity-40 disabled:cursor-not-allowed transition"
-                >
-                  ←
-                </button>
-
-                {Array.from({ length: totalPages }, (_, i) => i + 1)
-                  .filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
-                  .reduce((acc, p, i, arr) => {
-                    if (i > 0 && p - arr[i - 1] > 1) acc.push('...');
-                    acc.push(p);
-                    return acc;
-                  }, [])
-                  .map((p, i) => p === '...' ? (
-                    <span key={`ellipsis-${i}`} className="px-2 text-gray-400">...</span>
-                  ) : (
-                    <button
-                      key={p}
-                      onClick={() => setCurrentPage(p)}
-                      className={`px-3 py-1.5 rounded-lg border transition ${
-                        currentPage === p
-                          ? 'bg-green-600 text-white border-green-600'
-                          : 'border-gray-300 hover:border-green-600 hover:text-green-600'
-                      }`}
-                    >
-                      {p}
-                    </button>
-                  ))
-                }
-
-                <button
-                  onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
-                  disabled={currentPage === totalPages}
-                  className="px-3 py-1.5 rounded-lg border border-gray-300 hover:border-green-600 hover:text-green-600 disabled:opacity-40 disabled:cursor-not-allowed transition"
-                >
-                  →
-                </button>
+            <div className="flex flex-col items-center justify-end gap-4 mt-8">
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <span>Afficher :</span>
+                {[25, 50, 100].map(n => (
+                  <button
+                    key={n}
+                    onClick={() => {
+                      setItemsPerPage(n);
+                      setCurrentPage(1);
+                    }}
+                    className={`px-3 py-1.5 rounded-lg border transition ${
+                      itemsPerPage === n
+                        ? 'bg-green-600 text-white border-green-600'
+                        : 'border-gray-300 hover:border-green-600 hover:text-green-600 cursor-pointer'
+                    }`}
+                  >
+                    {n}
+                  </button>
+                ))}
               </div>
-            )}
-          </div>
-        </>
-      )}
-    </div>
+
+              {totalPages > 1 && (
+                <div className="flex items-center gap-2 text-sm">
+                  <button
+                    onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                    disabled={currentPage === 1}
+                    className="px-3 py-1.5 rounded-lg border border-gray-300 hover:border-green-600 hover:text-green-600 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                  >
+                    ←
+                  </button>
+
+                  {Array.from({ length: totalPages }, (_, i) => i + 1)
+                    .filter(p => p === 1 || p === totalPages || Math.abs(p - currentPage) <= 1)
+                    .reduce((acc, p, i, arr) => {
+                      if (i > 0 && p - arr[i - 1] > 1) acc.push('...');
+                      acc.push(p);
+                      return acc;
+                    }, [])
+                    .map((p, i) => p === '...' ? (
+                      <span key={`ellipsis-${i}`} className="px-2 text-gray-400">...</span>
+                    ) : (
+                      <button
+                        key={p}
+                        onClick={() => setCurrentPage(p)}
+                        className={`px-3 py-1.5 rounded-lg border transition ${
+                          currentPage === p
+                            ? 'bg-green-600 text-white border-green-600'
+                            : 'border-gray-300 hover:border-green-600 hover:text-green-600'
+                        }`}
+                      >
+                        {p}
+                      </button>
+                    ))
+                  }
+
+                  <button
+                    onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1.5 rounded-lg border border-gray-300 hover:border-green-600 hover:text-green-600 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                  >
+                    →
+                  </button>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </div>
+    </>
   );
 }
 
@@ -259,7 +269,7 @@ function App() {
               <Route path="/annonces/:id" element={<Annonce/>} />
               <Route path="/login" element={<Login />} />
               <Route path="/inscription" element={<SignUp />} />
-              <Route path="/compte" element={<UserProfile key="own-profile" />} />
+              <Route path="/mon-profil" element={<UserProfile key="own-profile" />} />
               <Route path="/profil/:id" element={<UserProfile />} />
               <Route path="/annonces/add" element={<AnnoncesAdd />} />
               <Route path="/messages" element={<Messages />} />

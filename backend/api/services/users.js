@@ -8,8 +8,9 @@ const baseService = defaultService(User);
 const usersService = {
     ...baseService,
     
-    getById: async (id) => {        
-        const user = await User.findByPk(id, {
+    getByPseudo: async (pseudo) => {        
+        const user = await User.findOne({
+            where: { pseudo },
             attributes: { exclude: ["email", "password"] },
             include: {
                 model: Departement,

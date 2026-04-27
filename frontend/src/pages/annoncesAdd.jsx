@@ -123,7 +123,7 @@ export default function AnnoncesAdd() {
             }
 
             previewUrls.forEach(url => URL.revokeObjectURL(url));
-            navigate("/compte");
+            navigate("/mon-profil");
         } catch (err) {
             console.error(err);
             setError(err.response?.data?.message || "Erreur lors de la création de l'annonce");

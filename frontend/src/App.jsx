@@ -261,7 +261,6 @@ function App() {
             </div>
           }>
             <Routes>
-              {/* Home est défini localement, donc pas de lazy possible ici */}
               <Route path="/" element={<Home />} />
               <Route path="/categorie/:id" element={<CategorieAnnonces />} />
               
@@ -270,7 +269,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/inscription" element={<SignUp />} />
               <Route path="/mon-profil" element={<UserProfile key="own-profile" />} />
-              <Route path="/profil/:id" element={<UserProfile />} />
+              <Route path="/profil/:pseudo" element={<UserProfile />} />
               <Route path="/annonces/add" element={<AnnoncesAdd />} />
               <Route path="/messages" element={<Messages />} />
               <Route path="/construction" element={<Construction />} />

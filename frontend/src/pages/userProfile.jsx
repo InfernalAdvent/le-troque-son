@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, useCallback, useRef } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 import { AuthContext } from "../components/authContext";
 import { MapPin, Camera } from "lucide-react";
@@ -10,11 +10,10 @@ import api from "../api";
 
 export default function UserProfile() {
     const { user, loadingAuth } = useContext(AuthContext); // Utilisateur connecté
-    const { id } = useParams(); // ID depuis l'URL (undefined si on est sur /mon-profil)
+    const { pseudo } = useParams(); // Pseudo depuis l'URL (undefined si on est sur /mon-profil)
     
-    // Si pas d'ID dans l'URL, on affiche le profil de l'utilisateur connecté
-    const profileUserId = id || user?.id;
-    const isOwnProfile = user && profileUserId === user.id;
+    // Si pas de pseudo dans l'URL, on affiche le profil de l'utilisateur connecté
+    const isOwnProfile = !pseudo && !!user;
 
     const [profileUser, setProfileUser] = useState(null);
     const [annoncesUser, setAnnoncesUser] = useState([]);
@@ -46,7 +45,6 @@ export default function UserProfile() {
                     await api.delete(`/wishlist/${existingId}`);
                 }
                 setWishlistText("");
-                await fetchWishlist();
                 setEditingWishlist(false);
                 return;
             }
@@ -65,7 +63,15 @@ export default function UserProfile() {
                 });
             }
 
-            await fetchWishlist();
+            const wishlistRes = await api.get(`/wishlist/user/${profileUser.id}`);
+            setWishlist(wishlistRes.data);
+            if (wishlistRes.data.length > 0) {
+                setWishlistText(wishlistRes.data.map(item => item.souhait_texte).join("\n"));
+            } else {
+                setWishlistText("");
+                setEditingWishlist(false);
+            }
+            setLoadingWishlist(false);
             setEditingWishlist(false);
         } catch (err) {
             console.error("Erreur sauvegarde wishlist:", err);
@@ -82,35 +88,19 @@ export default function UserProfile() {
             await api.delete(`/wishlist/${wishlist[0].id}`);
             setWishlistText("");
             setEditingWishlist(false);
-            fetchWishlist();
-        } catch (err) {
-            console.error("Erreur suppression wishlist:", err);
-        }
-    };
-
-    const fetchWishlist = useCallback(async () => {
-        if (!profileUserId) return;
-
-        try {
-            setLoadingWishlist(true);
-            const res = await api.get(`/wishlist/user/${profileUserId}`);
-            setWishlist(res.data);
-
-            if (res.data.length > 0) {
-                setWishlistText(res.data.map(item => item.souhait_texte).join("\n"));
+            const wishlistRes = await api.get(`/wishlist/user/${profileUser.id}`);
+            setWishlist(wishlistRes.data);
+            if (wishlistRes.data.length > 0) {
+                setWishlistText(wishlistRes.data.map(item => item.souhait_texte).join("\n"));
             } else {
                 setWishlistText("");
                 setEditingWishlist(false);
             }
-        } catch (err) {
-            console.error("Erreur chargement wishlist:", err);
-            setWishlist([]);
-            setWishlistText("");
-            setEditingWishlist(false);
-        } finally {
             setLoadingWishlist(false);
+        } catch (err) {
+            console.error("Erreur suppression wishlist:", err);
         }
-    }, [profileUserId]);
+    };
 
     const handleAvatarChange = async (e) => {
         const file = e.target.files[0];
@@ -148,30 +138,40 @@ export default function UserProfile() {
 
     useEffect(() => {
         if (loadingAuth) return;
-
-        if (!profileUserId) return;
+        if (!pseudo && !user) return; // pas de pseudo dans l'URL et pas connecté
 
         const fetchData = async () => {
             setLoading(true);
-
             try {
+                const userRes = pseudo
+                    ? await api.get(`/users/${pseudo}`)
+                    : await api.get(`/users/${user.pseudo}`);
                 
-                const userRes = await api.get(`/users/${profileUserId}`);
-                 setProfileUser(userRes.data);
-                
-                const annoncesRes = await api.get(`/annonces/user/${profileUserId}`);
+                setProfileUser(userRes.data);
+                const userId = userRes.data.id;
+
+                const annoncesRes = await api.get(`/annonces/user/${userId}`);
                 setAnnoncesUser(annoncesRes.data);
+
+                // Charger la wishlist avec l'id récupéré depuis la réponse
+                const wishlistRes = await api.get(`/wishlist/user/${userId}`);
+                setWishlist(wishlistRes.data);
+                if (wishlistRes.data.length > 0) {
+                    setWishlistText(wishlistRes.data.map(item => item.souhait_texte).join("\n"));
+                } else {
+                    setWishlistText("");
+                }
+
             } catch (err) {
                 console.error("Erreur chargement profil:", err);
             } finally {
                 setLoading(false);
+                setLoadingWishlist(false);
             }
-
-            fetchWishlist();
         };
 
         fetchData();
-    }, [profileUserId, isOwnProfile, user, loadingAuth , fetchWishlist, id]);
+    }, [pseudo, user, loadingAuth]);
 
     const getPhoto = (annonce) => getPhotoForAnnonce(annonce.photos);
 
@@ -196,7 +196,7 @@ export default function UserProfile() {
             <Helmet>
                 <title>
                     {isOwnProfile
-                    ? `Mon Profil | Le Troque Son | Profil de {profileUser.pseudo}`
+                    ? `Mon Profil | Le Troque Son`
                     : `Profil de ${profileUser.pseudo} | Le Troque Son`
                     }
                 </title>

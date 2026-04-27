@@ -528,7 +528,7 @@ export default function Annonce() {
                             <div className="space-y-2">
                                 <p>
                                     <strong>
-                                        <Link to={ isOwner? "/mon-profil" : `/profil/${annonce?.user?.id}`} className="text-green-600 hover:underline">
+                                        <Link to={ isOwner? "/mon-profil" : `/profil/${annonce?.user?.pseudo}`} className="text-green-600 hover:underline">
                                             {annonce.user?.pseudo || "Utilisateur inconnu"}
                                         </Link>
                                     </strong>

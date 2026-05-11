@@ -2,15 +2,24 @@ const { User, Departement } = require('../models');
 const defaultService = require('./defaultService');
 const { uploadToCloudinary } = require('../middlewares/upload');
 const cloudinary = require('cloudinary').v2;
+const { Op } = require('sequelize');
 
 const baseService = defaultService(User);
 
 const usersService = {
     ...baseService,
     
-    getByPseudo: async (pseudo) => {        
+    getByPseudo: async (identifier) => {     
+        
+        const isNumeric = !isNaN(identifier) && Number.isInteger(Number(identifier));
+
         const user = await User.findOne({
-            where: { pseudo },
+            where: {
+                [Op.or]: [
+                    ...(isNumeric ? [{ id: identifier }] : []), // Si c'est un nombre, check l'ID
+                    { pseudo: identifier } // Dans tous les cas, check le pseudo
+                ]
+            },
             attributes: { exclude: ["email", "password"] },
             include: {
                 model: Departement,

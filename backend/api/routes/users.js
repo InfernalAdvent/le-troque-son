@@ -7,7 +7,7 @@ const verifyCookieToken = require('../middlewares/auth');
 const { avatar: uploadAvatar } = require('../middlewares/upload');
 
 
-router.get('/:pseudo', usersController.getByPseudo);
+router.get('/:identifier', usersController.getByPseudo);
 
 router.post('/avatar', verifyCookieToken, uploadAvatar.single('avatar'), usersController.uploadAvatar);
 router.delete('/avatar', verifyCookieToken, usersController.deleteAvatar);

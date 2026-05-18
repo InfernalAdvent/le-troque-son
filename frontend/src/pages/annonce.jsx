@@ -395,7 +395,7 @@ export default function Annonce() {
                             <input
                                 value={formData.titre || ""}
                                 onChange={(e) => setFormData({ ...formData, titre: e.target.value })}
-                                className="w-full bg-white text-gray-700 text-3xl font-bold border rounded px-2 py-1 mb-4"
+                                className="w-full bg-white text-gray-700 text-3xl font-bold border border-gray-300 rounded px-2 py-1 mb-4"
                             />
                         ) : (
                             <h1 className="text-3xl font-bold text-green-600 mb-4">{annonce.titre}</h1>
@@ -426,7 +426,7 @@ export default function Annonce() {
                                         setErrors({ ...errors, prix: null });
                                     }
                                 }}
-                                className={`w-64 bg-white text-gray-700 text-xl border rounded px-2 py-1 mb-1 ${
+                                className={`w-64 bg-white text-gray-700 text-xl border border-gray-300 rounded px-2 py-1 mb-1 ${
                                     errors.prix ? 'border-red-600' : ''
                                 }`}
                             />
@@ -471,11 +471,11 @@ export default function Annonce() {
                             <h2 className="text-xl font-semibold text-green-600 mb-4">Détails de l'annonce</h2>
                             {editMode ? (
                                 <div className="space-y-4">
-                                    <label className="block font-semibold mb-1">État :
+                                    <label className="block font-semibold mb-1">État
                                         <select
                                             value={formData.etat || ""}
                                             onChange={(e) => setFormData({ ...formData, etat: e.target.value })}
-                                            className="w-full p-3 border rounded font-normal mt-1 mb-1"
+                                            className="w-full p-3 border border-gray-300 rounded font-normal mt-1 mb-1"
                                         >
                                             <option value="Comme neuf">Comme neuf</option>
                                             <option value="Très bon état">Très bon état</option>
@@ -483,7 +483,7 @@ export default function Annonce() {
                                             <option value="Usagé">Usagé</option>
                                         </select>
                                     </label>
-                                    <label className="block font-semibold mb-1">Échange possible :
+                                    <label className="block font-semibold mb-1">Échange possible
                                         <input
                                             value={formData.echange_souhaite_texte || ""}
                                             onChange={(e) => {
@@ -492,8 +492,8 @@ export default function Annonce() {
                                                     setErrors({ ...errors, echange_souhaite_texte: null });
                                                 }
                                             }}
-                                            placeholder="Ex: Échange possible contre un vélo"
-                                            className={`w-full p-3 border rounded font-normal mt-1 mb-1 ${
+                                            placeholder="Ex: Échange possible contre une Gibson Lespaul Custom"
+                                            className={`w-full p-3 border border-gray-300 rounded font-normal mt-1 mb-1 ${
                                                 errors.echange_souhaite_texte ? 'border-red-600' : ''}`}
                                         />
                                         {errors.echange_souhaite_texte && (
@@ -513,12 +513,29 @@ export default function Annonce() {
                                 </div>
                             ) : ( 
                                 <div className="space-y-2">
-                                    <p><strong>État :</strong> {annonce.etat}</p>
+                                    <p>
+                                        <span className="font-semibold">État :</span>{" "}
+                                        <span className="font-normal">{annonce.etat}</span>
+                                    </p>
+
                                     {annonce.echange_souhaite_texte && (
-                                        <p><strong>Échange possible contre :</strong> {annonce.echange_souhaite_texte}</p>
-                                    )}                                
-                                    <p><strong>Ville :</strong> {annonce.ville}</p>
-                                    <p><strong>Code Postal :</strong> {annonce.code_postal}</p>
+                                        <p>
+                                            <span className="font-semibold">Échange possible contre :</span>{" "}
+                                            <span className="font-normal">
+                                                {annonce.echange_souhaite_texte}
+                                            </span>
+                                        </p>
+                                    )}
+
+                                    <p>
+                                        <span className="font-semibold">Ville :</span>{" "}
+                                        <span className="font-normal">{annonce.ville}</span>
+                                    </p>
+
+                                    <p>
+                                        <span className="font-semibold">Code Postal :</span>{" "}
+                                        <span className="font-normal">{annonce.code_postal}</span>
+                                    </p>
                                 </div>
                             )}
                         </div>

@@ -62,7 +62,7 @@ export default function CityAutocomplete({
                     value={ville || ""}
                     onChange={handleVilleChange}
                     onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                    className="w-full p-3 border rounded"
+                    className="w-full p-3 border border-gray-300 rounded"
                     placeholder="Ex: Marseille"
                     required={required}
                     autoComplete="off"
@@ -96,7 +96,7 @@ export default function CityAutocomplete({
                     <select
                         value={codePostal || ""}
                         onChange={handleCodePostalChange}
-                        className="w-full p-3 border rounded"
+                        className="w-full p-3 border border-gray-300 rounded"
                         required={required}
                     >
                         <option value="">Choisir un code postal</option>
@@ -107,7 +107,7 @@ export default function CityAutocomplete({
                 ) : (
                     <input
                         value={codePostal || ""}
-                        className="w-full p-3 border rounded"
+                        className="w-full p-3 border border-gray-300 rounded"
                         readOnly
                         required={required}
                     />

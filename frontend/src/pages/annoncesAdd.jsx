@@ -229,7 +229,7 @@ export default function AnnoncesAdd() {
                         name="titre"
                         value={formData.titre}
                         onChange={handleChange}
-                        className="w-full p-3 border rounded"
+                        className="w-full p-3 border border-gray-300 rounded"
                         required
                     />
                 </div>
@@ -296,7 +296,7 @@ export default function AnnoncesAdd() {
                         name="categorie_id"
                         value={formData.categorie_id}
                         onChange={handleChange}
-                        className="w-full p-3 border rounded"
+                        className="w-full p-3 border border-gray-300 rounded"
                         required
                     >
                         <option value="">Sélectionner une catégorie</option>
@@ -310,7 +310,7 @@ export default function AnnoncesAdd() {
                         name="description"
                         value={formData.description}
                         onChange={handleChange}
-                        className="w-full p-3 border rounded"
+                        className="w-full p-3 border border-gray-300 rounded"
                         rows="4"
                         required
                     ></textarea>
@@ -323,7 +323,7 @@ export default function AnnoncesAdd() {
                         name="prix"
                         value={formData.prix}
                         onChange={handleChange}
-                        className="w-full p-3 border rounded"
+                        className="w-full p-3 border border-gray-300 rounded"
                         min="0"
                         required
                     />
@@ -336,7 +336,7 @@ export default function AnnoncesAdd() {
                         name="echange_souhaite_texte"
                         value={formData.echange_souhaite_texte}
                         onChange={handleChange}
-                        className="w-full p-3 border rounded"
+                        className="w-full p-3 border border-gray-300 rounded"
                         placeholder="Ex: Contre une basse, un ampli..."
                     />
                 </div>
@@ -347,7 +347,7 @@ export default function AnnoncesAdd() {
                         name="etat"
                         value={formData.etat}
                         onChange={handleChange}
-                        className="w-full p-3 border rounded"
+                        className="w-full p-3 border border-gray-300 rounded"
                         required
                     >
                         <option value="">Sélectionner</option>

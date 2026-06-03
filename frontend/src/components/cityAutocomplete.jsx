@@ -57,7 +57,7 @@ export default function CityAutocomplete({
     return (
         <div className="space-y-2">
             <div className="relative">
-                <label className="block font-semibold mb-1">Ville</label>
+                <label className="block font-semibold text-gray-700 mb-1">Ville</label>
                 <input
                     value={ville || ""}
                     onChange={handleVilleChange}
@@ -91,7 +91,7 @@ export default function CityAutocomplete({
             </div>
 
             <div>
-                <label className="block font-semibold mb-1">Code postal</label>
+                <label className="block font-semibold text-gray-700 mb-1">Code postal</label>
                 {codesPostauxDisponibles.length > 1 ? (
                     <select
                         value={codePostal || ""}

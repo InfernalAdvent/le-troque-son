@@ -13,6 +13,8 @@ import { getPhotoForAnnonce } from './utils/getPhotoForAnnonce';
 
 // 2. IMPORTS LAZY (Uniquement les pages lourdes et distantes)
 const Login = lazy(() => import('./pages/login'));
+const ForgotPassword = lazy(() => import('./pages/forgetPassword'));
+const ResetPassword = lazy(() => import('./pages/resetPassword'));
 const SignUp = lazy(() => import('./pages/signup'));
 const Annonce = lazy(() => import('./pages/annonce'));
 const AnnoncesAdd = lazy(() => import('./pages/annoncesAdd'));
@@ -267,6 +269,8 @@ function App() {
               {/* Ces composants seront chargés dynamiquement */}
               <Route path="/annonces/:id" element={<Annonce/>} />
               <Route path="/login" element={<Login />} />
+              <Route path="/mot-de-passe-oublie" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/inscription" element={<SignUp />} />
               <Route path="/mon-profil" element={<UserProfile key="own-profile" />} />
               <Route path="/profil/:pseudo" element={<UserProfile />} />

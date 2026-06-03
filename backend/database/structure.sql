@@ -51,6 +51,8 @@ CREATE TABLE users (
     date_inscription DATETIME DEFAULT CURRENT_TIMESTAMP,
     derniere_connexion DATETIME DEFAULT NULL,
     avatar_url VARCHAR(255) DEFAULT NULL,
+    reset_token VARCHAR(255) DEFAULT NULL,
+    reset_token_expiration DATETIME DEFAULT NULL,
 
     INDEX idx_users_departement (departement_numero),
 
@@ -109,7 +111,7 @@ CREATE TABLE annonces (
 
 CREATE TABLE wishlist (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
+    user_id INT NOT NULL UNIQUE,
     souhait_texte VARCHAR(255) DEFAULT NULL,
     date_ajout DATETIME DEFAULT CURRENT_TIMESTAMP,
 

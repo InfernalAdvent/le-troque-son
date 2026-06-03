@@ -441,7 +441,7 @@ export default function Messages() {
                                                             : 'bg-gray-200 text-gray-700 rounded-bl-sm'
                                                     }`}>
                                                         <p className="text-sm whitespace-pre-wrap">{message.contenu}</p>
-                                                        <p className={`text-xs mt-1 ${isOwn ? 'text-green-200' : 'text-gray-500'}`}>
+                                                        <p className={`text-xs mt-1 text-right ${isOwn ? 'text-green-200' : 'text-gray-500'}`}>
                                                             {formatDate(message.date_envoi)}
                                                             {isOwn && (
                                                                 <span className="ml-1">

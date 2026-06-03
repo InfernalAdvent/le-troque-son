@@ -471,7 +471,7 @@ export default function Annonce() {
                             <h2 className="text-xl font-semibold text-green-600 mb-4">Détails de l'annonce</h2>
                             {editMode ? (
                                 <div className="space-y-4">
-                                    <label className="block font-semibold mb-1">État
+                                    <label className="block font-semibold text-gray-700 mb-1">État
                                         <select
                                             value={formData.etat || ""}
                                             onChange={(e) => setFormData({ ...formData, etat: e.target.value })}
@@ -483,7 +483,7 @@ export default function Annonce() {
                                             <option value="Usagé">Usagé</option>
                                         </select>
                                     </label>
-                                    <label className="block font-semibold mb-1">Échange possible
+                                    <label className="block font-semibold text-gray-700 mb-1">Échange possible
                                         <input
                                             value={formData.echange_souhaite_texte || ""}
                                             onChange={(e) => {

@@ -62,7 +62,7 @@ export default function Login() {
                         <label className="block text-sm font-medium text-gray-700 mb-1">
                             Mot de passe
                         </label>
-                        <div className="relative">
+                        <div className="relative pb-2">
                             <input
                                 type={showPassword ? "text" : "password"}
                                 required
@@ -91,6 +91,12 @@ export default function Login() {
                 </form>
                 
                 <p className="text-center text-sm text-gray-600 mt-4">
+                    Mot de passe oublié ?{" "}
+                    <NavLink to="/mot-de-passe-oublie" className="text-green-600 hover:underline">
+                        Réinitialiser
+                    </NavLink>
+                </p>
+                <p className="text-center text-sm text-gray-600 mt-2">
                     Pas encore de compte ?{" "}
                     <NavLink to="/inscription" className="text-green-600 hover:underline">
                         S'inscrire

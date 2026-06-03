@@ -17,7 +17,7 @@ export default function Header() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const isAuthPage = ["/login", "/inscription", "/annonces/add"].some(path =>
+    const isAuthPage = ["/login", "/inscription", "/annonces/add", "/mot-de-passe-oublie", "/reset-password"].some(path =>
         location.pathname.startsWith(path)
     );
 

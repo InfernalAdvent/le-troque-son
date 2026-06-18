@@ -34,13 +34,11 @@ export default function Header() {
         fetchMainCategories();
     }, []);
 
-    // Détecter si on est sur une page de catégorie et charger les enfants
     useEffect(() => {
         const match = location.pathname.match(/^\/categorie\/(\d+)/);
     
-    // Si on n'est pas sur une page catégorie, réinitialiser
+        // Évite un re-render inutile quand on quitte une catégorie
         if (!match) {
-            // 👇 Vérifier d'abord si on a vraiment besoin de modifier
             if (sousCategories.length > 0 || filtresActifs.length > 0) {
                 startTransition(() => {
                     setSousCategories([]);
@@ -50,31 +48,14 @@ export default function Header() {
             return;
         }
     
-    // Si on est sur une page catégorie, charger les sous-catégories
         const categorieId = match[1];
         
         const fetchSousCategories = async() => {
             try {
                 const childrenRes = await api.get(`/categories/${categorieId}/children`);
+
+                setSousCategories(childrenRes.data);
                 
-                const categoriesAvecEnfants = await Promise.all(
-                    childrenRes.data.map(async (cat) => {
-                        try {
-                            const enfantsRes = await api.get(`/categories/${cat.id}/children`);
-                            return {
-                                ...cat,
-                                hasChildren: enfantsRes.data.length > 0
-                            };
-                        } catch (err) {
-                            console.error(`Erreur vérification enfants catégorie ${cat.id}:`, err);
-                            return { ...cat, hasChildren: false };
-                        }
-                    })
-                );
-                
-                setSousCategories(categoriesAvecEnfants);
-                
-                 // Synchronise filtresActifs avec l'URL au lieu de réinitialiser
                 const params = new URLSearchParams(location.search);
                 const filtresParam = params.get('filtres');
                 

@@ -53,7 +53,7 @@ const conversationController = {
         const userId = req.user.id;
 
         try {
-            const conversations = await conversationService.getUserConversations(userId);
+            const conversations = await conversationService.getConversations(userId);
             res.status(200).json(conversations);
         } catch (error) {
             logger.error("Erreur lors de la récupération des conversations:", error);
@@ -61,7 +61,7 @@ const conversationController = {
         }
     },
 
-    getHistory: async (req, res) => {
+    getConversationHistory: async (req, res) => {
         const { error, value } = conversationIdSchema.validate({ id: parseInt(req.params.id, 10) });
         if (error) {
             return res.status(400).json({ error: error.details[0].message });
@@ -123,24 +123,6 @@ const conversationController = {
         } catch (error) {
             logger.error("Erreur lors du masquage de la conversation:", error);
             res.status(403).json({ error: error.message });
-        }
-    },
-
-    markAsRead: async (req, res) => {
-        const { error, value } = conversationIdSchema.validate({ id: parseInt(req.params.id, 10) });
-        if (error) {
-            return res.status(400).json({ error: error.details[0].message });
-        }
-
-        const userId = req.user.id;
-        const conversationId = value.id;
-
-        try {
-            await conversationService.markAsRead(conversationId, userId);
-            res.status(200).json({ message: "Message lu" });
-        } catch (error) {
-            logger.error("Erreur markAsRead:", error);
-            res.status(500).json({ message: "Erreur serveur" });
         }
     }
 };

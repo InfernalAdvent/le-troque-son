@@ -103,7 +103,7 @@ const conversationService = {
      * @param {number} userId - L'ID de l'utilisateur connecté.
      * @returns {Array<object>} Liste des conversations.
      */
-    getUserConversations: async (userId) => {
+    getConversations: async (userId) => {
         try {
             return await Conversation.findAll({
                 where: {
@@ -120,7 +120,7 @@ const conversationService = {
                 include: ConversationIncludes
             });
         } catch (error) {
-            logger.error("Erreur dans getUserConversations:", error);
+            logger.error("Erreur dans getConversations:", error);
             throw new Error(`Erreur lors de la récupération des conversations : ${error.message}`);
         }
     },
@@ -264,28 +264,6 @@ const conversationService = {
         } catch (error) {
             logger.error("Erreur masquage conversation:", error);
             throw new Error(`Erreur lors du masquage : ${error.message}`);
-        }
-    },
-
-    /**
-     * Marquer comme lu un message
-     * @param {number} conversationId - L'ID de la conversation.
-     * @param {number} userId - L'ID de l'utilisateur connecté.
-     */
-    markAsRead: async (conversationId, userId) => {
-        try {
-            await Message.update(
-                {lu_par_destinataire: true},
-                {
-                    where: {
-                        conversation_id: conversationId,
-                        expediteur_id: { [Op.ne]: userId }
-                    }
-                }
-            );
-        } catch (error) {
-            logger.error("Erreur markAsRead:", error);
-            throw new Error(`Erreur lors du read : ${error.message}`)
         }
     }
 };

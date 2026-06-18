@@ -6,8 +6,7 @@ const verifyCookieToken = require('../middlewares/auth');
 
 router.post('/', verifyCookieToken, conversationController.startConversation);
 router.get('/', verifyCookieToken, conversationController.getConversations);
-router.get('/:id/messages', verifyCookieToken, conversationController.getHistory);
-router.put('/:id/read', verifyCookieToken, conversationController.markAsRead);
+router.get('/:id/messages', verifyCookieToken, conversationController.getConversationHistory);
 router.post('/:id/messages', verifyCookieToken, conversationController.postMessage);
 router.delete('/:id', verifyCookieToken, conversationController.hideConversation);
 

@@ -45,7 +45,6 @@ export default function Messages() {
             const res = await api.get(`/conversations/${conversation.id}/messages`);
             setMessages(res.data);
 
-            await api.put(`/conversations/${conversation.id}/read`);
 
              // Mettre à jour l'état local immédiatement
             setConversations(prev =>
@@ -92,7 +91,6 @@ export default function Messages() {
                     
                 // Vérifier s'il y a de nouveaux messages
                 if (newMessages.length > messages.length) {
-                    setMessages(newMessages);
                     setTimeout(scrollToBottom, 10);
                 }
             }

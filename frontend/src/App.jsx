@@ -57,7 +57,9 @@ function Home() {
   }, [location.search]);
 
 
-  const totalPages = Math.ceil(annonces.length / itemsPerPage);
+  const totalPages = Math.ceil(annonces.length / itemsPerPage
+  );
+  
   const paginatedAnnonces = annonces.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage

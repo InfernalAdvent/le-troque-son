@@ -16,14 +16,6 @@ const checkAnnonceOwnership = async (annonceId, userId) => {
 
 const photoService = {
 
-    getAllPublic: async () => {
-        return Photo.findAll({
-            where: { annonce_id: { [Op.ne]: null } },
-            attributes: ['id', 'annonce_id', 'url', 'ordre'],
-            order: [['ordre', 'ASC']]
-        });
-    },
-
     uploadPhotos: async (files, userId, annonceId = null) => {
         try {
             if (annonceId) {

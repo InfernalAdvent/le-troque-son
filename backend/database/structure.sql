@@ -78,7 +78,7 @@ CREATE TABLE annonces (
     date_publication DATETIME DEFAULT CURRENT_TIMESTAMP,
     ville VARCHAR(45) NOT NULL,
     code_postal VARCHAR(5) NOT NULL,
-    user_id INT DEFAULT NULL,
+    user_id INT NOT NULL,
     departement_numero VARCHAR(3) NOT NULL,
     deleted_at DATETIME DEFAULT NULL,
 
@@ -95,7 +95,7 @@ CREATE TABLE annonces (
     CONSTRAINT fk_annonces_user
         FOREIGN KEY (user_id)
         REFERENCES users(id)
-        ON DELETE SET NULL
+        ON DELETE RESTRICT
         ON UPDATE CASCADE,
 
     CONSTRAINT fk_annonces_departement

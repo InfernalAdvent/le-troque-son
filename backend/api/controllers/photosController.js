@@ -32,16 +32,6 @@ const updateOrderSchema = Joi.object({
 
 const photoController = {
 
-    getAllPublic: async (req, res) => {
-        try {
-            const photos = await photoService.getAllPublic();
-            res.json(photos);
-        } catch (err) {
-            logger.error("Erreur récupération photos publiques:", err);
-            res.status(500).json({ error: "Erreur serveur" });
-        }
-    },
-
     upload: async (req, res) => {
         if (!req.files || req.files.length === 0) {
             return res.status(400).json({ error: "Aucune photo reçue." });

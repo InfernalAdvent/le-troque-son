@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const verifyCookieToken = require('../middlewares/auth');
+const { verifyCookieToken } = require('../middlewares/auth');
 const { photos: upload } = require("../middlewares/upload");
 
 const { Photo } = require('../models');

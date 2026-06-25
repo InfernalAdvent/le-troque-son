@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const conversationController = require('../controllers/conversationsController');
-const verifyCookieToken = require('../middlewares/auth');
+const { verifyCookieToken } = require('../middlewares/auth');
 
 
 router.post('/', verifyCookieToken, conversationController.startConversation);

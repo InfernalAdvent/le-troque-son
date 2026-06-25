@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { Wishlist } = require('../models');
-const verifyCookieToken = require('../middlewares/auth');
+const { verifyCookieToken } = require('../middlewares/auth');
 
 const wishlistSpecificController = require('../controllers/wishlistsController');
 

@@ -3,6 +3,7 @@ import { Menu, X, Search, User, MessageSquare, ChevronLeft, UserCircle, LogIn, L
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "./authContext";
 import api from "../api";
+import socket from "../socket";
 
 export default function Header() {
     const [mainCategories, setMainCategories] = useState([]);
@@ -93,9 +94,39 @@ export default function Header() {
         };
 
         checkUnread();
-        const interval = setInterval(checkUnread, 30000);
-        return () => clearInterval(interval);
     }, [user]);
+
+   useEffect(() => {
+        if (!user) return;
+
+        const handleNotification = () => {
+            if (window.location.pathname !== '/messages') {
+                setHasUnread(true);
+            }
+        };
+
+        const registerListener = () => {
+            socket.on('nouvelle_notification', handleNotification);
+        };
+
+        if (socket.connected) {
+            registerListener();
+        } else {
+            socket.once('connect', registerListener);
+        }
+
+        return () => {
+            socket.off('connect', registerListener);
+            socket.off('nouvelle_notification', handleNotification);
+        };
+    }, [user]);
+
+    //  Réinitialisation du badge quand on visite /messages
+    useEffect(() => {
+        if (location.pathname === '/messages') {
+            setHasUnread(false);
+        }
+    }, [location.pathname]);
 
     // Fonction pour retourner à la page d'accueil
     const retourArriere = () => {

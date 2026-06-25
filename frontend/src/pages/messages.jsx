@@ -3,6 +3,7 @@ import { AuthContext } from "../components/authContext";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { Trash2 } from "lucide-react";
 import api from "../api";
+import socket from "../socket";
 
 export default function Messages() {
     const { user, loadingAuth } = useContext(AuthContext);
@@ -71,58 +72,62 @@ export default function Messages() {
     }, [user]);
 
     useEffect(() => {
-        if (!selectedConversation || selectedConversation.isNew) return;
-
-        // Fonction pour rafraîchir les messages
-        const refreshMessages = async () => {
-            try {
-                const res = await api.get(`/conversations/${selectedConversation.id}/messages`);
-                const newMessages = res.data;
-
-                 const hasChanges = 
-                    newMessages.length !== messages.length ||
-                    newMessages.some((newMsg, index) => {
-                        const oldMsg = messages[index];
-                        return oldMsg && oldMsg.lu_par_destinataire !== newMsg.lu_par_destinataire;
-                    });
-
-                if (hasChanges) {
-                    setMessages(newMessages);
-                    
-                // Vérifier s'il y a de nouveaux messages
-                if (newMessages.length > messages.length) {
-                    setTimeout(scrollToBottom, 10);
-                }
-            }
-            } catch (err) {
-                console.error("Erreur rafraîchissement messages:", err);
-            }
-        };
-
-        
-
-        // Rafraîchir toutes les 30 secondes
-        const interval = setInterval(refreshMessages, 30000);
-
-        // Nettoyer l'intervalle quand on change de conversation ou quitte la page
-        return () => clearInterval(interval);
-    }, [selectedConversation, messages]);
-
-    useEffect(() => {
         if (!user) return;
 
-        // Rafraîchir la conversation pour afficher le dernier message
-        const refreshConversations = async () => {
-            try {
-                const res = await api.get("/conversations");
-                setConversations(res.data);
-            } catch (err) {
-                console.error("Erreur rafraîchissement conversations:", err);
-            }
+        const handleNouveauMessage = async ({ conversationId, message }) => {
+            // Mettre à jour la liste des conversations dans tous les cas
+            const convRes = await api.get("/conversations");
+            setConversations(convRes.data);
+
+            // Si la conversation reçue est celle actuellement ouverte,
+            // ajouter le message directement et le marquer comme lu
+            setSelectedConversation(prev => {
+                if (prev?.id === conversationId) {
+                    setMessages(prevMessages => {
+                        if (prevMessages.some(m => m.id === message.id)) {
+                            return prevMessages; // Message déjà présent, ne rien faire
+                        }
+                        return [...prevMessages, message];
+                    });
+                    setTimeout(scrollToBottom, 10);
+
+                    // Marquer comme lu côté serveur
+                    api.get(`/conversations/${conversationId}/messages`).catch(() => {});
+                }
+                return prev;
+            });
+        };
+        const handleMessagesLus = ({ conversationId }) => {
+            setSelectedConversation(prev => {
+                if (prev?.id === conversationId) {
+                    setMessages(prevMessages =>
+                        prevMessages.map(m => ({ ...m, lu_par_destinataire: true }))
+                    );
+                }
+                return prev;
+            });
         };
 
-        const interval = setInterval(refreshConversations, 30000);
-        return () => clearInterval(interval);
+         // Si la socket est déjà connectée, enregistrer directement
+        // Sinon attendre l'événement connect
+        const registerListeners = () => {
+            socket.off('nouveau_message', handleNouveauMessage);
+            socket.on('nouveau_message', handleNouveauMessage);
+            socket.off('messages_lus', handleMessagesLus);
+            socket.on('messages_lus', handleMessagesLus);
+        };
+
+        if (socket.connected) {
+            registerListeners();
+        } else {
+            socket.once('connect', registerListeners);
+        }
+
+        return () => {
+            socket.off('connect', registerListeners);
+            socket.off('nouveau_message', handleNouveauMessage);
+            socket.off('messages_lus', handleMessagesLus);
+        };
     }, [user]);
 
     const handleSendMessage = async () => {
@@ -143,24 +148,20 @@ export default function Messages() {
                 setSelectedConversation(newConvRes.data);
             }
 
-            const res = await api.post(`/conversations/${conversationId}/messages`, {
+            await api.post(`/conversations/${conversationId}/messages`, {
                 contenu: newMessage.trim()
             });
 
-            setMessages(prev => [...prev, res.data]);
             setNewMessage("");
 
-            // Recharger les conversations pour avoir la mise à jour
-            const convRes = await api.get("/conversations");
-            setConversations(convRes.data);
-
-            setTimeout(scrollToBottom, 100);
+           
         } catch (err) {
             console.error("Erreur envoi message:", err);
         } finally {
             setSending(false);
         }
     };
+
 
     const handleKeyPress = (e) => {
         if (e.key === "Enter" && !e.shiftKey) {

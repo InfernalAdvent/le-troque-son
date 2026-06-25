@@ -13,6 +13,7 @@
 | Base de données | MySQL (via Sequelize) |
 | Authentification | JWT (cookie httpOnly) |
 | Stockage des images | Cloudinary |
+| WebSocket | Socket IO |
 
 ---
 

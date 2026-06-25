@@ -1,5 +1,6 @@
 import { createContext, useState, useEffect } from "react";
 import api from "../api";
+import socket from "../socket";
 
 const AuthContext = createContext();
 
@@ -22,6 +23,15 @@ export default function AuthProvider({ children }) {
     };
     fetchUser();
   }, []);
+
+   // Connecter/déconnecter la socket selon l'état de l'utilisateur
+  useEffect(() => {
+    if (user) {
+      socket.connect();
+    } else {
+      socket.disconnect();
+    }
+  }, [user]);
 
   return (
     <AuthContext.Provider value={{ user, setUser, loadingAuth }}> 

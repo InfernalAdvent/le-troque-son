@@ -10,6 +10,8 @@ const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const { csrfProtection, csrfToken } = require('./middlewares/csrf');
 const PORT = process.env.PORT || 5000;
+const http = require('http');
+const { initSocket } = require('./socket');
 
 const usersRouter = require('./routes/users');
 const departementsRouter = require('./routes/departements');
@@ -60,17 +62,8 @@ const limiter = rateLimit({
   message: 'Trop de requêtes, réessayez plus tard.',
   standardHeaders: true,
   legacyHeaders: false,
-  skip: (req) => req.path.startsWith('/conversations') || req.path.startsWith('/auth') // Exclure les routes avec leur propre rate limiter
+  skip: (req) => req.path.startsWith('/auth') // Exclue les routes avec leur propre rate limiter
 });
-// Rate limiting spécifique pour la messagerie (polling toutes les 5s)
-const messagingLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 2000, // Plus permissif pour le polling
-  message: 'Trop de requêtes de messagerie, réessayez plus tard.',
-  standardHeaders: true,
-  legacyHeaders: false,
-});
-app.use(limiter);
 
 // Rate limiting strict pour l'authentification (anti brute-force)
 const authLimiter = rateLimit({
@@ -83,9 +76,7 @@ const authLimiter = rateLimit({
 app.use('/auth/login', authLimiter);
 app.use('/auth/signup', authLimiter);
 
-// Appliquer le rate limit spécifique aux conversations
-app.use('/conversations', messagingLimiter);
-
+app.use('/conversations', conversationsRouter);
 app.use('/users', usersRouter);
 app.use('/departements', departementsRouter);
 app.use('/annonces', annoncesRouter);
@@ -98,7 +89,10 @@ app.use('/conversations', conversationsRouter);
 // Route pour obtenir le token CSRF
 app.get('/csrf-token', csrfToken);
 
-app.listen(PORT, () => {
+const httpServer = http.createServer(app);
+initSocket(httpServer);
+
+httpServer.listen(PORT, () => {
   logger.info(`Serveur démarré sur le port ${PORT}`);
 });
 

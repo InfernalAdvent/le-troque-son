@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const { Wishlist } = require('../models');
-const verifyCookieToken = require('../middlewares/auth');
+const { verifyCookieToken } = require('../middlewares/auth');
 
 const wishlistSpecificController = require('../controllers/wishlistsController');
 
@@ -13,8 +13,6 @@ const wishlistDefaultService = defaultService(Wishlist);
 const wishlistDefaultController = defaultController(wishlistDefaultService);
 
 router.get('/user/:userId', wishlistDefaultController.getByUserId);
-router.get('/', wishlistDefaultController.getAll);
-router.get('/:id', wishlistDefaultController.getById);
 router.post('/', verifyCookieToken, wishlistSpecificController.createWishlist);
 router.put('/:id', verifyCookieToken, wishlistSpecificController.updateWishlistOwner);
 router.delete('/:id', verifyCookieToken, wishlistDefaultController.delete);

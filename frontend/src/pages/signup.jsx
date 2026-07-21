@@ -2,6 +2,7 @@ import { useState, useEffect, useContext } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import { AuthContext } from "../components/authContext";
 import { Eye, EyeOff } from "lucide-react";
+import { Helmet } from "react-helmet-async";
 import api from "../api";
 
 export default function Signup() {
@@ -83,168 +84,177 @@ export default function Signup() {
     }, []);
 
     return (
-        <div className="flex justify-center items-center min-h-screen py-12">
-            <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl">
-                <h2 className="text-3xl font-bold text-green-600 mb-6">Créer un compte</h2>
-                
-                <form onSubmit={handleSubmit} className="space-y-4">
-                    {error && (
-                        <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">
-                            {error}
-                        </div>
-                    )}
+        <>
+            <Helmet>
+                <title>Le Troque Son | Créer un compte</title>
+                <meta 
+                    name="description" 
+                    content="Créez votre compte Le Troque Son et commencez à échanger vos instruments et votre musique dès aujourd'hui !" 
+                />
+            </Helmet>
+            <div className="flex justify-center items-center min-h-screen py-12">
+                <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl">
+                    <h2 className="text-3xl font-bold text-green-600 mb-6">Créer un compte</h2>
                     
-                    {/* Ligne 1 : Prénom et Nom */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        {error && (
+                            <div className="bg-red-50 text-red-600 p-3 rounded-md text-sm">
+                                {error}
+                            </div>
+                        )}
+                        
+                        {/* Ligne 1 : Prénom et Nom */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Prénom *
+                                </label>
+                                <input
+                                    type="text"
+                                    name="prenom"
+                                    required
+                                    value={formData.prenom}
+                                    onChange={handleChange}
+                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
+                                />
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Nom *
+                                </label>
+                                <input
+                                    type="text"
+                                    name="nom"
+                                    required
+                                    value={formData.nom}
+                                    onChange={handleChange}
+                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
+                                />
+                            </div>
+                        </div>
+                        
+                        {/* Pseudo */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Prénom *
+                                Pseudo *
                             </label>
                             <input
                                 type="text"
-                                name="prenom"
+                                name="pseudo"
                                 required
-                                value={formData.prenom}
+                                value={formData.pseudo}
                                 onChange={handleChange}
                                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
                             />
                         </div>
                         
+                        {/* Email */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Nom *
+                                Email *
                             </label>
                             <input
-                                type="text"
-                                name="nom"
+                                type="email"
+                                name="email"
                                 required
-                                value={formData.nom}
+                                value={formData.email}
                                 onChange={handleChange}
                                 className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
                             />
                         </div>
-                    </div>
-                    
-                    {/* Pseudo */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Pseudo *
-                        </label>
-                        <input
-                            type="text"
-                            name="pseudo"
-                            required
-                            value={formData.pseudo}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
-                        />
-                    </div>
-                    
-                    {/* Email */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Email *
-                        </label>
-                        <input
-                            type="email"
-                            name="email"
-                            required
-                            value={formData.email}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
-                        />
-                    </div>
-                    
-                    {/* Ligne 2 : Mot de passe et Confirmation */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Mot de passe *
-                            </label>
-                            <div className="relative">
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    name="password"
-                                    required
-                                    value={formData.password}
-                                    onChange={handleChange}
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-12 focus:outline-none focus:border-green-600"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-2 text-gray-600 hover:text-green-600 cursor-pointer text-xl"
-                                    title={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-                                >
-                                    {showPassword ? <EyeOff /> : <Eye />}
-                                </button>
+                        
+                        {/* Ligne 2 : Mot de passe et Confirmation */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Mot de passe *
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        name="password"
+                                        required
+                                        value={formData.password}
+                                        onChange={handleChange}
+                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-12 focus:outline-none focus:border-green-600"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-2 text-gray-600 hover:text-green-600 cursor-pointer text-xl"
+                                        title={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                                    >
+                                        {showPassword ? <EyeOff /> : <Eye />}
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Confirmer le mot de passe *
+                                </label>
+                                <div className="relative">
+                                    <input
+                                        type={showPassword ? "text" : "password"}
+                                        name="confirmPassword"
+                                        required
+                                        value={formData.confirmPassword}
+                                        onChange={handleChange}
+                                        className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-12 focus:outline-none focus:border-green-600"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword(!showPassword)}
+                                        className="absolute right-3 top-2 text-gray-600 hover:text-green-600 cursor-pointer text-xl"
+                                        title={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
+                                    >
+                                        {showPassword ? <EyeOff /> : <Eye />}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         
+                        {/* Département */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Confirmer le mot de passe *
+                                Département *
                             </label>
-                            <div className="relative">
-                                <input
-                                    type={showPassword ? "text" : "password"}
-                                    name="confirmPassword"
-                                    required
-                                    value={formData.confirmPassword}
-                                    onChange={handleChange}
-                                    className="w-full border border-gray-300 rounded-lg px-4 py-2 pr-12 focus:outline-none focus:border-green-600"
-                                />
-                                <button
-                                    type="button"
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    className="absolute right-3 top-2 text-gray-600 hover:text-green-600 cursor-pointer text-xl"
-                                    title={showPassword ? "Masquer le mot de passe" : "Afficher le mot de passe"}
-                                >
-                                    {showPassword ? <EyeOff /> : <Eye />}
-                                </button>
-                            </div>
+                            <select
+                                name="departement_numero" 
+                                required
+                                value={formData.departement_numero}
+                                onChange={handleChange}
+                                className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
+                            >
+                                <option value="">Sélectionner un département</option>
+                                {departements
+                                    .filter(dep => dep && dep.numero && dep.nom)
+                                    .map(dep => (
+                                        <option key={dep.id} value={dep.numero}>
+                                            {dep.numero} - {dep.nom}
+                                        </option>
+                                    ))}
+                            </select>
                         </div>
-                    </div>
-                    
-                    {/* Département */}
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Département *
-                        </label>
-                        <select
-                            name="departement_numero" // 👈 Corrige le name
-                            required
-                            value={formData.departement_numero}
-                            onChange={handleChange}
-                            className="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-green-600"
+                        
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className="w-full bg-green-600 hover:bg-green-800 cursor-pointer text-white font-medium py-3 rounded-lg transition-colors disabled:bg-gray-400 mt-6"
                         >
-                            <option value="">Sélectionner un département</option>
-                            {departements
-                                .filter(dep => dep && dep.numero && dep.nom)
-                                .map(dep => (
-                                    <option key={dep.id} value={dep.numero}>
-                                        {dep.numero} - {dep.nom}
-                                    </option>
-                                ))}
-                        </select>
-                    </div>
+                            {loading ? "Inscription en cours..." : "S'inscrire"}
+                        </button>
+                    </form>
                     
-                    <button
-                        type="submit"
-                        disabled={loading}
-                        className="w-full bg-green-600 hover:bg-green-800 cursor-pointer text-white font-medium py-3 rounded-lg transition-colors disabled:bg-gray-400 mt-6"
-                    >
-                        {loading ? "Inscription en cours..." : "S'inscrire"}
-                    </button>
-                </form>
-                
-                <p className="text-center text-sm text-gray-600 mt-4">
-                    Déjà un compte ?{" "}
-                    <NavLink to="/login" className="text-green-600 hover:underline">
-                        Se connecter
-                    </NavLink>
-                </p>
+                    <p className="text-center text-sm text-gray-600 mt-4">
+                        Déjà un compte ?{" "}
+                        <NavLink to="/login" className="text-green-600 hover:underline">
+                            Se connecter
+                        </NavLink>
+                    </p>
+                </div>
             </div>
-        </div>
+        </>
     );
 }

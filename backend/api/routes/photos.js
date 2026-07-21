@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const verifyCookieToken = require('../middlewares/auth');
+const { verifyCookieToken } = require('../middlewares/auth');
 const { photos: upload } = require("../middlewares/upload");
 
 const { Photo } = require('../models');
@@ -13,12 +13,11 @@ const photosDefaultService = defaultService(Photo);
 const photosDefaultController = defaultController(photosDefaultService);
 const photosSpecificController = require("../controllers/photosController");
 
-router.get('/', photosSpecificController.getAllPublic);
 router.delete('/:id', verifyCookieToken, photosDefaultController.delete);
 router.post(
     "/upload",
     verifyCookieToken,
-    upload.array("photos", 10),
+    upload.array("photos", 5),
     photosSpecificController.upload
 );
 router.get('/annonce/:annonceId', photosSpecificController.getByAnnonceId);

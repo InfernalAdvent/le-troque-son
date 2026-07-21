@@ -57,12 +57,12 @@ export default function CityAutocomplete({
     return (
         <div className="space-y-2">
             <div className="relative">
-                <label className="block font-semibold mb-1">Ville</label>
+                <label className="block font-semibold text-gray-700 mb-1">Ville</label>
                 <input
                     value={ville || ""}
                     onChange={handleVilleChange}
                     onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                    className="w-full p-3 border rounded"
+                    className="w-full p-3 border border-gray-300 rounded"
                     placeholder="Ex: Marseille"
                     required={required}
                     autoComplete="off"
@@ -91,12 +91,12 @@ export default function CityAutocomplete({
             </div>
 
             <div>
-                <label className="block font-semibold mb-1">Code postal</label>
+                <label className="block font-semibold text-gray-700 mb-1">Code postal</label>
                 {codesPostauxDisponibles.length > 1 ? (
                     <select
                         value={codePostal || ""}
                         onChange={handleCodePostalChange}
-                        className="w-full p-3 border rounded"
+                        className="w-full p-3 border border-gray-300 rounded"
                         required={required}
                     >
                         <option value="">Choisir un code postal</option>
@@ -107,7 +107,7 @@ export default function CityAutocomplete({
                 ) : (
                     <input
                         value={codePostal || ""}
-                        className="w-full p-3 border rounded"
+                        className="w-full p-3 border border-gray-300 rounded"
                         readOnly
                         required={required}
                     />

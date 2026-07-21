@@ -4,16 +4,12 @@ export default function AnnoncesCard({ annonce, photo }) {
     return(
         <NavLink 
             to={`/annonces/${annonce.id}`}
-        className="border border-gray-200 rounded-xl shadow-custom hover:drop-shadow-xl/25 transition-all p-6 w-full max-w-xs flex flex-col gap-3 bg-white mx-auto"        >
+            className="border border-gray-200 rounded-xl shadow-custom hover:drop-shadow-xl/25 transition-all p-6 w-full max-w-xs flex flex-col gap-3 bg-white mx-auto"        >
             {/* Image de l'annonce */}
             <div className="h-48 w-full bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
                 {photo ? (
                     <img 
-                        src={photo.url.startsWith("/uploads")
-                            ? `${import.meta.env.VITE_API_URL}${photo.url}` 
-                            : photo.url
-                        }
-                         
+                        src={photo.url}
                         alt={annonce.titre}
                         className="w-full h-full object-contain"
                     />

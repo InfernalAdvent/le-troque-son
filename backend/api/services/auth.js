@@ -2,6 +2,8 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { User, Departement } = require('../models');
 const logger = require('../logger');
+const crypto = require('crypto');
+const { Op } = require('sequelize');
 
 const saltRounds = 10; 
 
@@ -76,4 +78,34 @@ const getCurrentUser = async (userId) => {
     }
 };
 
-module.exports = { login, signup, getCurrentUser };
+const forgotPassword = async (email) => {
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+        return
+    }
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiration = new Date(Date.now() + 3600000);
+    await user.update({ reset_token: token, reset_token_expiration: expiration });
+    logger.info(`\n Lien de reset : http://localhost:5173/reset-password?token=${token}\n`);
+};
+
+const resetPassword = async (token, newPassword) => {
+    const user = await User.findOne({ 
+        where: { 
+            reset_token: token, 
+            reset_token_expiration: { [Op.gt]: new Date() } 
+        } 
+    });
+    if (!user) {
+        throw new Error("Token de réinitialisation invalide ou expiré.");
+    }
+
+    const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+    await user.update(
+        { password: hashedPassword, reset_token: null, reset_token_expiration: null }
+    );
+};
+
+module.exports = { login, signup, getCurrentUser, forgotPassword, resetPassword };

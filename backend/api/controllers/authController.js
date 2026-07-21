@@ -130,4 +130,26 @@ const me = async (req, res) => {
     }
 };
 
-module.exports = { postLogin, postSignUp, postLogout, me };
+const forgotPassword = async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        await authService.forgotPassword(email);
+        res.status(200).json({ message: "Si cet email existe, un lien de réinitialisation a été envoyé." });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+const resetPassword = async (req, res) => {
+    const { token, newPassword } = req.body;
+
+    try {
+        await authService.resetPassword(token, newPassword);
+        res.status(200).json({ message: "Mot de passe réinitialisé avec succès." });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+};
+
+module.exports = { postLogin, postSignUp, postLogout, me, forgotPassword, resetPassword };

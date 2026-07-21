@@ -2,5 +2,13 @@
 
 @theme {
   --shadow-custom: 0px 3px 5px #b4b4b4;
+
   --font-titre: "New Rocker", system-ui;
+  --font-sans: "Segoe UI", sans-serif;
+}
+
+@layer base {
+  body {
+    font-family: var(--font-sans);
+  }
 }

@@ -1,6 +1,8 @@
 const { Op } = require('sequelize');
 const Photo  = require('../models/photo');
 const Annonce = require('../models/annonce');
+const { uploadToCloudinary } = require('../middlewares/upload');
+
 
 const checkAnnonceOwnership = async (annonceId, userId) => {
         const annonce = await Annonce.findByPk(annonceId);
@@ -14,14 +16,6 @@ const checkAnnonceOwnership = async (annonceId, userId) => {
 
 const photoService = {
 
-    getAllPublic: async () => {
-        return Photo.findAll({
-            where: { annonce_id: { [Op.ne]: null } },
-            attributes: ['id', 'annonce_id', 'url', 'ordre'],
-            order: [['ordre', 'ASC']]
-        });
-    },
-
     uploadPhotos: async (files, userId, annonceId = null) => {
         try {
             if (annonceId) {
@@ -29,12 +23,14 @@ const photoService = {
             }
             const savedPhotos = await Promise.all(
                 files.map((file, index) =>
-                    Photo.create({
-                        user_id: userId,
-                        annonce_id: annonceId,
-                        url: "/uploads/" + file.filename,
-                        ordre: index
-                    })
+                    uploadToCloudinary(file.buffer, 'annonces').then(result => 
+                        Photo.create({
+                            user_id: userId,
+                            annonce_id: annonceId,
+                            url: result.secure_url,
+                            ordre: index
+                        })
+                    )
                 )
             );
 

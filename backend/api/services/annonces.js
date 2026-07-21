@@ -27,7 +27,7 @@ const getAnnonceWithUser = async (id) => {
     });
 };
 
-// 🔹 Récupération de toutes les annonces avec filtres (départements + recherche)
+// Récupération de toutes les annonces avec filtres (départements + recherche)
 const getAllWithFilters = async ({ departements, search }) => {
     const where = {};
 
@@ -36,14 +36,13 @@ const getAllWithFilters = async ({ departements, search }) => {
     }
 
     if (search) {
-        // 👇 Diviser la recherche en mots
         const mots = search.trim().split(/\s+/);
         
         const conditions = mots.map(mot => ({
             titre: { [Op.like]: `%${mot}%` },
         }));
 
-        // 👇 Ajouter les conditions de recherche au where
+        
         where[Op.and] = conditions;
     }
 

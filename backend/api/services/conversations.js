@@ -103,7 +103,7 @@ const conversationService = {
      * @param {number} userId - L'ID de l'utilisateur connecté.
      * @returns {Array<object>} Liste des conversations.
      */
-    getUserConversations: async (userId) => {
+    getConversations: async (userId) => {
         try {
             return await Conversation.findAll({
                 where: {
@@ -120,7 +120,7 @@ const conversationService = {
                 include: ConversationIncludes
             });
         } catch (error) {
-            logger.error("Erreur dans getUserConversations:", error);
+            logger.error("Erreur dans getConversations:", error);
             throw new Error(`Erreur lors de la récupération des conversations : ${error.message}`);
         }
     },
@@ -150,7 +150,17 @@ const conversationService = {
             if (!isParticipant) {
                 throw new Error("Accès refusé. L'utilisateur n'est pas participant à cette conversation.");
             }
-            // 2. Marquer les messages comme lus par le destinataire (l'utilisateur actuel)
+
+             //2. Récupérer les messages qui vont être marqués comme lus, AVANT la mise à jour
+            const messagesToMarkAsRead = await Message.findAll({
+                where: {
+                    conversation_id: conversationId,
+                    expediteur_id: { [Op.ne]: currentUserId },
+                    lu_par_destinataire: false
+                },
+                attributes: ['id', 'expediteur_id']
+            });
+            // 3. Marquer les messages comme lus par le destinataire (l'utilisateur actuel)
             // L'utilisateur actuel est le destinataire si l'expéditeur n'est pas lui.
             await Message.update(
                 { lu_par_destinataire: true },
@@ -163,13 +173,13 @@ const conversationService = {
                 }
             );
 
-            // 3. Récupérer les messages après la mise à jour
+            // 4. Récupérer les messages après la mise à jour
             const messages = await Message.findAll({
                 where: { conversation_id: conversationId },
                 order: [['date_envoi', 'ASC']],
                 include: MessageIncludes 
             });
-            return messages;
+            return {messages, markedAsRead: messagesToMarkAsRead};
 
         } catch (error) {
             logger.error("Erreur dans getConversationHistory:", error);
@@ -223,7 +233,11 @@ const conversationService = {
 
             await conversation.update(updateData);
 
-            return newMessage;
+            const recipientId = isInitiateur
+                ? conversation.utilisateur_receveur_id
+                : conversation.utilisateur_initiateur_id;
+
+            return { newMessage, recipientId };
 
         } catch (error) {
             logger.error("Erreur lors de l'envoi du message :", error);
@@ -264,28 +278,6 @@ const conversationService = {
         } catch (error) {
             logger.error("Erreur masquage conversation:", error);
             throw new Error(`Erreur lors du masquage : ${error.message}`);
-        }
-    },
-
-    /**
-     * Marquer comme lu un message
-     * @param {number} conversationId - L'ID de la conversation.
-     * @param {number} userId - L'ID de l'utilisateur connecté.
-     */
-    markAsRead: async (conversationId, userId) => {
-        try {
-            await Message.update(
-                {lu_par_destinataire: true},
-                {
-                    where: {
-                        conversation_id: conversationId,
-                        expediteur_id: { [Op.ne]: userId }
-                    }
-                }
-            );
-        } catch (error) {
-            logger.error("Erreur markAsRead:", error);
-            throw new Error(`Erreur lors du read : ${error.message}`)
         }
     }
 };

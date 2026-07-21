@@ -10,8 +10,11 @@ const User = sequelize.define('users', {
     password: { type: DataTypes.STRING(255), allowNull: false },
     departement_numero: { type: DataTypes.STRING(3), allowNull: true },
     avatar_url: { type: DataTypes.STRING, allowNull: true },
+    avatar_public_id: { type: DataTypes.STRING, allowNull: true },
     date_inscription: { type: DataTypes.DATE, defaultValue: DataTypes.NOW },
-    derniere_connexion: { type: DataTypes.DATE, allowNull: true, defaultValue: null }
+    derniere_connexion: { type: DataTypes.DATE, allowNull: true, defaultValue: null },
+    reset_token: { type: DataTypes.STRING, allowNull: true, defaultValue: null },
+    reset_token_expiration: { type: DataTypes.DATE, allowNull: true, defaultValue: null }
 });
 
 module.exports = User;

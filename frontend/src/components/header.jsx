@@ -3,6 +3,7 @@ import { Menu, X, Search, User, MessageSquare, ChevronLeft, UserCircle, LogIn, L
 import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { AuthContext } from "./authContext";
 import api from "../api";
+import socket from "../socket";
 
 export default function Header() {
     const [mainCategories, setMainCategories] = useState([]);
@@ -17,7 +18,7 @@ export default function Header() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const isAuthPage = ["/login", "/inscription", "/annonces/add"].some(path =>
+    const isAuthPage = ["/login", "/inscription", "/annonces/add", "/mot-de-passe-oublie", "/reset-password"].some(path =>
         location.pathname.startsWith(path)
     );
 
@@ -34,13 +35,11 @@ export default function Header() {
         fetchMainCategories();
     }, []);
 
-    // Détecter si on est sur une page de catégorie et charger les enfants
     useEffect(() => {
         const match = location.pathname.match(/^\/categorie\/(\d+)/);
     
-    // Si on n'est pas sur une page catégorie, réinitialiser
+        // Évite un re-render inutile quand on quitte une catégorie
         if (!match) {
-            // 👇 Vérifier d'abord si on a vraiment besoin de modifier
             if (sousCategories.length > 0 || filtresActifs.length > 0) {
                 startTransition(() => {
                     setSousCategories([]);
@@ -50,31 +49,14 @@ export default function Header() {
             return;
         }
     
-    // Si on est sur une page catégorie, charger les sous-catégories
         const categorieId = match[1];
         
         const fetchSousCategories = async() => {
             try {
                 const childrenRes = await api.get(`/categories/${categorieId}/children`);
+
+                setSousCategories(childrenRes.data);
                 
-                const categoriesAvecEnfants = await Promise.all(
-                    childrenRes.data.map(async (cat) => {
-                        try {
-                            const enfantsRes = await api.get(`/categories/${cat.id}/children`);
-                            return {
-                                ...cat,
-                                hasChildren: enfantsRes.data.length > 0
-                            };
-                        } catch (err) {
-                            console.error(`Erreur vérification enfants catégorie ${cat.id}:`, err);
-                            return { ...cat, hasChildren: false };
-                        }
-                    })
-                );
-                
-                setSousCategories(categoriesAvecEnfants);
-                
-                 // Synchronise filtresActifs avec l'URL au lieu de réinitialiser
                 const params = new URLSearchParams(location.search);
                 const filtresParam = params.get('filtres');
                 
@@ -112,9 +94,39 @@ export default function Header() {
         };
 
         checkUnread();
-        const interval = setInterval(checkUnread, 30000);
-        return () => clearInterval(interval);
     }, [user]);
+
+   useEffect(() => {
+        if (!user) return;
+
+        const handleNotification = () => {
+            if (window.location.pathname !== '/messages') {
+                setHasUnread(true);
+            }
+        };
+
+        const registerListener = () => {
+            socket.on('nouvelle_notification', handleNotification);
+        };
+
+        if (socket.connected) {
+            registerListener();
+        } else {
+            socket.once('connect', registerListener);
+        }
+
+        return () => {
+            socket.off('connect', registerListener);
+            socket.off('nouvelle_notification', handleNotification);
+        };
+    }, [user]);
+
+    //  Réinitialisation du badge quand on visite /messages
+    useEffect(() => {
+        if (location.pathname === '/messages') {
+            setHasUnread(false);
+        }
+    }, [location.pathname]);
 
     // Fonction pour retourner à la page d'accueil
     const retourArriere = () => {
@@ -252,9 +264,9 @@ export default function Header() {
                             {user ? (
                                 <>
                                 <NavLink 
-                                    to="/compte" 
+                                    to="/mon-profil" 
                                     className="text-green-600 hover:text-green-800 transition-colors p-2"
-                                    title="Compte"
+                                    title="Profil"
                                 >
                                     <UserCircle size={24} />
                                 </NavLink>
@@ -404,12 +416,12 @@ export default function Header() {
                         <div className="space-y-2 mb-4 pb-4 border-b border-gray-200">
                             {user ? (
                                 <NavLink
-                                    to="/compte"
+                                    to="/mon-profil"
                                     className="flex items-center gap-3 px-4 py-3 rounded-lg text-gray-700 hover:bg-green-100 transition-colors"
                                     onClick={() => setMobileMenuOpen(false)}
                                 >
                                     <User size={20} className="text-green-600" />
-                                    <span className="font-medium">Mon Compte</span>
+                                    <span className="font-medium">Mon Profil</span>
                                 </NavLink>
                             ) : (
                                 <NavLink

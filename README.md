@@ -72,6 +72,23 @@ npm install
 
 ##  Variables d'environnement
 
+### Cloudinary
+
+Configuration de Cloudinary
+
+Le projet utilise Cloudinary pour le stockage des images des annonces et des avatars.
+
+Créer un compte gratuit sur Cloudinary.
+Se connecter au tableau de bord Cloudinary.
+Récupérer les informations suivantes :
+Cloud Name
+API Key
+API Secret
+
+Ces informations doivent être renseignées dans le fichier .env du backend.
+
+Les identifiants Cloudinary personnels ne sont pas fournis dans le dépôt pour des raisons de sécurité. Chaque utilisateur doit utiliser son propre compte Cloudinary.
+
 ### Backend
 
 Créer un fichier `.env` dans `backend/api/` en vous basant sur le fichier `.env.example` présent à la racine
@@ -150,4 +167,5 @@ En production, penser à mettre à jour :
 -  Messagerie entre utilisateurs
 -  Wishlist personnalisée
 -  Profil utilisateur avec avatar
--  Authentification sécurisée (JWT, CSRF, rate limiting)
+-  Authentification sécurisée avec JWT
+-  Protection CSRF et rate limiting

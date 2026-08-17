@@ -364,7 +364,7 @@ export default function Messages() {
                     ) : (
                         <>
                         {/* Header de la conversation */}
-                        <div className="px-4 py-3 border-b border-gray-200 bg-gray-50 flex items-center justify-between"> {/* 👈 Ajouter justify-between */}
+                        <div className="px-4 py-3 border-b border-gray-200 bg-gray-50 flex items-center justify-between">
                             <div className="flex items-center gap-3">
                                 <button
                                     onClick={() => setSelectedConversation(null)}

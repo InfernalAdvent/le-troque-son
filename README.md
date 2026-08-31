@@ -157,7 +157,7 @@ En production, penser à mettre à jour :
 - `NODE_ENV=production` dans le `.env` backend
 - `ALLOWED_ORIGINS` avec les URLs de production
 - `VITE_API_URL` avec l'URL du backend en production
-
+- `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY` et `CLOUDINARY_API_SECRET` avec les identifiants du compte Cloudinary utilisé pour le déploiement.
 ---
 
 ## Fonctionnalités principales
@@ -169,3 +169,4 @@ En production, penser à mettre à jour :
 -  Profil utilisateur avec avatar
 -  Authentification sécurisée avec JWT
 -  Protection CSRF et rate limiting
+-  Réinitialisation du mot de passe via un lien affiché dans le terminal de l’API

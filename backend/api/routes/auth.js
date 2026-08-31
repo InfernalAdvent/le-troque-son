@@ -1,15 +1,14 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const { postLogin, postSignUp ,postLogout, me, forgotPassword, resetPassword } = require('../controllers/authController');
-const { verifyCookieToken } = require('../middlewares/auth');
+const authController = require("../controllers/authController");
+const { verifyCookieToken } = require("../middlewares/auth");
 
-router.get('/me', verifyCookieToken, me)
-router.post('/login', postLogin);
-router.post('/signup', postSignUp);
-router.post('/logout', postLogout);
-router.post('/forgot-password', forgotPassword);
-router.post('/reset-password', resetPassword);
-
+router.get("/me", verifyCookieToken, authController.me);
+router.post("/login", authController.postLogin);
+router.post("/signup", authController.postSignUp);
+router.post("/logout", authController.postLogout);
+router.post("/forgot-password", authController.forgotPassword);
+router.post("/reset-password", authController.resetPassword);
 
 module.exports = router;

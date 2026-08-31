@@ -59,7 +59,7 @@ CREATE TABLE users (
     CONSTRAINT fk_users_departement
         FOREIGN KEY (departement_numero)
         REFERENCES departements(numero)
-        ON DELETE SET NULL
+        ON DELETE RESTRICT
         ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 

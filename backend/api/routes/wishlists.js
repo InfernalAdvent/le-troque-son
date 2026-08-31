@@ -1,20 +1,24 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const { Wishlist } = require('../models');
-const { verifyCookieToken } = require('../middlewares/auth');
+const { Wishlist } = require("../models");
+const { verifyCookieToken } = require("../middlewares/auth");
 
-const wishlistSpecificController = require('../controllers/wishlistsController');
+const wishlistSpecificController = require("../controllers/wishlistsController");
 
-const defaultService = require('../services/defaultService');
-const defaultController = require('../controllers/defaultController');
+const defaultService = require("../services/defaultService");
+const defaultController = require("../controllers/defaultController");
 
 const wishlistDefaultService = defaultService(Wishlist);
 const wishlistDefaultController = defaultController(wishlistDefaultService);
 
-router.get('/user/:userId', wishlistDefaultController.getByUserId);
-router.post('/', verifyCookieToken, wishlistSpecificController.createWishlist);
-router.put('/:id', verifyCookieToken, wishlistSpecificController.updateWishlistOwner);
-router.delete('/:id', verifyCookieToken, wishlistDefaultController.delete);
+router.get("/user/:userId", wishlistDefaultController.getByUserId);
+router.post("/", verifyCookieToken, wishlistSpecificController.createWishlist);
+router.put(
+  "/:id",
+  verifyCookieToken,
+  wishlistSpecificController.updateWishlistOwner,
+);
+router.delete("/:id", verifyCookieToken, wishlistDefaultController.delete);
 
 module.exports = router;

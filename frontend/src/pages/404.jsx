@@ -1,4 +1,4 @@
-import NotFoundImage from '../assets/404.png'
+import NotFoundImage from "../assets/404.png";
 
 export default function NotFound() {
   return (
@@ -8,9 +8,7 @@ export default function NotFound() {
         alt="pictogramme d'erreur 404"
         className="w-1/2 h-auto object-cover"
       />
-      <p className="text-lg text-gray-700">
-        Oups, cette page n'existe pas.
-      </p>
+      <p className="text-lg text-gray-700">Oups, cette page n'existe pas.</p>
     </div>
   );
 }

@@ -1,4 +1,4 @@
-import picture from '../assets/guitar-construction.webp';
+import picture from "../assets/guitar-construction.webp";
 
 export default function Construction() {
   return (

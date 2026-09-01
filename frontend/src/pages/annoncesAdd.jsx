@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
 import CityAutocomplete from "../components/cityAutocomplete";
+import { useDragAndDrop } from "../components/useDragAndDrop";
 import api from "../api";
 
 export default function AnnoncesAdd() {
@@ -20,9 +21,7 @@ export default function AnnoncesAdd() {
   });
 
   const [categories, setCategories] = useState([]);
-  const [uploadedPhotos, setUploadedPhotos] = useState([]);
-  const [draggedIndex, setDraggedIndex] = useState(null);
-  const [previewUrls, setPreviewUrls] = useState([]);
+  const [photos, setPhotos] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [villeValide, setVilleValide] = useState(false);
@@ -34,36 +33,39 @@ export default function AnnoncesAdd() {
     });
   };
 
+  const { handleDragStart, handleDragOver, handleDrop } = useDragAndDrop(
+    [], // pas de photos "existantes" en mode création
+    photos,
+    (reordered) => setPhotos(reordered),
+  );
+
   // Gérer l'ajout de photos
   const handlePhotoChange = (e) => {
     const files = Array.from(e.target.files);
-
     if (files.length === 0) return;
 
-    setUploadedPhotos((prev) => {
-      if (prev.length + files.length > 5) {
-        setError("Maximum 5 photos autorisées");
-        return prev;
-      }
-      return [...prev, ...files];
-    });
+    if (photos.length + files.length > 5) {
+      setError("Maximum 5 photos autorisées");
+      return;
+    }
 
-    setPreviewUrls((prev) => {
-      const newUrls = files.map((file) => URL.createObjectURL(file));
-      return [...prev, ...newUrls];
-    });
+    const newPhotosObjs = files.map((f) => ({
+      id: `new-${Date.now()}-${f.name}`,
+      file: f,
+      url: URL.createObjectURL(f),
+    }));
 
+    setPhotos((prev) => [...prev, ...newPhotosObjs]);
     setError("");
   };
 
   // Supprimer une photo
-  const removePhoto = (index) => {
-    setPreviewUrls((prev) => {
-      URL.revokeObjectURL(prev[index]);
-      return prev.filter((_, i) => i !== index);
+  const removePhoto = (id) => {
+    setPhotos((prev) => {
+      const toRemove = prev.find((p) => p.id === id);
+      if (toRemove) URL.revokeObjectURL(toRemove.url);
+      return prev.filter((p) => p.id !== id);
     });
-
-    setUploadedPhotos((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e) => {
@@ -114,9 +116,9 @@ export default function AnnoncesAdd() {
       const res = await api.post("/annonces", formData);
       const annonceId = res.data.id;
 
-      if (uploadedPhotos.length > 0) {
+      if (photos.length > 0) {
         const formPhotos = new FormData();
-        uploadedPhotos.forEach((file) => formPhotos.append("photos", file));
+        photos.forEach((p) => formPhotos.append("photos", p.file));
         formPhotos.append("annonce_id", annonceId);
 
         await api.post("/photos/upload", formPhotos, {
@@ -124,7 +126,7 @@ export default function AnnoncesAdd() {
         });
       }
 
-      previewUrls.forEach((url) => URL.revokeObjectURL(url));
+      photos.forEach((p) => URL.revokeObjectURL(p.url));
       navigate("/mon-profil");
     } catch (err) {
       console.error(err);
@@ -194,34 +196,6 @@ export default function AnnoncesAdd() {
     fetchCategories();
   }, []);
 
-  const handleDragStart = (index) => {
-    setDraggedIndex(index);
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
-  };
-
-  const handleDrop = (index) => {
-    if (draggedIndex === null || draggedIndex === index) return;
-
-    const newPhotos = [...uploadedPhotos];
-    const newPreviews = [...previewUrls];
-
-    const draggedPhoto = newPhotos[draggedIndex];
-    const draggedPreview = newPreviews[draggedIndex];
-
-    newPhotos.splice(draggedIndex, 1);
-    newPreviews.splice(draggedIndex, 1);
-
-    newPhotos.splice(index, 0, draggedPhoto);
-    newPreviews.splice(index, 0, draggedPreview);
-
-    setUploadedPhotos(newPhotos);
-    setPreviewUrls(newPreviews);
-    setDraggedIndex(null);
-  };
-
   return (
     <div className="flex justify-center items-center min-h-screen pt-12">
       <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-2xl">
@@ -251,13 +225,13 @@ export default function AnnoncesAdd() {
           {/* Zone de photos */}
           <div>
             <label className="block font-semibold text-gray-700 mb-2">
-              Photos ({uploadedPhotos.length}/5)
+              Photos ({photos.length}/5)
             </label>
 
             <div className="grid grid-cols-5 gap-3 mb-3">
-              {previewUrls.map((url, index) => (
+              {photos.map((photo, index) => (
                 <div
-                  key={index}
+                  key={photo.id}
                   draggable
                   onDragStart={() => handleDragStart(index)}
                   onDragOver={handleDragOver}
@@ -265,26 +239,24 @@ export default function AnnoncesAdd() {
                   className="relative aspect-square cursor-move"
                 >
                   <img
-                    src={url}
+                    src={photo.url}
                     alt={`Photo ${index + 1}`}
                     className="w-full h-full object-cover rounded-lg border-2 border-gray-300"
                   />
-
                   <button
                     type="button"
-                    onClick={() => removePhoto(index)}
+                    onClick={() => removePhoto(photo.id)}
                     className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 shadow-lg transition-colors"
                   >
                     <X size={16} />
                   </button>
-
                   <span className="absolute bottom-1 right-1 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
                     {index + 1}
                   </span>
                 </div>
               ))}
 
-              {uploadedPhotos.length < 5 && (
+              {photos.length < 5 && (
                 <label className="aspect-square border-2 border-dashed border-gray-300 hover:border-green-600 rounded-lg flex flex-col items-center justify-center cursor-pointer transition-colors bg-gray-50 hover:bg-green-50">
                   <svg
                     className="w-8 h-8 text-gray-400 mb-1"

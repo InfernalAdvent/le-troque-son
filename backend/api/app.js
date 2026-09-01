@@ -79,6 +79,7 @@ const authLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+app.use(limiter);
 app.use("/auth/login", authLimiter);
 app.use("/auth/signup", authLimiter);
 

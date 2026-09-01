@@ -7,7 +7,6 @@ const AuthContext = createContext();
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
-  
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -24,7 +23,7 @@ export default function AuthProvider({ children }) {
     fetchUser();
   }, []);
 
-   // Connecter/déconnecter la socket selon l'état de l'utilisateur
+  // Connecter/déconnecter la socket selon l'état de l'utilisateur
   useEffect(() => {
     if (user) {
       socket.connect();
@@ -34,7 +33,7 @@ export default function AuthProvider({ children }) {
   }, [user]);
 
   return (
-    <AuthContext.Provider value={{ user, setUser, loadingAuth }}> 
+    <AuthContext.Provider value={{ user, setUser, loadingAuth }}>
       {children}
     </AuthContext.Provider>
   );

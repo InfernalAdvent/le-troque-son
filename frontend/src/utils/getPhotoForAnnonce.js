@@ -3,6 +3,6 @@
  * @param {Array} photos - Le tableau annonce.photos embarqué dans la réponse
  */
 export function getPhotoForAnnonce(photos) {
-    if (!photos || photos.length === 0) return null;
-    return photos.find(photo => photo.ordre === 0) || photos[0];
+  if (!photos || photos.length === 0) return null;
+  return photos.find((photo) => photo.ordre === 0) || photos[0];
 }
